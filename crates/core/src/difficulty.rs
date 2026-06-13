@@ -92,11 +92,9 @@ fn count_numbered_items(query: &str) -> usize {
     query
         .lines()
         .filter(|line| {
-            let mut chars = line.trim_start().chars();
-            match chars.next() {
-                Some(c) if c.is_ascii_digit() => matches!(chars.next(), Some('.') | Some(')')),
-                _ => false,
-            }
+            let trimmed = line.trim_start();
+            let rest = trimmed.trim_start_matches(|c: char| c.is_ascii_digit());
+            rest.len() < trimmed.len() && matches!(rest.chars().next(), Some('.') | Some(')'))
         })
         .count()
 }
@@ -104,6 +102,12 @@ fn count_numbered_items(query: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn multi_digit_numbered_items_are_counted() {
+        let q = "1. first\n2. second\n10. tenth";
+        assert_eq!(count_numbered_items(q), 3);
+    }
 
     #[test]
     fn sigmoid_midpoint() {
