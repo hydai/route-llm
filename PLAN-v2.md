@@ -78,7 +78,7 @@ Cargo.toml        # workspace: add "crates/trainer"                   (Task 5)
 - Create: `crates/core/src/learned/features.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Create the module dir + features with failing tests**
+- [x] **Step 1: Create the module dir + features with failing tests**
 
 Create `crates/core/src/learned/features.rs`:
 ```rust
@@ -156,12 +156,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `cargo test -p route-llm-core features`
 Expected: FAILS to compile (`features` not found).
 
-- [ ] **Step 3: Implement `features()` (reference default)**
+- [x] **Step 3: Implement `features()` (reference default)**
 
 Prepend to `crates/core/src/learned/features.rs` (above `#[cfg(test)]`):
 ```rust
@@ -288,7 +288,7 @@ fn count_numbered_items(query: &str) -> usize {
 }
 ```
 
-- [ ] **Step 4: Wire the module (temporary, completed in Task 3)**
+- [x] **Step 4: Wire the module (temporary, completed in Task 3)**
 
 Add to `crates/core/src/lib.rs` below `pub mod difficulty;`:
 ```rust
@@ -300,12 +300,12 @@ Create `crates/core/src/learned/mod.rs` with just:
 pub mod features;
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-core features`
 Expected: PASS (5 tests).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -322,7 +322,7 @@ git commit -m "feat(core): add learned-router feature extractor"
 - Create: `crates/core/src/learned/model.rs`
 - Modify: `crates/core/src/learned/mod.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/core/src/learned/model.rs`:
 ```rust
@@ -396,12 +396,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-core model`
 Expected: FAILS to compile (`difficulty` method not found).
 
-- [ ] **Step 3: Implement the model (reference default)**
+- [x] **Step 3: Implement the model (reference default)**
 
 Prepend to `crates/core/src/learned/model.rs` impl (above `#[cfg(test)]`):
 ```rust
@@ -438,19 +438,19 @@ impl LinearModel {
 }
 ```
 
-- [ ] **Step 4: Wire the module**
+- [x] **Step 4: Wire the module**
 
 In `crates/core/src/learned/mod.rs` add below `pub mod features;`:
 ```rust
 pub mod model;
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-core model`
 Expected: PASS (4 tests).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -468,7 +468,7 @@ git commit -m "feat(core): add learned linear model with standardized logistic d
 - Modify: `crates/core/src/learned/mod.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Create seed weights**
+- [x] **Step 1: Create seed weights**
 
 Create `crates/core/src/learned/weights.rs` (hand-seeded; `trainer emit` overwrites this in Task 8/10):
 ```rust
@@ -500,7 +500,7 @@ pub fn shipped_model() -> LinearModel {
 }
 ```
 
-- [ ] **Step 2: Write the failing test for LearnedRouter**
+- [x] **Step 2: Write the failing test for LearnedRouter**
 
 Replace `crates/core/src/learned/mod.rs` with:
 ```rust
@@ -576,12 +576,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 3: Run to verify it fails**
+- [x] **Step 3: Run to verify it fails**
 
 Run: `cargo test -p route-llm-core learned`
 Expected: FAILS to compile (`weights`/`LearnedRouter` not yet wired / `Router` import).
 
-- [ ] **Step 4: Re-export from the crate root**
+- [x] **Step 4: Re-export from the crate root**
 
 In `crates/core/src/lib.rs`, update the re-export line for `router` to also export `LearnedRouter`:
 ```rust
@@ -589,12 +589,12 @@ pub use router::{HeuristicRouter, Router};
 pub use learned::LearnedRouter;
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-core`
 Expected: PASS (all core tests incl. learned router + seed weights behave sanely).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -614,7 +614,7 @@ git commit -m "feat(core): add LearnedRouter with seeded embedded weights"
 - Create: `crates/server/tests/learned.rs`
 - Create: `crates/core/tests/heuristic_frozen.rs`
 
-- [ ] **Step 1: Write the frozen-heuristic regression test**
+- [x] **Step 1: Write the frozen-heuristic regression test**
 
 Create `crates/core/tests/heuristic_frozen.rs` (proves v2 did not disturb v1's scorer):
 ```rust
@@ -632,12 +632,12 @@ fn heuristic_difficulty_matches_v1_on_spec_query() {
 }
 ```
 
-- [ ] **Step 2: Run it (should already pass — v1 untouched)**
+- [x] **Step 2: Run it (should already pass — v1 untouched)**
 
 Run: `cargo test -p route-llm-core --test heuristic_frozen`
 Expected: PASS (1 test).
 
-- [ ] **Step 3: Add the shared-router type + `app_with_router` in lib.rs**
+- [x] **Step 3: Add the shared-router type + `app_with_router` in lib.rs**
 
 Replace `crates/server/src/lib.rs` with:
 ```rust
@@ -670,7 +670,7 @@ pub fn app() -> axum::Router {
 }
 ```
 
-- [ ] **Step 4: Thread the router through handlers.rs**
+- [x] **Step 4: Thread the router through handlers.rs**
 
 In `crates/server/src/handlers.rs`: (a) update imports, (b) make `process` take the router, (c) extract `State<SharedRouter>` in the three routing handlers.
 
@@ -726,7 +726,7 @@ Update `chat_completions` signature to start with `State(router): State<SharedRo
 
 > `health` and `list_models` take no `State` param — they ignore the router. They still compile under a stateful `Router` because handlers may omit extractors they don't use.
 
-- [ ] **Step 5: Select the strategy from env in main.rs**
+- [x] **Step 5: Select the strategy from env in main.rs**
 
 Replace the app-construction lines in `crates/server/src/main.rs` (keep the tracing/listener code) so the router is chosen from `ROUTE_LLM_ROUTER`:
 ```rust
@@ -752,7 +752,7 @@ fn router_name() -> &'static str {
 }
 ```
 
-- [ ] **Step 6: Write the new learned-server test**
+- [x] **Step 6: Write the new learned-server test**
 
 Create `crates/server/tests/learned.rs`:
 ```rust
@@ -791,12 +791,12 @@ async fn invalid_inputs_still_rejected_under_learned() {
 }
 ```
 
-- [ ] **Step 7: Run the full workspace test suite**
+- [x] **Step 7: Run the full workspace test suite**
 
 Run: `cargo test`
 Expected: PASS — all v1 server tests (unchanged, via `app()` → heuristic) plus the new learned + frozen tests.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cargo fmt --all
@@ -815,7 +815,7 @@ git commit -m "feat(server): select router strategy via ROUTE_LLM_ROUTER (defaul
 - Create: `crates/trainer/src/main.rs`
 - Create: `crates/trainer/src/dataset.rs`
 
-- [ ] **Step 1: Add the crate to the workspace**
+- [x] **Step 1: Add the crate to the workspace**
 
 In the root `Cargo.toml`, extend `members`:
 ```toml
@@ -824,7 +824,7 @@ resolver = "2"
 members = ["crates/core", "crates/server", "crates/trainer"]
 ```
 
-- [ ] **Step 2: Create the trainer manifest**
+- [x] **Step 2: Create the trainer manifest**
 
 Create `crates/trainer/Cargo.toml`:
 ```toml
@@ -843,7 +843,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 ```
 
-- [ ] **Step 3: Write the dataset module with failing tests**
+- [x] **Step 3: Write the dataset module with failing tests**
 
 Create `crates/trainer/src/dataset.rs`:
 ```rust
@@ -916,7 +916,7 @@ mod tests {
 }
 ```
 
-- [ ] **Step 4: Write the CLI entrypoint**
+- [x] **Step 4: Write the CLI entrypoint**
 
 Create `crates/trainer/src/main.rs`:
 ```rust
@@ -945,14 +945,14 @@ fn main() {
 }
 ```
 
-- [ ] **Step 5: Run the dataset tests**
+- [x] **Step 5: Run the dataset tests**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (2 tests). (`main` compiles; the `dataset` import is used by tests.)
 
 > The crate-level `#![allow(dead_code)]` keeps the build/lint clean while subcommands are wired incrementally (Tasks 6–9); Task 11 can tighten it once every module is used.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -971,7 +971,7 @@ git commit -m "feat(trainer): scaffold trainer crate with jsonl dataset I/O"
 - Create: `crates/trainer/src/corpus.rs`
 - Modify: `crates/trainer/src/main.rs`
 
-- [ ] **Step 1: Write the corpus module with failing tests**
+- [x] **Step 1: Write the corpus module with failing tests**
 
 Create `crates/trainer/src/corpus.rs`:
 ```rust
@@ -1052,24 +1052,24 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer corpus`
 Expected: FAILS to compile (`corpus` module not declared).
 
-- [ ] **Step 3: Wire the subcommand**
+- [x] **Step 3: Wire the subcommand**
 
 In `crates/trainer/src/main.rs`, add `mod corpus;` below `mod dataset;`, and add a match arm above the `"label"` arm:
 ```rust
         "synth" => corpus::run(),
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (dataset + corpus tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -1088,7 +1088,7 @@ git commit -m "feat(trainer): add synth subcommand for synthetic labeled corpus"
 - Create: `crates/trainer/src/logreg.rs`
 - Modify: `crates/trainer/src/main.rs`
 
-- [ ] **Step 1: Write the logreg module with failing tests**
+- [x] **Step 1: Write the logreg module with failing tests**
 
 Create `crates/trainer/src/logreg.rs`:
 ```rust
@@ -1209,12 +1209,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer logreg`
 Expected: FAILS to compile (`logreg` not declared).
 
-- [ ] **Step 3: Wire a temporary `fit` arm (prints a summary)**
+- [x] **Step 3: Wire a temporary `fit` arm (prints a summary)**
 
 In `crates/trainer/src/main.rs`, add `mod logreg;` and an arm:
 ```rust
@@ -1225,12 +1225,12 @@ In `crates/trainer/src/main.rs`, add `mod logreg;` and an arm:
         }
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (dataset + corpus + logreg).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -1247,7 +1247,7 @@ git commit -m "feat(trainer): add deterministic logistic-regression fit"
 - Create: `crates/trainer/src/emit.rs`
 - Modify: `crates/trainer/src/main.rs`
 
-- [ ] **Step 1: Write the emit module with failing tests**
+- [x] **Step 1: Write the emit module with failing tests**
 
 Create `crates/trainer/src/emit.rs`:
 ```rust
@@ -1305,12 +1305,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer emit`
 Expected: FAILS to compile (`emit` not declared).
 
-- [ ] **Step 3: Wire emit into the `fit` arm**
+- [x] **Step 3: Wire emit into the `fit` arm**
 
 In `crates/trainer/src/main.rs`, add `mod emit;` and extend the `"fit"` arm to write the weights file:
 ```rust
@@ -1322,12 +1322,12 @@ In `crates/trainer/src/main.rs`, add `mod emit;` and extend the `"fit"` arm to w
         }
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (dataset + corpus + logreg + emit).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -1344,7 +1344,7 @@ git commit -m "feat(trainer): add weights.rs codegen and wire fit to emit"
 - Create: `crates/trainer/src/eval.rs`
 - Modify: `crates/trainer/src/main.rs`
 
-- [ ] **Step 1: Write the eval module with failing tests**
+- [x] **Step 1: Write the eval module with failing tests**
 
 Create `crates/trainer/src/eval.rs`:
 ```rust
@@ -1469,24 +1469,24 @@ mod tests {
 
 > Note: `cost_profile` uses `route_llm_core::Difficulty` (a public type) and `registry::builtin()` / `ranker::rank` — all v1 public API, read-only. The "cost savings at fixed quality" reading is: at the reported adequacy rate, a lower avg cost is better; compare against `always-strongest` mentally (its adequacy ≈ 1.0 at the cost of the most expensive model).
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer eval`
 Expected: FAILS to compile (`eval` not declared).
 
-- [ ] **Step 3: Wire the `eval` arm**
+- [x] **Step 3: Wire the `eval` arm**
 
 In `crates/trainer/src/main.rs`, add `mod eval;` and an arm:
 ```rust
         "eval" => eval::run(),
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (all trainer module tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -1503,22 +1503,22 @@ git commit -m "feat(trainer): add eval (spearman, ordinal, cost) for learned vs 
 - Modify: `crates/core/src/learned/weights.rs` (regenerated)
 - Create: `data/corpus.jsonl`, `data/labeled.jsonl`
 
-- [ ] **Step 1: Synthesize the corpus + labels**
+- [x] **Step 1: Synthesize the corpus + labels**
 
 Run: `cargo run -p route-llm-trainer -- synth`
 Expected: writes `data/corpus.jsonl` and `data/labeled.jsonl`; prints the example count.
 
-- [ ] **Step 2: Inspect the eval (sanity, before committing weights)**
+- [x] **Step 2: Inspect the eval (sanity, before committing weights)**
 
 Run: `cargo run -p route-llm-trainer -- eval`
 Expected: prints holdout metrics. Learned `spearman`/`ordinal` should be ≥ heuristic. If not, expand the synth corpus (★ Task 6) or adjust `FitConfig` (★ Task 7) and re-run — do not proceed with a worse-than-heuristic model.
 
-- [ ] **Step 3: Fit and regenerate the embedded weights**
+- [x] **Step 3: Fit and regenerate the embedded weights**
 
 Run: `cargo run -p route-llm-trainer -- fit`
 Expected: overwrites `crates/core/src/learned/weights.rs` with trained values.
 
-- [ ] **Step 4: Format and re-run the core sanity tests with trained weights**
+- [x] **Step 4: Format and re-run the core sanity tests with trained weights**
 
 ```bash
 cargo fmt --all
@@ -1526,12 +1526,12 @@ cargo test -p route-llm-core learned
 ```
 Expected: PASS — `trivial_query_is_easier_than_hard_query` still holds with the trained weights. If it fails, the synth corpus is too small/unseparated; expand it (★) and re-fit.
 
-- [ ] **Step 5: Run the full suite**
+- [x] **Step 5: Run the full suite**
 
 Run: `cargo test`
 Expected: PASS (all crates).
 
-- [ ] **Step 6: Commit the data and regenerated weights**
+- [x] **Step 6: Commit the data and regenerated weights**
 
 ```bash
 lineguard data/corpus.jsonl data/labeled.jsonl crates/core/src/learned/weights.rs
@@ -1546,7 +1546,7 @@ git commit -m "feat(core): train and embed learned-router weights from synthetic
 **Files:**
 - Modify: `README.md`
 
-- [ ] **Step 1: Document v2 in the README**
+- [x] **Step 1: Document v2 in the README**
 
 Append to `README.md`:
 ```markdown
@@ -1575,7 +1575,7 @@ cargo run -p route-llm-trainer -- fit     # regenerate crates/core/src/learned/w
 Inference never calls an LLM or the network; only the (deferred) `label` step would.
 ```
 
-- [ ] **Step 2: Final verification**
+- [x] **Step 2: Final verification**
 
 ```bash
 cargo build --release
@@ -1590,7 +1590,7 @@ kill $SRV
 ```
 Expected: `/health` → `{"status":"ok"}`; `/v1/recommend` → 200 with a `ranking` (cheaper model first for the trivial query); difficulty `signals` reflect learned-feature names.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cargo fmt --all
@@ -1603,9 +1603,9 @@ git commit -m "docs: document the learned router and offline trainer"
 
 ## Final verification checklist
 
-- [ ] `cargo build --release` — clean.
-- [ ] `cargo test` — all crates green (v1 tests unchanged; new learned/trainer tests pass).
-- [ ] `crates/core/src/difficulty.rs`, `ranker.rs`, `registry.rs`, `router.rs` are **unmodified** (v1 frozen).
-- [ ] `ROUTE_LLM_ROUTER=learned` and `=heuristic` both serve; unknown value fails fast.
-- [ ] `cargo run -p route-llm-trainer -- eval` shows learned ≥ heuristic on the holdout.
-- [ ] Inference performs no network I/O.
+- [x] `cargo build --release` — clean.
+- [x] `cargo test` — all crates green (v1 tests unchanged; new learned/trainer tests pass).
+- [x] `crates/core/src/difficulty.rs`, `ranker.rs`, `registry.rs`, `router.rs` are **unmodified** (v1 frozen).
+- [x] `ROUTE_LLM_ROUTER=learned` and `=heuristic` both serve; unknown value fails fast.
+- [x] `cargo run -p route-llm-trainer -- eval` shows learned ≥ heuristic on the holdout.
+- [x] Inference performs no network I/O.
