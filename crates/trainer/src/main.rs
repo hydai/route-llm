@@ -4,6 +4,7 @@
 
 mod corpus;
 mod dataset;
+mod emit;
 mod logreg;
 
 fn main() {
@@ -13,11 +14,11 @@ fn main() {
         "fit" => {
             let data = dataset::load("data/labeled.jsonl").expect("load labeled.jsonl");
             let model = logreg::fit(&data, &logreg::FitConfig::default());
+            emit::write(&model, "crates/core/src/learned/weights.rs").expect("write weights.rs");
             eprintln!(
-                "fit: {} examples, bias={:.3}, |w|={}",
+                "fit: {} examples -> crates/core/src/learned/weights.rs (bias={:.3})",
                 data.len(),
-                model.bias,
-                model.weights.len()
+                model.bias
             );
         }
         // arms wired in later tasks
