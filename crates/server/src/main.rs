@@ -1,5 +1,12 @@
 use tracing_subscriber::EnvFilter;
 
+fn router_name() -> &'static str {
+    match std::env::var("ROUTE_LLM_ROUTER").as_deref() {
+        Ok("heuristic") => "heuristic",
+        _ => "learned",
+    }
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt()
@@ -15,7 +22,19 @@ async fn main() {
             .expect("ROUTE_LLM_PORT must be a valid port number (0-65535)"),
         Err(_) => 8080,
     };
-    let app = route_llm_server::app();
+
+    let router: route_llm_server::SharedRouter = match std::env::var("ROUTE_LLM_ROUTER").as_deref()
+    {
+        Ok("heuristic") => std::sync::Arc::new(route_llm_core::HeuristicRouter),
+        // default (unset) is the learned strategy per SPEC-v2 §9
+        Ok("learned") | Err(_) => std::sync::Arc::new(route_llm_core::LearnedRouter::new()),
+        Ok(other) => {
+            eprintln!("invalid ROUTE_LLM_ROUTER: {other:?} (expected 'learned' or 'heuristic')");
+            std::process::exit(1);
+        }
+    };
+    tracing::info!("route-llm using router strategy: {}", router_name());
+    let app = route_llm_server::app_with_router(router);
 
     let listener = tokio::net::TcpListener::bind((host.as_str(), port))
         .await

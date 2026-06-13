@@ -1,12 +1,11 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use axum::extract::rejection::JsonRejection;
+use axum::extract::State;
 use axum::Json;
 use serde_json::{json, Value};
 
-use route_llm_core::{
-    registry, CandidateInput, HeuristicRouter, Recommendation, Router, RoutingPreferences,
-};
+use route_llm_core::{registry, CandidateInput, Recommendation, Router, RoutingPreferences};
 
 use crate::dto::{
     AnthropicContent, AnthropicUsage, ChatChoice, ChatCompletionRequest, ChatCompletionResponse,
@@ -14,6 +13,7 @@ use crate::dto::{
     RecommendRequest,
 };
 use crate::error::ApiError;
+use crate::SharedRouter;
 
 static ID_COUNTER: AtomicU64 = AtomicU64::new(1);
 
@@ -87,6 +87,7 @@ pub(crate) fn prefs_or_default(p: Option<PrefsInput>) -> RoutingPreferences {
 
 /// Shared across all three dialects: validate, resolve, route.
 pub(crate) fn process(
+    router: &dyn Router,
     query: &str,
     candidates: Vec<CandidateInput>,
     prefs: RoutingPreferences,
@@ -109,19 +110,26 @@ pub(crate) fn process(
             return Err(ApiError::InvalidModel(p.id.clone()));
         }
     }
-    Ok(HeuristicRouter.recommend(query, &profiles, &prefs))
+    Ok(router.recommend(query, &profiles, &prefs))
 }
 
 pub async fn recommend(
+    State(router): State<SharedRouter>,
     payload: Result<Json<RecommendRequest>, JsonRejection>,
 ) -> Result<Json<Recommendation>, ApiError> {
     let Json(req) = payload.map_err(|e| ApiError::InvalidJson(e.body_text()))?;
     let candidates = collect_candidates(None, req.models);
-    let rec = process(&req.query, candidates, prefs_or_default(req.preferences))?;
+    let rec = process(
+        router.as_ref(),
+        &req.query,
+        candidates,
+        prefs_or_default(req.preferences),
+    )?;
     Ok(Json(rec))
 }
 
 pub async fn chat_completions(
+    State(router): State<SharedRouter>,
     payload: Result<Json<ChatCompletionRequest>, JsonRejection>,
 ) -> Result<Json<ChatCompletionResponse>, ApiError> {
     let Json(req) = payload.map_err(|e| ApiError::InvalidJson(e.body_text()))?;
@@ -132,7 +140,12 @@ pub async fn chat_completions(
         .collect::<Vec<_>>()
         .join("\n");
     let candidates = collect_candidates(req.model, req.models);
-    let rec = process(&query, candidates, prefs_or_default(req.preferences))?;
+    let rec = process(
+        router.as_ref(),
+        &query,
+        candidates,
+        prefs_or_default(req.preferences),
+    )?;
     let top = rec
         .ranking
         .first()
@@ -162,6 +175,7 @@ pub async fn chat_completions(
 }
 
 pub async fn messages(
+    State(router): State<SharedRouter>,
     payload: Result<Json<MessagesRequest>, JsonRejection>,
 ) -> Result<Json<MessagesResponse>, ApiError> {
     let Json(req) = payload.map_err(|e| ApiError::InvalidJson(e.body_text()))?;
@@ -173,7 +187,12 @@ pub async fn messages(
     let query = parts.join("\n");
 
     let candidates = collect_candidates(req.model, req.models);
-    let rec = process(&query, candidates, prefs_or_default(req.preferences))?;
+    let rec = process(
+        router.as_ref(),
+        &query,
+        candidates,
+        prefs_or_default(req.preferences),
+    )?;
     let top = rec
         .ranking
         .first()
