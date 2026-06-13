@@ -13,4 +13,5 @@ pub fn app() -> Router {
         .route("/health", get(handlers::health))
         .route("/v1/models", get(handlers::list_models))
         .route("/v1/recommend", post(handlers::recommend))
+        .route("/v1/chat/completions", post(handlers::chat_completions))
 }

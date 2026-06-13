@@ -1,5 +1,5 @@
-use route_llm_core::{CandidateInput, RoutingPreferences};
-use serde::Deserialize;
+use route_llm_core::{CandidateInput, Recommendation, RoutingPreferences};
+use serde::{Deserialize, Serialize};
 
 /// A candidate model entry in a request (id + optional overrides).
 #[derive(Debug, Deserialize)]
@@ -43,4 +43,56 @@ pub struct RecommendRequest {
     pub models: Vec<ModelInput>,
     #[serde(default)]
     pub preferences: Option<PrefsInput>,
+}
+
+/// A chat message (request side). We only support string `content` in v1.
+#[derive(Debug, Deserialize)]
+pub struct ChatMessage {
+    #[serde(default)]
+    pub role: String,
+    #[serde(default)]
+    pub content: String,
+}
+
+/// OpenAI-shaped `/v1/chat/completions` request.
+#[derive(Debug, Deserialize)]
+pub struct ChatCompletionRequest {
+    #[serde(default)]
+    pub model: Option<String>,
+    #[serde(default)]
+    pub messages: Vec<ChatMessage>,
+    #[serde(default)]
+    pub models: Vec<ModelInput>,
+    #[serde(default)]
+    pub preferences: Option<PrefsInput>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ChatRespMessage {
+    pub role: &'static str,
+    pub content: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ChatChoice {
+    pub index: u32,
+    pub message: ChatRespMessage,
+    pub finish_reason: &'static str,
+}
+
+#[derive(Debug, Serialize)]
+pub struct OpenAiUsage {
+    pub prompt_tokens: u32,
+    pub completion_tokens: u32,
+    pub total_tokens: u32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ChatCompletionResponse {
+    pub id: String,
+    pub object: &'static str,
+    pub model: String,
+    pub choices: Vec<ChatChoice>,
+    pub usage: OpenAiUsage,
+    pub route_llm: Recommendation,
 }

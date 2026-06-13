@@ -1,3 +1,5 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+
 use axum::extract::rejection::JsonRejection;
 use axum::Json;
 use serde_json::{json, Value};
@@ -6,8 +8,36 @@ use route_llm_core::{
     registry, CandidateInput, HeuristicRouter, Recommendation, Router, RoutingPreferences,
 };
 
-use crate::dto::{ModelInput, PrefsInput, RecommendRequest};
+use crate::dto::{
+    ChatChoice, ChatCompletionRequest, ChatCompletionResponse, ChatRespMessage, ModelInput,
+    OpenAiUsage, PrefsInput, RecommendRequest,
+};
 use crate::error::ApiError;
+
+static ID_COUNTER: AtomicU64 = AtomicU64::new(1);
+
+pub(crate) fn next_id() -> String {
+    format!("rec-{:016x}", ID_COUNTER.fetch_add(1, Ordering::Relaxed))
+}
+
+/// Human-readable one-liner describing the recommendation.
+pub(crate) fn summary_line(rec: &Recommendation) -> String {
+    let order = rec
+        .ranking
+        .iter()
+        .map(|r| r.id.as_str())
+        .collect::<Vec<_>>()
+        .join(" > ");
+    let top = rec
+        .ranking
+        .first()
+        .map(|r| r.id.as_str())
+        .unwrap_or("(none)");
+    format!(
+        "Recommended: {} (difficulty {:.2}). Order: {}.",
+        top, rec.difficulty.score, order
+    )
+}
 
 pub async fn health() -> Json<Value> {
     Json(json!({ "status": "ok" }))
@@ -67,4 +97,44 @@ pub async fn recommend(
     let candidates = collect_candidates(None, req.models);
     let rec = process(&req.query, candidates, prefs_or_default(req.preferences))?;
     Ok(Json(rec))
+}
+
+pub async fn chat_completions(
+    payload: Result<Json<ChatCompletionRequest>, JsonRejection>,
+) -> Result<Json<ChatCompletionResponse>, ApiError> {
+    let Json(req) = payload.map_err(|e| ApiError::InvalidJson(e.body_text()))?;
+    let query = req
+        .messages
+        .iter()
+        .map(|m| m.content.as_str())
+        .collect::<Vec<_>>()
+        .join("\n");
+    let candidates = collect_candidates(req.model, req.models);
+    let rec = process(&query, candidates, prefs_or_default(req.preferences))?;
+    let top = rec
+        .ranking
+        .first()
+        .map(|r| r.id.clone())
+        .unwrap_or_default();
+
+    let resp = ChatCompletionResponse {
+        id: next_id(),
+        object: "chat.completion",
+        model: top,
+        choices: vec![ChatChoice {
+            index: 0,
+            message: ChatRespMessage {
+                role: "assistant",
+                content: summary_line(&rec),
+            },
+            finish_reason: "stop",
+        }],
+        usage: OpenAiUsage {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+        },
+        route_llm: rec,
+    };
+    Ok(Json(resp))
 }
