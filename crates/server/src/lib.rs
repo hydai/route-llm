@@ -14,4 +14,5 @@ pub fn app() -> Router {
         .route("/v1/models", get(handlers::list_models))
         .route("/v1/recommend", post(handlers::recommend))
         .route("/v1/chat/completions", post(handlers::chat_completions))
+        .route("/v1/messages", post(handlers::messages))
 }

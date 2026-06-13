@@ -9,8 +9,9 @@ use route_llm_core::{
 };
 
 use crate::dto::{
-    ChatChoice, ChatCompletionRequest, ChatCompletionResponse, ChatRespMessage, ModelInput,
-    OpenAiUsage, PrefsInput, RecommendRequest,
+    AnthropicContent, AnthropicUsage, ChatChoice, ChatCompletionRequest, ChatCompletionResponse,
+    ChatRespMessage, MessagesRequest, MessagesResponse, ModelInput, OpenAiUsage, PrefsInput,
+    RecommendRequest,
 };
 use crate::error::ApiError;
 
@@ -133,6 +134,44 @@ pub async fn chat_completions(
             prompt_tokens: 0,
             completion_tokens: 0,
             total_tokens: 0,
+        },
+        route_llm: rec,
+    };
+    Ok(Json(resp))
+}
+
+pub async fn messages(
+    payload: Result<Json<MessagesRequest>, JsonRejection>,
+) -> Result<Json<MessagesResponse>, ApiError> {
+    let Json(req) = payload.map_err(|e| ApiError::InvalidJson(e.body_text()))?;
+    let mut parts: Vec<String> = Vec::new();
+    if let Some(sys) = req.system {
+        parts.push(sys);
+    }
+    parts.extend(req.messages.into_iter().map(|m| m.content));
+    let query = parts.join("\n");
+
+    let candidates = collect_candidates(req.model, req.models);
+    let rec = process(&query, candidates, prefs_or_default(req.preferences))?;
+    let top = rec
+        .ranking
+        .first()
+        .map(|r| r.id.clone())
+        .unwrap_or_default();
+
+    let resp = MessagesResponse {
+        id: next_id(),
+        kind: "message",
+        role: "assistant",
+        model: top,
+        content: vec![AnthropicContent {
+            kind: "text",
+            text: summary_line(&rec),
+        }],
+        stop_reason: "end_turn",
+        usage: AnthropicUsage {
+            input_tokens: 0,
+            output_tokens: 0,
         },
         route_llm: rec,
     };

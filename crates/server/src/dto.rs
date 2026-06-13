@@ -96,3 +96,44 @@ pub struct ChatCompletionResponse {
     pub usage: OpenAiUsage,
     pub route_llm: Recommendation,
 }
+
+/// Anthropic-shaped `/v1/messages` request.
+#[derive(Debug, Deserialize)]
+pub struct MessagesRequest {
+    #[serde(default)]
+    pub model: Option<String>,
+    #[serde(default)]
+    pub system: Option<String>,
+    #[serde(default)]
+    pub messages: Vec<ChatMessage>,
+    #[serde(default)]
+    pub models: Vec<ModelInput>,
+    #[serde(default)]
+    pub preferences: Option<PrefsInput>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct AnthropicContent {
+    #[serde(rename = "type")]
+    pub kind: &'static str,
+    pub text: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct AnthropicUsage {
+    pub input_tokens: u32,
+    pub output_tokens: u32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct MessagesResponse {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub kind: &'static str,
+    pub role: &'static str,
+    pub model: String,
+    pub content: Vec<AnthropicContent>,
+    pub stop_reason: &'static str,
+    pub usage: AnthropicUsage,
+    pub route_llm: Recommendation,
+}
