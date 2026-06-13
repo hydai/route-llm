@@ -53,10 +53,7 @@ pub fn score(query: &str) -> Difficulty {
         "設計",
         "比較",
     ];
-    let hits = reasoning
-        .iter()
-        .filter(|k| lower.contains(&k.to_lowercase()))
-        .count();
+    let hits = reasoning.iter().filter(|&&k| lower.contains(k)).count();
     if hits > 0 {
         sum += (hits as f64 * 0.5).min(1.5);
         signals.push("reasoning".into());
@@ -79,7 +76,7 @@ pub fn score(query: &str) -> Difficulty {
 
     // Explanation request.
     let explain = ["explain", "說明", "為什麼", "how does", "怎麼", "what is"];
-    if explain.iter().any(|s| lower.contains(&s.to_lowercase())) {
+    if explain.iter().any(|&s| lower.contains(s)) {
         sum += 0.4;
         signals.push("explanation_request".into());
     }
