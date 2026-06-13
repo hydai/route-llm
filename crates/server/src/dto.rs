@@ -24,7 +24,14 @@ impl From<ModelInput> for CandidateInput {
 /// Optional routing preferences in a request body.
 #[derive(Debug, Deserialize)]
 pub struct PrefsInput {
+    /// A present-but-empty `"preferences": {}` falls back to the documented
+    /// default instead of failing deserialization with `invalid_json`.
+    #[serde(default = "default_cost_bias")]
     pub cost_bias: f64,
+}
+
+fn default_cost_bias() -> f64 {
+    RoutingPreferences::default().cost_bias
 }
 
 impl From<PrefsInput> for RoutingPreferences {

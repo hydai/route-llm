@@ -112,6 +112,19 @@ async fn out_of_range_override_is_rejected() {
 }
 
 #[tokio::test]
+async fn empty_preferences_object_uses_default() {
+    let res = server()
+        .post("/v1/recommend")
+        .json(&json!({
+            "query": "hi",
+            "models": [{"id": "gpt-4o-mini"}],
+            "preferences": {}
+        }))
+        .await;
+    res.assert_status_ok();
+}
+
+#[tokio::test]
 async fn whitespace_model_id_in_array_is_dropped() {
     let res = server()
         .post("/v1/recommend")
