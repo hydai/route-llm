@@ -5,6 +5,7 @@
 mod corpus;
 mod dataset;
 mod emit;
+mod eval;
 mod logreg;
 
 fn main() {
@@ -21,6 +22,7 @@ fn main() {
                 model.bias
             );
         }
+        "eval" => eval::run(),
         // arms wired in later tasks
         "label" => {
             eprintln!("`label` (LLM re-labeling) is deferred; see SPEC-v2 §7/§16.");
