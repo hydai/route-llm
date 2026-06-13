@@ -16,7 +16,7 @@ pub enum ApiError {
     UnknownModels(Vec<String>),
     #[error("{0}")]
     InvalidPreferences(String),
-    #[error("model '{0}' has quality/cost outside the valid range 0.0..=1.0")]
+    #[error("model '{0}' has a non-finite or out-of-range quality/cost (must be finite and within 0.0..=1.0)")]
     InvalidModel(String),
 }
 
