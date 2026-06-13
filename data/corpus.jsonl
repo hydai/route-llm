@@ -1,0 +1,73 @@
+{"query":"hi","difficulty":0.1,"category":"chat"}
+{"query":"thanks!","difficulty":0.1,"category":"chat"}
+{"query":"what time is it?","difficulty":0.1,"category":"chat"}
+{"query":"tell me a joke","difficulty":0.1,"category":"chat"}
+{"query":"hello there","difficulty":0.1,"category":"chat"}
+{"query":"good morning","difficulty":0.1,"category":"chat"}
+{"query":"bye","difficulty":0.1,"category":"chat"}
+{"query":"how are you?","difficulty":0.1,"category":"chat"}
+{"query":"yes please","difficulty":0.1,"category":"chat"}
+{"query":"ok","difficulty":0.1,"category":"chat"}
+{"query":"sounds good","difficulty":0.1,"category":"chat"}
+{"query":"sure","difficulty":0.1,"category":"chat"}
+{"query":"Summarize this paragraph in one sentence.","difficulty":0.3,"category":"extraction"}
+{"query":"Extract the names from: Alice, Bob, Carol.","difficulty":0.3,"category":"extraction"}
+{"query":"List the main points from the following text.","difficulty":0.3,"category":"extraction"}
+{"query":"What is the capital city of France?","difficulty":0.3,"category":"extraction"}
+{"query":"Translate 'hello' to Spanish.","difficulty":0.3,"category":"extraction"}
+{"query":"Convert 100 USD to EUR.","difficulty":0.3,"category":"extraction"}
+{"query":"What does JSON stand for?","difficulty":0.3,"category":"extraction"}
+{"query":"Extract all email addresses from this text.","difficulty":0.3,"category":"extraction"}
+{"query":"Give me a one-line summary of photosynthesis.","difficulty":0.3,"category":"extraction"}
+{"query":"What year was the Eiffel Tower built?","difficulty":0.3,"category":"extraction"}
+{"query":"Define the word 'ephemeral'.","difficulty":0.3,"category":"extraction"}
+{"query":"Reformat this date: 2024-01-15 to January 15th, 2024.","difficulty":0.3,"category":"extraction"}
+{"query":"請逐步說明為什麼這段程式碼會出錯，並提供修正。","difficulty":0.55,"category":"multilingual"}
+{"query":"比較這兩個演算法的時間複雜度並證明。","difficulty":0.55,"category":"multilingual"}
+{"query":"解釋為什麼遞迴可以替代迭代，並給出例子。","difficulty":0.55,"category":"multilingual"}
+{"query":"分析這段 Python 程式碼的效能瓶頸並優化。","difficulty":0.55,"category":"multilingual"}
+{"query":"用中文說明 TCP 與 UDP 的差異，並給出適用場景。","difficulty":0.55,"category":"multilingual"}
+{"query":"設計一個資料庫 schema 來管理線上書店的訂單，並說明每個欄位的用途。","difficulty":0.55,"category":"multilingual"}
+{"query":"為什麼快速排序的平均複雜度是 O(n log n)？請推導。","difficulty":0.55,"category":"multilingual"}
+{"query":"比較 React 和 Vue 的狀態管理方式，哪個更適合大型專案？","difficulty":0.55,"category":"multilingual"}
+{"query":"請解釋梯度下降法的原理，並說明學習率的選擇對收斂的影響。","difficulty":0.55,"category":"multilingual"}
+{"query":"設計一個分散式快取系統並說明一致性的處理方式。","difficulty":0.55,"category":"multilingual"}
+{"query":"Write a Rust function to reverse a linked list and explain it.","difficulty":0.65,"category":"code"}
+{"query":"Debug this: ```fn main(){ let x: i32 = \"s\"; }```","difficulty":0.65,"category":"code"}
+{"query":"Implement a binary search tree in Python with insert, delete, and search.","difficulty":0.65,"category":"code"}
+{"query":"Write a function to detect cycles in a directed graph using DFS.","difficulty":0.65,"category":"code"}
+{"query":"Create a REST API endpoint in Rust using axum that handles JSON.","difficulty":0.65,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Rust using Arc and Mutex.","difficulty":0.65,"category":"code"}
+{"query":"Write a recursive function to solve the Tower of Hanoi problem.","difficulty":0.65,"category":"code"}
+{"query":"Debug this SQL query: SELECT * FROM users WHERE id = '123' AND active;","difficulty":0.65,"category":"code"}
+{"query":"Implement merge sort in TypeScript and analyze its time complexity.","difficulty":0.65,"category":"code"}
+{"query":"Write a regex pattern to validate email addresses and explain each part.","difficulty":0.65,"category":"code"}
+{"query":"Create a Python decorator that caches function results with TTL.","difficulty":0.65,"category":"code"}
+{"query":"Implement a state machine for a traffic light system in Rust.","difficulty":0.65,"category":"code"}
+{"query":"Write a function to parse CSV files handling quoted fields and newlines.","difficulty":0.65,"category":"code"}
+{"query":"Design a rate limiter using the token bucket algorithm in Go.","difficulty":0.65,"category":"code"}
+{"query":"Compute the integral $\\int_0^1 x^2 dx$ and justify each step.","difficulty":0.7,"category":"math"}
+{"query":"Prove that the square root of 2 is irrational.","difficulty":0.7,"category":"math"}
+{"query":"Solve the differential equation $y'' + 4y' + 4y = 0$ with initial conditions.","difficulty":0.7,"category":"math"}
+{"query":"Prove by induction that the sum of the first n natural numbers is n(n+1)/2.","difficulty":0.7,"category":"math"}
+{"query":"Find the eigenvalues and eigenvectors of the matrix [[1,2],[3,4]].","difficulty":0.7,"category":"math"}
+{"query":"Compute $\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$ and prove your answer.","difficulty":0.7,"category":"math"}
+{"query":"Derive the quadratic formula from first principles.","difficulty":0.7,"category":"math"}
+{"query":"Prove the Cauchy-Schwarz inequality for inner product spaces.","difficulty":0.7,"category":"math"}
+{"query":"Calculate the determinant of a 4x4 matrix using cofactor expansion.","difficulty":0.7,"category":"math"}
+{"query":"Solve the system of linear equations: 2x+3y=7, 4x-y=5; show all steps.","difficulty":0.7,"category":"math"}
+{"query":"Prove that there are infinitely many prime numbers.","difficulty":0.7,"category":"math"}
+{"query":"Derive the formula for the volume of a sphere using integration.","difficulty":0.7,"category":"math"}
+{"query":"Show that e is irrational using the Taylor series expansion.","difficulty":0.7,"category":"math"}
+{"query":"Prove step by step why Paxos guarantees safety and derive its invariant.","difficulty":0.88,"category":"reasoning"}
+{"query":"Analyze, compare, and design a consensus protocol; justify each choice.","difficulty":0.88,"category":"reasoning"}
+{"query":"Explain why the CAP theorem implies trade-offs in distributed systems; design a system that maximizes availability while proving it sacrifices consistency.","difficulty":0.88,"category":"reasoning"}
+{"query":"Derive the time complexity of the A* search algorithm and prove it is optimal for admissible heuristics; analyze edge cases.","difficulty":0.88,"category":"reasoning"}
+{"query":"Compare Byzantine fault tolerance vs crash fault tolerance; prove that BFT requires 3f+1 nodes; design a protocol for f=2.","difficulty":0.88,"category":"reasoning"}
+{"query":"Analyze why quicksort degrades to O(n^2) in the worst case; prove this bound; design a pivot selection strategy to avoid it.","difficulty":0.88,"category":"reasoning"}
+{"query":"Prove that P != NP implies RSA is secure; analyze what happens if P = NP; compare RSA with elliptic curve cryptography.","difficulty":0.88,"category":"reasoning"}
+{"query":"Design a lock-free concurrent hash map in Rust; prove it is deadlock-free; analyze ABA problem risks and mitigations.","difficulty":0.88,"category":"reasoning"}
+{"query":"Analyze the trade-offs in microservices vs monolith architectures; prove that network partition handling increases complexity by O(n^2); design a hybrid approach.","difficulty":0.88,"category":"reasoning"}
+{"query":"Step by step: prove the correctness of Dijkstra's algorithm; derive its complexity; explain why it fails with negative weights; compare with Bellman-Ford.","difficulty":0.88,"category":"reasoning"}
+{"query":"Analyze garbage collection algorithms (mark-sweep, generational, reference counting); derive their complexity; prove that no algorithm is optimal for all workloads.","difficulty":0.88,"category":"reasoning"}
+{"query":"Design a distributed transaction protocol; prove its correctness under network partitions; analyze the two-phase commit problem and derive a solution.","difficulty":0.88,"category":"reasoning"}
