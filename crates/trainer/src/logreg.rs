@@ -27,6 +27,7 @@ fn standardization(rows: &[Vec<f64>]) -> (Vec<f64>, Vec<f64>) {
     let m = rows.len().max(1) as f64;
     let mut means = vec![0.0; n];
     for r in rows {
+        debug_assert_eq!(r.len(), n, "standardization: feature length mismatch");
         for i in 0..n {
             means[i] += r[i];
         }
@@ -36,6 +37,7 @@ fn standardization(rows: &[Vec<f64>]) -> (Vec<f64>, Vec<f64>) {
     }
     let mut stds = vec![0.0; n];
     for r in rows {
+        debug_assert_eq!(r.len(), n, "standardization: feature length mismatch");
         for i in 0..n {
             let d = r[i] - means[i];
             stds[i] += d * d;
@@ -77,6 +79,7 @@ pub fn fit(examples: &[LabeledExample], cfg: &FitConfig) -> LinearModel {
         let mut gw = vec![0.0; n];
         let mut gb = 0.0;
         for (x, &y) in xs.iter().zip(&ys) {
+            debug_assert_eq!(x.len(), n, "fit: feature length mismatch");
             let mut s = b;
             for i in 0..n {
                 s += w[i] * x[i];

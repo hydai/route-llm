@@ -26,6 +26,7 @@ fn ranks(v: &[f64]) -> Vec<f64> {
 }
 
 fn pearson(a: &[f64], b: &[f64]) -> f64 {
+    debug_assert_eq!(a.len(), b.len(), "pearson: slice length mismatch");
     let n = a.len() as f64;
     if n == 0.0 {
         return 0.0;
@@ -47,6 +48,7 @@ fn pearson(a: &[f64], b: &[f64]) -> f64 {
 }
 
 pub fn spearman(pred: &[f64], label: &[f64]) -> f64 {
+    debug_assert_eq!(pred.len(), label.len(), "spearman: slice length mismatch");
     pearson(&ranks(pred), &ranks(label))
 }
 
@@ -61,6 +63,7 @@ fn bucket(x: f64) -> u8 {
 }
 
 pub fn ordinal_accuracy(pred: &[f64], label: &[f64]) -> f64 {
+    debug_assert_eq!(pred.len(), label.len(), "ordinal_accuracy: slice length mismatch");
     if pred.is_empty() {
         return 0.0;
     }
@@ -91,6 +94,7 @@ fn always_strongest_baseline(labels: &[f64]) -> (f64, f64) {
 /// Average cost of the top-1 pick over the builtin registry, plus the fraction
 /// of picks that are "adequate" (chosen quality >= the query's true difficulty).
 fn cost_profile(diffs: &[f64], labels: &[f64]) -> (f64, f64) {
+    debug_assert_eq!(diffs.len(), labels.len(), "cost_profile: slice length mismatch");
     let models: Vec<ModelProfile> = registry::builtin();
     let prefs = RoutingPreferences::default();
     let (mut cost_sum, mut adequate) = (0.0, 0.0);
@@ -117,6 +121,7 @@ fn cost_profile(diffs: &[f64], labels: &[f64]) -> (f64, f64) {
 /// and measures (adequacy_rate, avg_cost). Returns the minimum avg_cost among grid
 /// points that reach `target` adequacy, or `None` if no grid point does.
 fn cost_at_adequacy(diffs: &[f64], labels: &[f64], target: f64) -> Option<f64> {
+    debug_assert_eq!(diffs.len(), labels.len(), "cost_at_adequacy: slice length mismatch");
     let models: Vec<ModelProfile> = registry::builtin();
     let n = diffs.len();
     if n == 0 {
