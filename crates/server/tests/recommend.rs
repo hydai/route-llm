@@ -106,10 +106,9 @@ async fn out_of_range_override_is_rejected() {
         }))
         .await;
     res.assert_status_bad_request();
-    assert_eq!(
-        res.json::<serde_json::Value>()["error"]["code"],
-        "invalid_model"
-    );
+    let body: serde_json::Value = res.json();
+    assert_eq!(body["error"]["code"], "invalid_model");
+    assert_eq!(body["error"]["details"]["model"], "x");
 }
 
 #[tokio::test]
