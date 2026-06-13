@@ -11,5 +11,6 @@ use axum::Router;
 pub fn app() -> Router {
     Router::new()
         .route("/health", get(handlers::health))
+        .route("/v1/models", get(handlers::list_models))
         .route("/v1/recommend", post(handlers::recommend))
 }

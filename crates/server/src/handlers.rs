@@ -13,6 +13,10 @@ pub async fn health() -> Json<Value> {
     Json(json!({ "status": "ok" }))
 }
 
+pub async fn list_models() -> Json<Value> {
+    Json(json!({ "models": registry::builtin() }))
+}
+
 /// Merge a candidate list with an optional standard `model` field (hint).
 pub(crate) fn collect_candidates(
     model: Option<String>,
