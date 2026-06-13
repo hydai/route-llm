@@ -1,5 +1,3 @@
-use std::net::SocketAddr;
-
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
@@ -17,15 +15,13 @@ async fn main() {
             .expect("ROUTE_LLM_PORT must be a valid port number (0-65535)"),
         Err(_) => 8080,
     };
-    let addr: SocketAddr = format!("{host}:{port}")
-        .parse()
-        .expect("invalid ROUTE_LLM_HOST/PORT");
-
     let app = route_llm_server::app();
+
+    let listener = tokio::net::TcpListener::bind((host.as_str(), port))
+        .await
+        .expect("failed to bind ROUTE_LLM_HOST/PORT");
+    let addr = listener.local_addr().expect("failed to read local address");
     tracing::info!("route-llm listening on http://{addr}");
 
-    let listener = tokio::net::TcpListener::bind(addr)
-        .await
-        .expect("failed to bind");
     axum::serve(listener, app).await.expect("server error");
 }
