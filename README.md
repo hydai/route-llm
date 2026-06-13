@@ -38,3 +38,27 @@ curl -s localhost:8080/v1/recommend -H 'content-type: application/json' -d '{
 ```bash
 cargo test
 ```
+
+## v2: Learned router
+
+`route-llm` ships two routing strategies behind the same API:
+
+- `heuristic` — v1's hand-tuned difficulty scorer (frozen).
+- `learned` — a logistic model over richer features, trained offline (default).
+
+Select at startup:
+
+```bash
+ROUTE_LLM_ROUTER=learned cargo run --release -p route-llm-server   # default
+ROUTE_LLM_ROUTER=heuristic cargo run --release -p route-llm-server # fallback
+```
+
+### Retraining (offline)
+
+```bash
+cargo run -p route-llm-trainer -- synth   # regenerate data/*.jsonl
+cargo run -p route-llm-trainer -- eval    # learned vs heuristic on a holdout
+cargo run -p route-llm-trainer -- fit     # regenerate crates/core/src/learned/weights.rs
+```
+
+Inference never calls an LLM or the network; only the (deferred) `label` step would.
