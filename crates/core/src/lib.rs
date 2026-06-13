@@ -2,5 +2,7 @@
 
 pub mod difficulty;
 pub mod model;
+pub mod registry;
 
 pub use model::{Difficulty, ModelProfile, RankedModel, Recommendation, RoutingPreferences};
+pub use registry::CandidateInput;
