@@ -4,11 +4,22 @@
 
 mod corpus;
 mod dataset;
+mod logreg;
 
 fn main() {
     let cmd = std::env::args().nth(1).unwrap_or_default();
     match cmd.as_str() {
         "synth" => corpus::run(),
+        "fit" => {
+            let data = dataset::load("data/labeled.jsonl").expect("load labeled.jsonl");
+            let model = logreg::fit(&data, &logreg::FitConfig::default());
+            eprintln!(
+                "fit: {} examples, bias={:.3}, |w|={}",
+                data.len(),
+                model.bias,
+                model.weights.len()
+            );
+        }
         // arms wired in later tasks
         "label" => {
             eprintln!("`label` (LLM re-labeling) is deferred; see SPEC-v2 §7/§16.");
