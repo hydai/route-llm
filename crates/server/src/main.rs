@@ -99,9 +99,12 @@ mod tests {
         );
     }
 
+    #[cfg(unix)]
     #[test]
     fn not_unicode_is_error() {
         // Simulate VarError::NotUnicode with a synthetic OsString.
+        // Unix-only: OsStringExt::from_vec is the portable-enough way to forge
+        // non-UTF-8 bytes; the production code path is platform-agnostic.
         use std::ffi::OsString;
         use std::os::unix::ffi::OsStringExt;
         let bad = OsString::from_vec(vec![0xFF, 0xFE]);
