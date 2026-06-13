@@ -57,6 +57,24 @@ pub fn ordinal_accuracy(pred: &[f64], label: &[f64]) -> f64 {
     ok as f64 / pred.len() as f64
 }
 
+/// Baseline: always pick the highest-quality builtin model.
+/// Returns (average cost, adequacy rate) over the given label set.
+/// The "strongest" model is the one with the max `quality` in `registry::builtin()`.
+fn always_strongest_baseline(labels: &[f64]) -> (f64, f64) {
+    let models: Vec<ModelProfile> = registry::builtin();
+    let strongest = models
+        .iter()
+        .max_by(|a, b| {
+            a.quality
+                .partial_cmp(&b.quality)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .expect("builtin registry must be non-empty");
+    let adequate = labels.iter().filter(|&&l| strongest.quality >= l).count();
+    let n = labels.len().max(1) as f64;
+    (strongest.cost, adequate as f64 / n)
+}
+
 /// Average cost of the top-1 pick over the builtin registry, plus the fraction
 /// of picks that are "adequate" (chosen quality >= the query's true difficulty).
 fn cost_profile(diffs: &[f64], labels: &[f64]) -> (f64, f64) {
@@ -104,6 +122,7 @@ pub fn run() {
 
     let (lc, la) = cost_profile(&learned, &labels);
     let (hc, ha) = cost_profile(&heuristic, &labels);
+    let (sc, sa) = always_strongest_baseline(&labels);
 
     eprintln!("eval (holdout n={})", holdout.len());
     eprintln!(
@@ -117,8 +136,8 @@ pub fn run() {
         ordinal_accuracy(&heuristic, &labels)
     );
     eprintln!(
-        "  avg cost   learned={:.3} (adeq {:.2})  heuristic={:.3} (adeq {:.2})",
-        lc, la, hc, ha
+        "  avg cost   learned={:.3} (adeq {:.2})  heuristic={:.3} (adeq {:.2})  always-strongest={:.3} (adeq {:.2})",
+        lc, la, hc, ha, sc, sa
     );
 }
 
@@ -138,5 +157,35 @@ mod tests {
         let pred = [0.1, 0.5, 0.9];
         let label = [0.2, 0.8, 0.95]; // buckets: pred 0,1,2 ; label 0,2,2 -> 2/3
         assert!((ordinal_accuracy(&pred, &label) - (2.0 / 3.0)).abs() < 1e-9);
+    }
+
+    #[test]
+    fn always_strongest_baseline_uses_max_quality_model() {
+        // The strongest builtin model has quality 0.97 (claude-opus-4-8) and cost 0.90.
+        // With labels [0.5, 0.99]:
+        //   row 0: quality(0.97) >= label(0.50) -> adequate
+        //   row 1: quality(0.97) >= label(0.99) -> NOT adequate
+        // adequacy = 1/2 = 0.5; avg cost = strongest.cost = 0.90
+        let labels = [0.5, 0.99];
+        let (cost, adeq) = always_strongest_baseline(&labels);
+
+        // Derive expected values from the actual builtin registry so this test
+        // never hard-codes a model list that can diverge from the real one.
+        let models = registry::builtin();
+        let strongest = models
+            .iter()
+            .max_by(|a, b| a.quality.partial_cmp(&b.quality).unwrap())
+            .unwrap();
+
+        assert!(
+            (cost - strongest.cost).abs() < 1e-12,
+            "baseline cost must equal the strongest model's cost, got {cost}"
+        );
+        let expected_adeq =
+            labels.iter().filter(|&&l| strongest.quality >= l).count() as f64 / labels.len() as f64;
+        assert!(
+            (adeq - expected_adeq).abs() < 1e-12,
+            "baseline adequacy mismatch: got {adeq}, expected {expected_adeq}"
+        );
     }
 }

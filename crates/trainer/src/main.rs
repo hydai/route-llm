@@ -1,6 +1,5 @@
 //! Offline trainer for the learned router. Subcommands added per task:
 //! `synth` (Task 6), `fit` (Task 7/8), `eval` (Task 9). `label` (LLM) deferred.
-#![allow(dead_code)] // helper modules are wired incrementally across Tasks 6–9
 
 mod corpus;
 mod dataset;
