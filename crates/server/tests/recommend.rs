@@ -111,3 +111,16 @@ async fn out_of_range_override_is_rejected() {
         "invalid_model"
     );
 }
+
+#[tokio::test]
+async fn whitespace_model_id_in_array_is_dropped() {
+    let res = server()
+        .post("/v1/recommend")
+        .json(&json!({ "query": "hi", "models": [{"id": "  "}] }))
+        .await;
+    res.assert_status_bad_request();
+    assert_eq!(
+        res.json::<serde_json::Value>()["error"]["code"],
+        "empty_candidates"
+    );
+}

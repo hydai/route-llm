@@ -53,7 +53,21 @@ pub(crate) fn collect_candidates(
     model: Option<String>,
     models: Vec<ModelInput>,
 ) -> Vec<CandidateInput> {
-    let mut out: Vec<CandidateInput> = models.into_iter().map(Into::into).collect();
+    let mut out: Vec<CandidateInput> = models
+        .into_iter()
+        .filter_map(|m| {
+            let id = m.id.trim();
+            if id.is_empty() {
+                None
+            } else {
+                Some(CandidateInput {
+                    id: id.to_string(),
+                    quality: m.quality,
+                    cost: m.cost,
+                })
+            }
+        })
+        .collect();
     if let Some(id) = model {
         let id = id.trim();
         if !id.is_empty() && !out.iter().any(|c| c.id == id) {
