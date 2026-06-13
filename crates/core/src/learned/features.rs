@@ -193,16 +193,15 @@ fn fnv3(w: &[char]) -> usize {
     h as usize
 }
 
-/// Count lines beginning with `<digit>.` or `<digit>)` (same as v1).
+/// Count lines beginning with one or more digits followed by `.` or `)`.
+/// Matches v1's multi-digit logic (e.g. `10. item` is counted).
 fn count_numbered_items(query: &str) -> usize {
     query
         .lines()
         .filter(|line| {
-            let mut chars = line.trim_start().chars();
-            match chars.next() {
-                Some(c) if c.is_ascii_digit() => matches!(chars.next(), Some('.') | Some(')')),
-                _ => false,
-            }
+            let trimmed = line.trim_start();
+            let rest = trimmed.trim_start_matches(|c: char| c.is_ascii_digit());
+            rest.len() < trimmed.len() && matches!(rest.chars().next(), Some('.') | Some(')'))
         })
         .count()
 }
@@ -245,5 +244,27 @@ mod tests {
     fn f_at(q: &str, name: &str) -> f64 {
         let i = BASE_FEATURE_NAMES.iter().position(|n| *n == name).unwrap();
         features(q)[i]
+    }
+
+    #[test]
+    fn multi_digit_numbered_list_sets_multi_constraint() {
+        // Three items with two-digit markers: 10, 11, 12
+        let q = "10. first item\n11. second item\n12. third item";
+        assert_eq!(
+            f_at(q, "multi_constraint"),
+            1.0,
+            "multi_constraint must be 1.0 for a list with multi-digit markers"
+        );
+    }
+
+    #[test]
+    fn single_digit_numbered_list_sets_multi_constraint() {
+        // Three items with single-digit markers should also work
+        let q = "1. first\n2. second\n3. third";
+        assert_eq!(
+            f_at(q, "multi_constraint"),
+            1.0,
+            "multi_constraint must be 1.0 for a list with single-digit markers"
+        );
     }
 }

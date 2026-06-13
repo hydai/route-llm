@@ -2,12 +2,25 @@ use crate::dataset::LabeledExample;
 use crate::logreg::{self, FitConfig};
 use route_llm_core::{difficulty, ranker, registry, ModelProfile, RoutingPreferences};
 
+/// Assign ranks using average rank for tied values (tie-corrected ranking for Spearman).
 fn ranks(v: &[f64]) -> Vec<f64> {
     let mut idx: Vec<usize> = (0..v.len()).collect();
     idx.sort_by(|&i, &j| v[i].partial_cmp(&v[j]).unwrap_or(std::cmp::Ordering::Equal));
     let mut r = vec![0.0; v.len()];
-    for (rank, &i) in idx.iter().enumerate() {
-        r[i] = rank as f64;
+    let n = idx.len();
+    let mut i = 0;
+    while i < n {
+        // Find the run of equal values starting at sorted position i.
+        let mut j = i + 1;
+        while j < n && v[idx[j]] == v[idx[i]] {
+            j += 1;
+        }
+        // Average rank for all elements in [i, j).
+        let avg = (i + j - 1) as f64 / 2.0;
+        for k in i..j {
+            r[idx[k]] = avg;
+        }
+        i = j;
     }
     r
 }
@@ -144,6 +157,34 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ranks_assigns_average_rank_for_ties() {
+        // [1.0, 2.0, 2.0, 3.0] → sorted positions: 1.0→0, 2.0→1, 2.0→2, 3.0→3
+        // Ties at positions 1 and 2 get average rank (1+2)/2 = 1.5
+        let v = [1.0, 2.0, 2.0, 3.0];
+        let r = ranks(&v);
+        assert!(
+            (r[0] - 0.0).abs() < 1e-9,
+            "rank of 1.0 should be 0.0, got {}",
+            r[0]
+        );
+        assert!(
+            (r[1] - 1.5).abs() < 1e-9,
+            "rank of first 2.0 should be 1.5, got {}",
+            r[1]
+        );
+        assert!(
+            (r[2] - 1.5).abs() < 1e-9,
+            "rank of second 2.0 should be 1.5, got {}",
+            r[2]
+        );
+        assert!(
+            (r[3] - 3.0).abs() < 1e-9,
+            "rank of 3.0 should be 3.0, got {}",
+            r[3]
+        );
+    }
 
     #[test]
     fn spearman_perfect_correlation_is_one() {
