@@ -95,3 +95,19 @@ async fn malformed_json_is_rejected() {
         "invalid_json"
     );
 }
+
+#[tokio::test]
+async fn out_of_range_override_is_rejected() {
+    let res = server()
+        .post("/v1/recommend")
+        .json(&json!({
+            "query": "hi",
+            "models": [{"id": "x", "quality": 1.5, "cost": 0.1}]
+        }))
+        .await;
+    res.assert_status_bad_request();
+    assert_eq!(
+        res.json::<serde_json::Value>()["error"]["code"],
+        "invalid_model"
+    );
+}

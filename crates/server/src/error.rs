@@ -16,6 +16,8 @@ pub enum ApiError {
     UnknownModels(Vec<String>),
     #[error("{0}")]
     InvalidPreferences(String),
+    #[error("model '{0}' has quality/cost outside the valid range 0.0..=1.0")]
+    InvalidModel(String),
 }
 
 impl ApiError {
@@ -26,6 +28,7 @@ impl ApiError {
             ApiError::EmptyCandidates => "empty_candidates",
             ApiError::UnknownModels(_) => "unknown_models",
             ApiError::InvalidPreferences(_) => "invalid_preferences",
+            ApiError::InvalidModel(_) => "invalid_model",
         }
     }
 }
@@ -34,6 +37,7 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let details = match &self {
             ApiError::UnknownModels(ids) => json!({ "unknown": ids }),
+            ApiError::InvalidModel(id) => json!({ "model": id }),
             _ => json!({}),
         };
         let body = json!({

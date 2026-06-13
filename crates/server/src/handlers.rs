@@ -89,6 +89,12 @@ pub(crate) fn process(
         ));
     }
     let profiles = registry::resolve(&candidates).map_err(ApiError::UnknownModels)?;
+    let in_range = |v: f64| v.is_finite() && (0.0..=1.0).contains(&v);
+    for p in &profiles {
+        if !in_range(p.quality) || !in_range(p.cost) {
+            return Err(ApiError::InvalidModel(p.id.clone()));
+        }
+    }
     Ok(HeuristicRouter.recommend(query, &profiles, &prefs))
 }
 
