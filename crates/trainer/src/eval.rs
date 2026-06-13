@@ -296,11 +296,11 @@ mod tests {
 
     #[test]
     fn always_strongest_baseline_uses_max_quality_model() {
-        // The strongest builtin model has quality 0.97 (claude-opus-4-8) and cost 0.90.
-        // With labels [0.5, 0.99]:
-        //   row 0: quality(0.97) >= label(0.50) -> adequate
-        //   row 1: quality(0.97) >= label(0.99) -> NOT adequate
-        // adequacy = 1/2 = 0.5; avg cost = strongest.cost = 0.90
+        // Derives expected values from registry::builtin() at runtime — no hard-coded
+        // model name, quality, or cost here. With labels [0.5, 0.99]:
+        //   row 0: strongest.quality >= 0.50 -> adequate
+        //   row 1: strongest.quality >= 0.99 -> depends on registry
+        // Expected adequacy and cost are computed from the live registry below.
         let labels = [0.5, 0.99];
         let (cost, adeq) = always_strongest_baseline(&labels);
 

@@ -86,7 +86,7 @@ pub fn features(query: &str) -> Vec<f64> {
     ];
     let hits = reasoning
         .iter()
-        .filter(|k| lower.contains(&k.to_lowercase()))
+        .filter(|k| lower.contains(*k))
         .count();
     v[3] = (hits.min(3)) as f64;
     // 4 multi_constraint
@@ -98,7 +98,7 @@ pub fn features(query: &str) -> Vec<f64> {
     v[5] = bool_f(structured.iter().any(|s| lower.contains(s)));
     // 6 explanation_request
     let explain = ["explain", "說明", "為什麼", "how does", "怎麼", "what is"];
-    v[6] = bool_f(explain.iter().any(|s| lower.contains(&s.to_lowercase())));
+    v[6] = bool_f(explain.iter().any(|s| lower.contains(*s)));
     // 7 char_count
     v[7] = char_count;
     // 8 word_count
