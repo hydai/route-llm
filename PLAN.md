@@ -83,7 +83,7 @@ route-llm/
 - Create: `crates/server/src/lib.rs`
 - Create: `crates/server/src/main.rs`
 
-- [ ] **Step 1: Create the workspace manifest**
+- [x] **Step 1: Create the workspace manifest**
 
 `Cargo.toml`:
 ```toml
@@ -95,7 +95,7 @@ members = ["crates/core", "crates/server"]
 debug = false
 ```
 
-- [ ] **Step 2: Create `.gitignore`**
+- [x] **Step 2: Create `.gitignore`**
 
 `.gitignore`:
 ```gitignore
@@ -104,7 +104,7 @@ debug = false
 Cargo.lock
 ```
 
-- [ ] **Step 3: Create the core crate manifest**
+- [x] **Step 3: Create the core crate manifest**
 
 `crates/core/Cargo.toml`:
 ```toml
@@ -120,14 +120,14 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 ```
 
-- [ ] **Step 4: Create a placeholder core lib**
+- [x] **Step 4: Create a placeholder core lib**
 
 `crates/core/src/lib.rs`:
 ```rust
 //! route-llm core: pure routing logic (no I/O).
 ```
 
-- [ ] **Step 5: Create the server crate manifest**
+- [x] **Step 5: Create the server crate manifest**
 
 `crates/server/Cargo.toml`:
 ```toml
@@ -156,7 +156,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 serde_json = "1"
 ```
 
-- [ ] **Step 6: Create a placeholder server lib + bin**
+- [x] **Step 6: Create a placeholder server lib + bin**
 
 `crates/server/src/lib.rs`:
 ```rust
@@ -170,12 +170,12 @@ fn main() {
 }
 ```
 
-- [ ] **Step 7: Verify the workspace builds**
+- [x] **Step 7: Verify the workspace builds**
 
 Run: `cargo build`
 Expected: compiles successfully (both crates), no errors.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cargo fmt --all
@@ -192,7 +192,7 @@ git commit -m "chore: scaffold cargo workspace with core and server crates"
 - Create: `crates/core/src/model.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `crates/core/src/model.rs`:
 ```rust
@@ -263,7 +263,7 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Wire the module**
+- [x] **Step 2: Wire the module**
 
 Replace `crates/core/src/lib.rs` with:
 ```rust
@@ -274,12 +274,12 @@ pub mod model;
 pub use model::{Difficulty, ModelProfile, RankedModel, Recommendation, RoutingPreferences};
 ```
 
-- [ ] **Step 3: Run the tests**
+- [x] **Step 3: Run the tests**
 
 Run: `cargo test -p route-llm-core`
 Expected: PASS (2 tests).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cargo fmt --all
@@ -298,7 +298,7 @@ git commit -m "feat(core): add domain types for models, difficulty, and recommen
 - Create: `crates/core/src/difficulty.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/core/src/difficulty.rs`:
 ```rust
@@ -338,12 +338,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-core difficulty`
 Expected: FAILS to compile (`score`/`sigmoid` not found).
 
-- [ ] **Step 3: Write the implementation (reference default)**
+- [x] **Step 3: Write the implementation (reference default)**
 
 Prepend to `crates/core/src/difficulty.rs` (above the `#[cfg(test)]` module):
 ```rust
@@ -430,7 +430,7 @@ fn count_numbered_items(query: &str) -> usize {
 }
 ```
 
-- [ ] **Step 4: Wire the module**
+- [x] **Step 4: Wire the module**
 
 In `crates/core/src/lib.rs`, add `pub mod difficulty;` below `pub mod model;`:
 ```rust
@@ -442,12 +442,12 @@ pub mod model;
 pub use model::{Difficulty, ModelProfile, RankedModel, Recommendation, RoutingPreferences};
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-core difficulty`
 Expected: PASS (4 tests).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -464,7 +464,7 @@ git commit -m "feat(core): add heuristic query difficulty scorer"
 - Create: `crates/core/src/registry.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/core/src/registry.rs`:
 ```rust
@@ -521,12 +521,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-core registry`
 Expected: FAILS to compile (`CandidateInput`/`resolve`/`builtin` not found).
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Prepend to `crates/core/src/registry.rs` (above the `#[cfg(test)]` module):
 ```rust
@@ -595,7 +595,7 @@ pub fn resolve(candidates: &[CandidateInput]) -> Result<Vec<ModelProfile>, Vec<S
 }
 ```
 
-- [ ] **Step 4: Wire the module**
+- [x] **Step 4: Wire the module**
 
 In `crates/core/src/lib.rs`, add `pub mod registry;` and re-export `CandidateInput`:
 ```rust
@@ -609,12 +609,12 @@ pub use model::{Difficulty, ModelProfile, RankedModel, Recommendation, RoutingPr
 pub use registry::CandidateInput;
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-core registry`
 Expected: PASS (5 tests).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -633,7 +633,7 @@ git commit -m "feat(core): add model registry with override merge and resolution
 - Create: `crates/core/src/ranker.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/core/src/ranker.rs`:
 ```rust
@@ -689,12 +689,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-core ranker`
 Expected: FAILS to compile (`rank` not found).
 
-- [ ] **Step 3: Write the implementation (reference default)**
+- [x] **Step 3: Write the implementation (reference default)**
 
 Prepend to `crates/core/src/ranker.rs` (above the `#[cfg(test)]` module):
 ```rust
@@ -763,7 +763,7 @@ fn make_reason(
 }
 ```
 
-- [ ] **Step 4: Wire the module**
+- [x] **Step 4: Wire the module**
 
 In `crates/core/src/lib.rs`, add `pub mod ranker;`:
 ```rust
@@ -778,12 +778,12 @@ pub use model::{Difficulty, ModelProfile, RankedModel, Recommendation, RoutingPr
 pub use registry::CandidateInput;
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-core ranker`
 Expected: PASS (5 tests).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -800,7 +800,7 @@ git commit -m "feat(core): add cost-quality ranker with deterministic tie-break"
 - Create: `crates/core/src/router.rs`
 - Modify: `crates/core/src/lib.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/core/src/router.rs`:
 ```rust
@@ -830,12 +830,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-core router`
 Expected: FAILS to compile (`HeuristicRouter`/`Router` not found).
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Prepend to `crates/core/src/router.rs` (above the `#[cfg(test)]` module):
 ```rust
@@ -866,7 +866,7 @@ impl Router for HeuristicRouter {
 }
 ```
 
-- [ ] **Step 4: Wire the module**
+- [x] **Step 4: Wire the module**
 
 Replace `crates/core/src/lib.rs` with:
 ```rust
@@ -883,12 +883,12 @@ pub use registry::CandidateInput;
 pub use router::{HeuristicRouter, Router};
 ```
 
-- [ ] **Step 5: Run the full core test suite**
+- [x] **Step 5: Run the full core test suite**
 
 Run: `cargo test -p route-llm-core`
 Expected: PASS (all core tests; includes the new router test).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -907,7 +907,7 @@ git commit -m "feat(core): add Router trait and HeuristicRouter"
 - Create: `crates/server/src/handlers.rs`
 - Create: `crates/server/tests/health.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/server/tests/health.rs`:
 ```rust
@@ -924,12 +924,12 @@ async fn health_returns_ok() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-server --test health`
 Expected: FAILS to compile (`route_llm_server::app` not found).
 
-- [ ] **Step 3: Write the handler**
+- [x] **Step 3: Write the handler**
 
 Create `crates/server/src/handlers.rs`:
 ```rust
@@ -941,7 +941,7 @@ pub async fn health() -> Json<Value> {
 }
 ```
 
-- [ ] **Step 4: Write the app builder**
+- [x] **Step 4: Write the app builder**
 
 Replace `crates/server/src/lib.rs` with:
 ```rust
@@ -958,7 +958,7 @@ pub fn app() -> Router {
 }
 ```
 
-- [ ] **Step 5: Write the binary entrypoint**
+- [x] **Step 5: Write the binary entrypoint**
 
 Replace `crates/server/src/main.rs` with:
 ```rust
@@ -987,12 +987,12 @@ async fn main() {
 }
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `cargo test -p route-llm-server --test health`
 Expected: PASS (1 test).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cargo fmt --all
@@ -1012,7 +1012,7 @@ git commit -m "feat(server): add axum app builder, /health, and env-based config
 - Modify: `crates/server/src/lib.rs`
 - Create: `crates/server/tests/recommend.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/server/tests/recommend.rs`:
 ```rust
@@ -1103,12 +1103,12 @@ async fn malformed_json_is_rejected() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-server --test recommend`
 Expected: FAILS to compile / route 404 (handler + route not defined yet).
 
-- [ ] **Step 3: Write the error type**
+- [x] **Step 3: Write the error type**
 
 Create `crates/server/src/error.rs`:
 ```rust
@@ -1158,7 +1158,7 @@ impl IntoResponse for ApiError {
 }
 ```
 
-- [ ] **Step 4: Write the DTOs**
+- [x] **Step 4: Write the DTOs**
 
 Create `crates/server/src/dto.rs`:
 ```rust
@@ -1204,7 +1204,7 @@ pub struct RecommendRequest {
 }
 ```
 
-- [ ] **Step 5: Write the shared processing + native handler**
+- [x] **Step 5: Write the shared processing + native handler**
 
 Replace `crates/server/src/handlers.rs` with:
 ```rust
@@ -1265,7 +1265,7 @@ pub async fn recommend(
 }
 ```
 
-- [ ] **Step 6: Wire modules and the new route**
+- [x] **Step 6: Wire modules and the new route**
 
 Replace `crates/server/src/lib.rs` with:
 ```rust
@@ -1286,12 +1286,12 @@ pub fn app() -> Router {
 }
 ```
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-server --test recommend`
 Expected: PASS (6 tests).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cargo fmt --all
@@ -1309,7 +1309,7 @@ git commit -m "feat(server): add native /v1/recommend endpoint with structured e
 - Modify: `crates/server/src/lib.rs`
 - Create: `crates/server/tests/models.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/server/tests/models.rs`:
 ```rust
@@ -1330,12 +1330,12 @@ async fn lists_builtin_models() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-server --test models`
 Expected: FAIL (404 / route not found).
 
-- [ ] **Step 3: Add the handler**
+- [x] **Step 3: Add the handler**
 
 Append to `crates/server/src/handlers.rs`:
 ```rust
@@ -1344,7 +1344,7 @@ pub async fn list_models() -> Json<Value> {
 }
 ```
 
-- [ ] **Step 4: Add the route**
+- [x] **Step 4: Add the route**
 
 In `crates/server/src/lib.rs`, add the `/v1/models` route to `app()`:
 ```rust
@@ -1356,12 +1356,12 @@ pub fn app() -> Router {
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `cargo test -p route-llm-server --test models`
 Expected: PASS (1 test).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -1380,7 +1380,7 @@ git commit -m "feat(server): add GET /v1/models to list the builtin registry"
 - Modify: `crates/server/src/lib.rs`
 - Create: `crates/server/tests/openai.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/server/tests/openai.rs`:
 ```rust
@@ -1431,12 +1431,12 @@ async fn model_field_alone_is_used_as_candidate() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-server --test openai`
 Expected: FAIL (404 / route not found).
 
-- [ ] **Step 3: Add the OpenAI DTOs**
+- [x] **Step 3: Add the OpenAI DTOs**
 
 Append to `crates/server/src/dto.rs`:
 ```rust
@@ -1495,7 +1495,7 @@ pub struct ChatCompletionResponse {
 }
 ```
 
-- [ ] **Step 4: Add shared helpers + the handler**
+- [x] **Step 4: Add shared helpers + the handler**
 
 Append to `crates/server/src/handlers.rs`:
 ```rust
@@ -1553,7 +1553,7 @@ pub async fn chat_completions(
 }
 ```
 
-- [ ] **Step 5: Add the route**
+- [x] **Step 5: Add the route**
 
 In `crates/server/src/lib.rs`, add the `/v1/chat/completions` route to `app()`:
 ```rust
@@ -1566,12 +1566,12 @@ pub fn app() -> Router {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-server --test openai`
 Expected: PASS (2 tests).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cargo fmt --all
@@ -1590,7 +1590,7 @@ git commit -m "feat(server): add OpenAI-shaped /v1/chat/completions endpoint"
 - Modify: `crates/server/src/lib.rs`
 - Create: `crates/server/tests/anthropic.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/server/tests/anthropic.rs`:
 ```rust
@@ -1626,12 +1626,12 @@ async fn messages_returns_message_envelope() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cargo test -p route-llm-server --test anthropic`
 Expected: FAIL (404 / route not found).
 
-- [ ] **Step 3: Add the Anthropic DTOs**
+- [x] **Step 3: Add the Anthropic DTOs**
 
 Append to `crates/server/src/dto.rs`:
 ```rust
@@ -1676,7 +1676,7 @@ pub struct MessagesResponse {
 }
 ```
 
-- [ ] **Step 4: Add the handler**
+- [x] **Step 4: Add the handler**
 
 Append to `crates/server/src/handlers.rs`:
 ```rust
@@ -1711,7 +1711,7 @@ pub async fn messages(
 }
 ```
 
-- [ ] **Step 5: Add the route**
+- [x] **Step 5: Add the route**
 
 In `crates/server/src/lib.rs`, add the `/v1/messages` route to `app()`:
 ```rust
@@ -1725,12 +1725,12 @@ pub fn app() -> Router {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `cargo test -p route-llm-server --test anthropic`
 Expected: PASS (1 test).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cargo fmt --all
@@ -1747,7 +1747,7 @@ git commit -m "feat(server): add Anthropic-shaped /v1/messages endpoint"
 - Create: `crates/server/tests/consistency.rs`
 - Create: `README.md`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/server/tests/consistency.rs`:
 ```rust
@@ -1811,12 +1811,12 @@ async fn all_three_dialects_agree_on_ranking() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it passes**
+- [x] **Step 2: Run the test to verify it passes**
 
 Run: `cargo test -p route-llm-server --test consistency`
 Expected: PASS (1 test). (All endpoints already exist; this is a regression guard for the shared core.)
 
-- [ ] **Step 3: Write the README**
+- [x] **Step 3: Write the README**
 
 Create `README.md`:
 ```markdown
@@ -1862,12 +1862,12 @@ cargo test
 ```
 ```
 
-- [ ] **Step 4: Run the full workspace test suite**
+- [x] **Step 4: Run the full workspace test suite**
 
 Run: `cargo test`
 Expected: PASS (all core + server tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -1880,9 +1880,9 @@ git commit -m "test(server): assert cross-dialect ranking parity; add README"
 
 ## Final verification
 
-- [ ] Run `cargo build --release` — clean release build.
-- [ ] Run `cargo test` — all tests green.
-- [ ] Manual smoke test:
+- [x] Run `cargo build --release` — clean release build.
+- [x] Run `cargo test` — all tests green.
+- [x] Manual smoke test:
   ```bash
   cargo run --release -p route-llm-server &
   curl -s localhost:8080/health
