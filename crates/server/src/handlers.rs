@@ -55,9 +55,10 @@ pub(crate) fn collect_candidates(
 ) -> Vec<CandidateInput> {
     let mut out: Vec<CandidateInput> = models.into_iter().map(Into::into).collect();
     if let Some(id) = model {
+        let id = id.trim();
         if !id.is_empty() && !out.iter().any(|c| c.id == id) {
             out.push(CandidateInput {
-                id,
+                id: id.to_string(),
                 quality: None,
                 cost: None,
             });

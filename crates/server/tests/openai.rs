@@ -43,3 +43,17 @@ async fn model_field_alone_is_used_as_candidate() {
     assert_eq!(body["route_llm"]["ranking"].as_array().unwrap().len(), 1);
     assert_eq!(body["model"], "claude-haiku-4-5");
 }
+
+#[tokio::test]
+async fn whitespace_model_field_is_not_a_candidate() {
+    let server = TestServer::new(app()).unwrap();
+    let res = server
+        .post("/v1/chat/completions")
+        .json(&json!({ "model": "  ", "messages": [{"role": "user", "content": "hi"}] }))
+        .await;
+    res.assert_status_bad_request();
+    assert_eq!(
+        res.json::<serde_json::Value>()["error"]["code"],
+        "empty_candidates"
+    );
+}
