@@ -49,6 +49,10 @@ fn standardization(rows: &[Vec<f64>]) -> (Vec<f64>, Vec<f64>) {
 
 /// Fit logistic regression on standardized features. Deterministic.
 pub fn fit(examples: &[LabeledExample], cfg: &FitConfig) -> LinearModel {
+    assert!(
+        !examples.is_empty(),
+        "fit: labeled dataset is empty — run `trainer synth` (or provide data/labeled.jsonl) first"
+    );
     let n = feature_count();
     let raw: Vec<Vec<f64>> = examples.iter().map(|e| features(&e.query)).collect();
     let (means, stds) = standardization(&raw);
@@ -124,6 +128,12 @@ mod tests {
                 category: "r".into(),
             },
         ]
+    }
+
+    #[test]
+    #[should_panic(expected = "labeled dataset is empty")]
+    fn fit_panics_on_empty_dataset() {
+        fit(&[], &FitConfig::default());
     }
 
     #[test]

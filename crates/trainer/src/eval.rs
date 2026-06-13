@@ -111,6 +111,56 @@ fn cost_profile(diffs: &[f64], labels: &[f64]) -> (f64, f64) {
     (cost_sum / n, adequate / n)
 }
 
+/// SPEC §12: minimum average cost achievable while keeping adequacy_rate >= `target`.
+///
+/// Sweeps `cost_bias` over [0.0, 0.1, …, 1.0]; for each bias, routes every query
+/// and measures (adequacy_rate, avg_cost). Returns the minimum avg_cost among grid
+/// points that reach `target` adequacy, or `None` if no grid point does.
+fn cost_at_adequacy(diffs: &[f64], labels: &[f64], target: f64) -> Option<f64> {
+    let models: Vec<ModelProfile> = registry::builtin();
+    let n = diffs.len();
+    if n == 0 {
+        return None;
+    }
+
+    let mut best_cost: Option<f64> = None;
+
+    // Sweep cost_bias in steps of 0.1 (11 grid points: 0.0 … 1.0).
+    let steps = 10usize;
+    for step in 0..=steps {
+        let cost_bias = step as f64 / steps as f64;
+        let prefs = RoutingPreferences { cost_bias };
+
+        let mut cost_sum = 0.0;
+        let mut adequate = 0usize;
+        for (i, &d) in diffs.iter().enumerate() {
+            let difficulty = route_llm_core::Difficulty {
+                score: d,
+                signals: vec![],
+            };
+            let ranking = ranker::rank(&difficulty, &models, &prefs);
+            let top_id = &ranking[0].id;
+            let top = models.iter().find(|m| &m.id == top_id).unwrap();
+            cost_sum += top.cost;
+            if top.quality >= labels[i] {
+                adequate += 1;
+            }
+        }
+
+        let adequacy_rate = adequate as f64 / n as f64;
+        let avg_cost = cost_sum / n as f64;
+
+        if adequacy_rate >= target {
+            best_cost = Some(match best_cost {
+                None => avg_cost,
+                Some(prev) => prev.min(avg_cost),
+            });
+        }
+    }
+
+    best_cost
+}
+
 /// `eval`: fit on a train split, report metrics on holdout for learned vs heuristic.
 pub fn run() {
     let data = crate::dataset::load("data/labeled.jsonl").expect("load labeled.jsonl");
@@ -137,6 +187,13 @@ pub fn run() {
     let (hc, ha) = cost_profile(&heuristic, &labels);
     let (sc, sa) = always_strongest_baseline(&labels);
 
+    // SPEC §12: fixed-adequacy cost metric at 90% adequacy target.
+    let target = 0.90;
+    let learned_fa = cost_at_adequacy(&learned, &labels, target);
+    let heuristic_fa = cost_at_adequacy(&heuristic, &labels, target);
+    // always-strongest cost is the ceiling: it is always the max-quality model's cost.
+    let strongest_fa_cost = sc;
+
     eprintln!("eval (holdout n={})", holdout.len());
     eprintln!(
         "  spearman   learned={:.3}  heuristic={:.3}",
@@ -151,6 +208,13 @@ pub fn run() {
     eprintln!(
         "  avg cost   learned={:.3} (adeq {:.2})  heuristic={:.3} (adeq {:.2})  always-strongest={:.3} (adeq {:.2})",
         lc, la, hc, ha, sc, sa
+    );
+    eprintln!(
+        "  cost @ adequacy>={:.2}  learned={}  heuristic={}  always-strongest={:.3}",
+        target,
+        learned_fa.map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
+        heuristic_fa.map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
+        strongest_fa_cost,
     );
 }
 
@@ -198,6 +262,36 @@ mod tests {
         let pred = [0.1, 0.5, 0.9];
         let label = [0.2, 0.8, 0.95]; // buckets: pred 0,1,2 ; label 0,2,2 -> 2/3
         assert!((ordinal_accuracy(&pred, &label) - (2.0 / 3.0)).abs() < 1e-9);
+    }
+
+    #[test]
+    fn cost_at_adequacy_returns_finite_cost_when_target_reachable() {
+        // Use easy labels (0.1) that every builtin model can handle adequately.
+        // At target 0.9, the sweep should find at least one cost_bias where adequacy >= 0.9,
+        // and the returned cost must be <= the always-strongest cost.
+        let diffs = vec![0.1, 0.1, 0.1, 0.1];
+        let labels = vec![0.1, 0.1, 0.1, 0.1];
+        let result = cost_at_adequacy(&diffs, &labels, 0.9);
+        assert!(result.is_some(), "expected Some cost for reachable target");
+        let cost = result.unwrap();
+        let (strongest_cost, _) = always_strongest_baseline(&labels);
+        assert!(
+            cost.is_finite(),
+            "cost must be finite, got {cost}"
+        );
+        assert!(
+            cost <= strongest_cost + 1e-9,
+            "cost {cost} should be <= always-strongest cost {strongest_cost}"
+        );
+    }
+
+    #[test]
+    fn cost_at_adequacy_returns_none_when_target_unreachable() {
+        // Target 1.01 is impossible since adequacy_rate is in [0, 1].
+        let diffs = vec![0.5, 0.5];
+        let labels = vec![0.5, 0.5];
+        let result = cost_at_adequacy(&diffs, &labels, 1.01);
+        assert!(result.is_none(), "expected None for unreachable target 1.01");
     }
 
     #[test]
