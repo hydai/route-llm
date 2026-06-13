@@ -11,10 +11,12 @@ async fn main() {
         .init();
 
     let host = std::env::var("ROUTE_LLM_HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
-    let port = std::env::var("ROUTE_LLM_PORT")
-        .ok()
-        .and_then(|p| p.parse::<u16>().ok())
-        .unwrap_or(8080);
+    let port: u16 = match std::env::var("ROUTE_LLM_PORT") {
+        Ok(v) => v
+            .parse()
+            .expect("ROUTE_LLM_PORT must be a valid port number (0-65535)"),
+        Err(_) => 8080,
+    };
     let addr: SocketAddr = format!("{host}:{port}")
         .parse()
         .expect("invalid ROUTE_LLM_HOST/PORT");
