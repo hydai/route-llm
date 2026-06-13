@@ -355,6 +355,7 @@ impl Router for HeuristicRouter {
 | `empty_candidates` | 400 | 候選集為空 |
 | `unknown_models` | 400 | 有無法解析的候選 id（`details.unknown` 列出） |
 | `invalid_preferences` | 400 | `cost_bias` 超出 0..=1 |
+| `invalid_model` | 400 | 候選的 `quality`/`cost`（含覆寫）非有限或超出 0.0..=1.0（`details.model` 列出該 id） |
 
 ## 11. 設定
 
