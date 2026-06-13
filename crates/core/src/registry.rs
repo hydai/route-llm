@@ -44,13 +44,10 @@ pub fn builtin() -> Vec<ModelProfile> {
     ]
 }
 
-fn lookup(id: &str) -> Option<ModelProfile> {
-    builtin().into_iter().find(|m| m.id == id)
-}
-
 /// Resolve candidates against the builtin table + overrides.
 /// `Err` carries the list of ids that could not be resolved.
 pub fn resolve(candidates: &[CandidateInput]) -> Result<Vec<ModelProfile>, Vec<String>> {
+    let table = builtin();
     let mut resolved: Vec<ModelProfile> = Vec::new();
     let mut unknown: Vec<String> = Vec::new();
 
@@ -61,15 +58,19 @@ pub fn resolve(candidates: &[CandidateInput]) -> Result<Vec<ModelProfile>, Vec<S
                 quality: q,
                 cost: co,
             }),
-            _ => lookup(&c.id).map(|mut base| {
-                if let Some(q) = c.quality {
-                    base.quality = q;
-                }
-                if let Some(co) = c.cost {
-                    base.cost = co;
-                }
-                base
-            }),
+            _ => table
+                .iter()
+                .find(|m| m.id == c.id)
+                .cloned()
+                .map(|mut base| {
+                    if let Some(q) = c.quality {
+                        base.quality = q;
+                    }
+                    if let Some(co) = c.cost {
+                        base.cost = co;
+                    }
+                    base
+                }),
         };
 
         match profile {
