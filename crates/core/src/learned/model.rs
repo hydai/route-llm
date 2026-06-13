@@ -30,9 +30,21 @@ impl LinearModel {
     /// positive contributors (w_i · z_i), for explainability.
     pub fn difficulty(&self, query: &str) -> Difficulty {
         let x = features(query);
-        debug_assert_eq!(self.weights.len(), x.len(), "weights length must match feature_count");
-        debug_assert_eq!(self.means.len(), x.len(), "means length must match feature_count");
-        debug_assert_eq!(self.stds.len(), x.len(), "stds length must match feature_count");
+        debug_assert_eq!(
+            self.weights.len(),
+            x.len(),
+            "weights length must match feature_count"
+        );
+        debug_assert_eq!(
+            self.means.len(),
+            x.len(),
+            "means length must match feature_count"
+        );
+        debug_assert_eq!(
+            self.stds.len(),
+            x.len(),
+            "stds length must match feature_count"
+        );
         let mut sum = self.bias;
         let mut contrib: Vec<(usize, f64)> = Vec::with_capacity(x.len());
         for (i, &xi) in x.iter().enumerate() {
