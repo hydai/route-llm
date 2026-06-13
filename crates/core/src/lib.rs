@@ -2,6 +2,7 @@
 
 pub mod difficulty;
 pub mod model;
+pub mod ranker;
 pub mod registry;
 
 pub use model::{Difficulty, ModelProfile, RankedModel, Recommendation, RoutingPreferences};
