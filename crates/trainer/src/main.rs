@@ -28,7 +28,7 @@ fn main() {
             std::process::exit(2);
         }
         other => {
-            eprintln!("usage: trainer <synth|fit|eval>");
+            eprintln!("usage: trainer <synth|fit|eval>  (label: deferred, see SPEC-v2 §16)");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }

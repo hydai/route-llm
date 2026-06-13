@@ -1,6 +1,6 @@
 # route-llm v2 — 設計規格：學習式難度路由器 (Learned Difficulty Router)
 
-> 狀態：v2 設計定稿，待複審 → 待實作
+> 狀態：v2 已實作（本 PR：core/server/trainer/data 全數完成；待合併）
 > 日期：2026-06-13
 > 關係：本規格在 v1（見 `SPEC.md`）之上做**加法**，不更動 v1 的 API、回應形狀與行為。
 
