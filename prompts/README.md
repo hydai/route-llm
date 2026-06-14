@@ -85,16 +85,21 @@ jq -c 'select(.difficulty < 0 or .difficulty > 1)' data/labeled.claude.jsonl   #
 artifacts), so it's safe to run per labeler. `fit` **overwrites `weights.rs`** — only
 run it on the labeler you decide to ship.
 
-Compare a foreign labeler **today** with zero code changes by swapping the canonical
-file (git is your backup):
+Eval any single labeled set without disturbing the canonical file:
 
 ```sh
-cp data/labeled.claude.jsonl data/labeled.jsonl
-cargo run -p route-llm-trainer -- eval     # record spearman / ordinal / cost@adequacy
-git checkout data/labeled.jsonl            # restore the canonical set
+cargo run -p route-llm-trainer -- eval --in data/labeled.claude.jsonl
 ```
 
-Repeat per labeler and compare the `eval` blocks. To ship a winner:
+Compare all labelers side-by-side in one table (the learned router's metrics on
+each set's holdout — no file swapping, safe to run while a `label` job is going):
+
+```sh
+cargo run -p route-llm-trainer -- compare \
+  data/labeled.jsonl data/labeled.claude.jsonl data/labeled.codex.jsonl
+```
+
+To ship a winner:
 
 ```sh
 cp data/labeled.<winner>.jsonl data/labeled.jsonl
@@ -109,6 +114,7 @@ truth, so a higher score means "this labeler's signal is more self-consistent /
 learnable," **not** "this labeler is more correct." For a fair cross-labeler verdict
 you want a shared yardstick — e.g. score every resulting router against one small
 hand-checked validation set, or compare the cost/adequacy behavior the routers
-produce on a shared query set. A dedicated `compare` command (eval each
-`labeled.*.jsonl`, print one table) is the natural next tool — see the repo's
-follow-up plan.
+produce on a shared query set. The `compare` subcommand does exactly the latter:
+it evals each `labeled.*.jsonl` and prints one table, where **`avg_cost` is the
+label-independent column** (same holdout queries, different routers) while
+`sp_learn`/`ordinal` are each measured against that set's own labels.

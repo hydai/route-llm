@@ -178,9 +178,31 @@ fn cost_at_adequacy(diffs: &[f64], labels: &[f64], target: f64) -> Option<f64> {
     best_cost
 }
 
-/// `eval`: fit on a train split, report metrics on holdout for learned vs heuristic.
-pub fn run() {
-    let data = crate::dataset::load("data/labeled.jsonl").expect("load labeled.jsonl");
+/// Structured holdout-eval result for one labeled dataset. Computed on the
+/// 80/20-by-index holdout, so two datasets over the same (ordered) corpus are
+/// evaluated on the same holdout queries.
+#[derive(Debug, Clone)]
+pub struct EvalReport {
+    pub n_holdout: usize,
+    pub spearman_learned: f64,
+    pub spearman_heuristic: f64,
+    pub ordinal_learned: f64,
+    pub ordinal_heuristic: f64,
+    pub cost_learned: f64,
+    pub adeq_learned: f64,
+    pub cost_heuristic: f64,
+    pub adeq_heuristic: f64,
+    pub cost_strongest: f64,
+    pub adeq_strongest: f64,
+    pub target_adequacy: f64,
+    pub cost_at_adequacy_learned: Option<f64>,
+    pub cost_at_adequacy_heuristic: Option<f64>,
+    pub cost_at_adequacy_strongest: f64,
+}
+
+/// Fit on the 80% train split and compute every metric on the 20% holdout.
+/// Pure (no I/O): the same labeled data always yields the same report.
+pub fn evaluate(data: &[LabeledExample]) -> EvalReport {
     let (train, holdout): (Vec<_>, Vec<_>) = data
         .iter()
         .cloned()
@@ -206,32 +228,125 @@ pub fn run() {
 
     // SPEC §12: fixed-adequacy cost metric at 90% adequacy target.
     let target = 0.90;
-    let learned_fa = cost_at_adequacy(&learned, &labels, target);
-    let heuristic_fa = cost_at_adequacy(&heuristic, &labels, target);
-    // always-strongest cost is the ceiling: it is always the max-quality model's cost.
-    let strongest_fa_cost = sc;
+    EvalReport {
+        n_holdout: holdout.len(),
+        spearman_learned: spearman(&learned, &labels),
+        spearman_heuristic: spearman(&heuristic, &labels),
+        ordinal_learned: ordinal_accuracy(&learned, &labels),
+        ordinal_heuristic: ordinal_accuracy(&heuristic, &labels),
+        cost_learned: lc,
+        adeq_learned: la,
+        cost_heuristic: hc,
+        adeq_heuristic: ha,
+        cost_strongest: sc,
+        adeq_strongest: sa,
+        target_adequacy: target,
+        cost_at_adequacy_learned: cost_at_adequacy(&learned, &labels, target),
+        cost_at_adequacy_heuristic: cost_at_adequacy(&heuristic, &labels, target),
+        // always-strongest cost is the ceiling: always the max-quality model's cost.
+        cost_at_adequacy_strongest: sc,
+    }
+}
 
-    eprintln!("eval (holdout n={})", holdout.len());
+/// Print one report in the original `eval` format, tagged with its source.
+fn print_report(source: &str, r: &EvalReport) {
+    eprintln!("eval {source} (holdout n={})", r.n_holdout);
     eprintln!(
         "  spearman   learned={:.3}  heuristic={:.3}",
-        spearman(&learned, &labels),
-        spearman(&heuristic, &labels)
+        r.spearman_learned, r.spearman_heuristic
     );
     eprintln!(
         "  ordinal    learned={:.3}  heuristic={:.3}",
-        ordinal_accuracy(&learned, &labels),
-        ordinal_accuracy(&heuristic, &labels)
+        r.ordinal_learned, r.ordinal_heuristic
     );
     eprintln!(
         "  avg cost   learned={:.3} (adeq {:.2})  heuristic={:.3} (adeq {:.2})  always-strongest={:.3} (adeq {:.2})",
-        lc, la, hc, ha, sc, sa
+        r.cost_learned, r.adeq_learned, r.cost_heuristic, r.adeq_heuristic, r.cost_strongest, r.adeq_strongest
     );
     eprintln!(
         "  cost @ adequacy>={:.2}  learned={}  heuristic={}  always-strongest={:.3}",
-        target,
-        learned_fa.map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
-        heuristic_fa.map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
-        strongest_fa_cost,
+        r.target_adequacy,
+        r.cost_at_adequacy_learned
+            .map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
+        r.cost_at_adequacy_heuristic
+            .map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
+        r.cost_at_adequacy_strongest,
+    );
+}
+
+/// `eval`: report metrics for the default labeled set (`data/labeled.jsonl`).
+pub fn run() {
+    run_path("data/labeled.jsonl");
+}
+
+/// `eval --in <path>`: report metrics for a specific labeled set.
+pub fn run_path(path: &str) {
+    let data = crate::dataset::load(path).unwrap_or_else(|e| panic!("load {path}: {e}"));
+    print_report(path, &evaluate(&data));
+}
+
+/// Parse an optional `--in <path>` flag from CLI args (after the subcommand).
+pub fn parse_in_flag(args: &[String]) -> Option<String> {
+    let pos = args.iter().position(|a| a == "--in")?;
+    args.get(pos + 1).cloned()
+}
+
+/// Shorten a labeled-set path to a table label: `data/labeled.claude.jsonl` → `claude`.
+fn short_name(path: &str) -> String {
+    let base = std::path::Path::new(path)
+        .file_name()
+        .and_then(|s| s.to_str())
+        .unwrap_or(path);
+    let stem = base.strip_suffix(".jsonl").unwrap_or(base);
+    stem.strip_prefix("labeled.")
+        .filter(|s| !s.is_empty())
+        .unwrap_or(stem)
+        .to_string()
+}
+
+/// `compare <files...>`: eval each labeled set and print a side-by-side table of
+/// the *learned* router's metrics (plus heuristic spearman for reference).
+///
+/// All sets should cover the same corpus so the holdout queries match. NOTE:
+/// each set's spearman/ordinal/adequacy are measured against *that set's own
+/// labels*, so they show how learnable each labeler's signal is — not which
+/// labeler is objectively "correct". Compare `avg_cost` (same holdout queries)
+/// for a label-independent view of how cheaply each router routes.
+pub fn compare(paths: &[String]) {
+    if paths.is_empty() {
+        eprintln!("usage: trainer compare <labeled1.jsonl> <labeled2.jsonl> [...]");
+        std::process::exit(2);
+    }
+    let reports: Vec<(String, EvalReport)> = paths
+        .iter()
+        .map(|p| {
+            let data = crate::dataset::load(p).unwrap_or_else(|e| panic!("load {p}: {e}"));
+            (short_name(p), evaluate(&data))
+        })
+        .collect();
+
+    println!("labeler comparison — learned router on each set's holdout");
+    println!(
+        "{:<14} {:>5} {:>9} {:>9} {:>8} {:>10} {:>10}",
+        "labeler", "n", "sp_learn", "sp_heur", "ordinal", "avg_cost", "cost@.90"
+    );
+    for (name, r) in &reports {
+        let ca = r
+            .cost_at_adequacy_learned
+            .map_or("n/a".to_string(), |c| format!("{c:.3}"));
+        println!(
+            "{:<14} {:>5} {:>9.3} {:>9.3} {:>8.3} {:>10.3} {:>10}",
+            name,
+            r.n_holdout,
+            r.spearman_learned,
+            r.spearman_heuristic,
+            r.ordinal_learned,
+            r.cost_learned,
+            ca
+        );
+    }
+    println!(
+        "note: sp/ordinal/cost@.90 are vs each set's OWN labels; avg_cost shares holdout queries."
     );
 }
 
@@ -339,5 +454,82 @@ mod tests {
             (adeq - expected_adeq).abs() < 1e-12,
             "baseline adequacy mismatch: got {adeq}, expected {expected_adeq}"
         );
+    }
+
+    fn sample_data() -> Vec<LabeledExample> {
+        let rows: &[(&str, f64)] = &[
+            ("hi", 0.0),
+            ("hello there", 0.0),
+            ("thanks", 0.0),
+            ("good morning", 0.0),
+            ("what is JSON", 0.25),
+            ("define HTTP", 0.25),
+            ("summarize DNA briefly", 0.25),
+            ("list three facts about gravity", 0.25),
+            ("implement a binary search in Rust", 0.5),
+            ("write unit tests for a parser", 0.5),
+            ("explain what this snippet does", 0.5),
+            ("refactor a tangled module", 0.5),
+            ("implement a lock-free concurrent queue", 0.75),
+            ("analyze the convergence of a series", 0.75),
+            ("optimize a hot loop and justify", 0.75),
+            ("profile and tune an allocator", 0.75),
+            ("prove by induction a statement about primes", 1.0),
+            ("design Raft, prove correctness, analyze failures", 1.0),
+            ("derive the closed form from first principles", 1.0),
+            ("prove a tight lower bound", 1.0),
+        ];
+        rows.iter()
+            .map(|(q, d)| LabeledExample {
+                query: (*q).to_string(),
+                difficulty: *d,
+                category: String::new(),
+            })
+            .collect()
+    }
+
+    #[test]
+    fn evaluate_produces_in_range_metrics() {
+        let r = evaluate(&sample_data());
+        assert!(r.n_holdout > 0, "holdout must be non-empty");
+        for s in [r.spearman_learned, r.spearman_heuristic] {
+            assert!((-1.0..=1.0).contains(&s), "spearman out of range: {s}");
+        }
+        for a in [
+            r.ordinal_learned,
+            r.ordinal_heuristic,
+            r.adeq_learned,
+            r.adeq_heuristic,
+            r.adeq_strongest,
+        ] {
+            assert!((0.0..=1.0).contains(&a), "rate out of range: {a}");
+        }
+        for c in [r.cost_learned, r.cost_heuristic, r.cost_strongest] {
+            assert!(c.is_finite() && c >= 0.0, "cost invalid: {c}");
+        }
+    }
+
+    #[test]
+    fn parse_in_flag_finds_path() {
+        let with = vec![
+            "eval".to_string(),
+            "--in".to_string(),
+            "data/x.jsonl".to_string(),
+        ];
+        assert_eq!(parse_in_flag(&with), Some("data/x.jsonl".to_string()));
+        assert_eq!(parse_in_flag(&["eval".to_string()]), None);
+        // --in present but no value
+        assert_eq!(
+            parse_in_flag(&["eval".to_string(), "--in".to_string()]),
+            None
+        );
+    }
+
+    #[test]
+    fn short_name_strips_path_and_prefix() {
+        assert_eq!(short_name("data/labeled.claude.jsonl"), "claude");
+        assert_eq!(short_name("data/labeled.codex.jsonl"), "codex");
+        assert_eq!(short_name("data/labeled.jsonl"), "labeled");
+        assert_eq!(short_name("/tmp/foo.jsonl"), "foo");
     }
 }

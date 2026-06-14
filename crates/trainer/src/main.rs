@@ -1,5 +1,5 @@
-//! Offline trainer for the learned router. Subcommands added per task:
-//! `synth` (Task 6), `fit` (Task 7/8), `eval` (Task 9). `label` (LLM) deferred.
+//! Offline trainer for the learned router.
+//! Subcommands: `synth`, `label`, `fit`, `eval [--in <file>]`, `compare <files...>`.
 
 mod corpus;
 mod dataset;
@@ -22,10 +22,20 @@ fn main() {
                 model.bias
             );
         }
-        "eval" => eval::run(),
+        "eval" => {
+            let args: Vec<String> = std::env::args().collect();
+            match eval::parse_in_flag(&args) {
+                Some(path) => eval::run_path(&path),
+                None => eval::run(),
+            }
+        }
+        "compare" => {
+            let files: Vec<String> = std::env::args().skip(2).collect();
+            eval::compare(&files);
+        }
         "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>]|compare <files...>>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }
