@@ -253,6 +253,49 @@ pub fn evaluate(data: &[LabeledExample]) -> EvalReport {
     }
 }
 
+/// Result of scoring routers against an EXTERNAL gold set (human labels = truth).
+/// Holdout-free: the learned model is fit on ALL of `train`, then predicts the
+/// gold queries. The `LinearModel` is too low-capacity to memorize individual
+/// queries, so train/gold query overlap does not bias the comparison — and this
+/// reflects the actually-shipped router's behavior. Cost is informational
+/// (avg top-1 pick cost); the gold verdict's primary axes are spearman + ordinal.
+#[derive(Debug, Clone)]
+pub struct GoldReport {
+    pub n: usize,
+    pub spearman_learned: f64,
+    pub spearman_heuristic: f64,
+    pub ordinal_learned: f64,
+    pub ordinal_heuristic: f64,
+    pub cost_learned: f64,
+    pub cost_heuristic: f64,
+}
+
+/// Fit learned on ALL of `train`; score learned + heuristic on `gold` vs gold's
+/// human `difficulty`. Pure (no I/O).
+pub fn evaluate_gold(train: &[LabeledExample], gold: &[LabeledExample]) -> GoldReport {
+    let model = logreg::fit(train, &FitConfig::default());
+    let labels: Vec<f64> = gold.iter().map(|e| e.difficulty).collect();
+    let learned: Vec<f64> = gold
+        .iter()
+        .map(|e| model.difficulty(&e.query).score)
+        .collect();
+    let heuristic: Vec<f64> = gold
+        .iter()
+        .map(|e| difficulty::score(&e.query).score)
+        .collect();
+    let (lc, _) = cost_profile(&learned, &labels);
+    let (hc, _) = cost_profile(&heuristic, &labels);
+    GoldReport {
+        n: gold.len(),
+        spearman_learned: spearman(&learned, &labels),
+        spearman_heuristic: spearman(&heuristic, &labels),
+        ordinal_learned: ordinal_accuracy(&learned, &labels),
+        ordinal_heuristic: ordinal_accuracy(&heuristic, &labels),
+        cost_learned: lc,
+        cost_heuristic: hc,
+    }
+}
+
 /// Print one report in the original `eval` format, tagged with its source.
 fn print_report(source: &str, r: &EvalReport) {
     eprintln!("eval {source} (holdout n={})", r.n_holdout);
@@ -528,6 +571,28 @@ mod tests {
             parse_in_flag(&["eval".to_string(), "--in".to_string()]),
             None
         );
+    }
+
+    #[test]
+    fn evaluate_gold_produces_in_range_metrics() {
+        let train = sample_data();
+        let gold = vec![
+            LabeledExample { query: "hi".into(), difficulty: 0.0, category: "chat".into() },
+            LabeledExample { query: "prove a tight lower bound".into(), difficulty: 1.0, category: "math".into() },
+            LabeledExample { query: "implement a binary search in Rust".into(), difficulty: 0.5, category: "code".into() },
+            LabeledExample { query: "define HTTP".into(), difficulty: 0.25, category: "extraction".into() },
+        ];
+        let r = evaluate_gold(&train, &gold);
+        assert_eq!(r.n, 4);
+        for s in [r.spearman_learned, r.spearman_heuristic] {
+            assert!((-1.0..=1.0).contains(&s), "spearman out of range: {s}");
+        }
+        for o in [r.ordinal_learned, r.ordinal_heuristic] {
+            assert!((0.0..=1.0).contains(&o), "ordinal out of range: {o}");
+        }
+        for c in [r.cost_learned, r.cost_heuristic] {
+            assert!(c.is_finite() && c >= 0.0, "cost invalid: {c}");
+        }
     }
 
     #[test]
