@@ -193,14 +193,19 @@ labeled.{gemma,claude,codex}  ──▶ crosseval     ──▶   fit A / 評 B 
 
 ## 16. 驗收結論
 
-> 待跑：需擁有者完成 §5 人工盲標、提交 `data/gold.jsonl` 後,執行 `compare --gold` / `eval --gold`,依 §8 規則填入下表並做出兩軸決定。
+**結論：獨立人工 gold 確認 v2.1 的判決 → 預設維持 `learned`、出貨維持 codex 標註;`choose_router` 與 `weights.rs` 皆不變(零程式/權重改動)。**
 
-| labeler（在 gold 上） | Spearman vs human | ordinal vs human | avg_cost | 備註 |
+擁有者盲標 143 題 claude≠codex 的查詢(rating 分布 2:31 / 3:32 / 4:48 / 5:32,無 1——全為爭議難題),提交 `data/gold.jsonl`。各 router 對**同一套人類標籤**評分(`compare --gold`):
+
+| labeler（在 gold 上,n=143） | Spearman vs human | ordinal vs human | avg_cost | 備註 |
 |---|---|---|---|---|
-| heuristic | _待填_ | _待填_ | _待填_ | 基準 |
-| learned-fit-claude | _待填_ | _待填_ | _待填_ | |
-| learned-fit-codex（現出貨） | _待填_ | _待填_ | _待填_ | |
-| learned-fit-gemma（參考） | _待填_ | _待填_ | _待填_ | |
+| heuristic | 0.670 | 0.322 | 0.164 | 基準(難題上分級近乎失效) |
+| learned-fit-claude | 0.850 | 0.727 | 0.367 | |
+| **learned-fit-codex（現出貨）** | **0.932** | **0.874** | 0.318 | **gold 最佳** |
+| learned-fit-gemma（參考） | 0.872 | 0.678 | 0.265 | |
 
-- 軸 A 決定（預設 router）：_待填_。
-- 軸 B 決定（出貨 labeler）：_待填_。
+- **軸 A 決定（預設 router）：維持 `learned`。** 最佳 learned（codex）`Spearman 0.932 ≥ heuristic 0.670` 且 `ordinal 0.874 ≥ 0.322`,依 §8 勝出。margin 極寬（Spearman 差 0.26、ordinal 差 0.55），遠超 §15.4 的 in-sample 優勢所能解釋,故**無需** leakage-free 重 fit;`choose_router` 不動。
+- **軸 B 決定（出貨 labeler）：維持 codex。** codex 在 gold 上 Spearman/ordinal **雙項最佳**,即現出貨者 → `weights.rs` 不變。(gold 題對三套 labeler-router 皆為 in-sample,故此三方比較對稱、無偏。)
+- **成本說明**：learned 的 avg_cost（0.318）高於 heuristic（0.164）是**正確行為**——gold 為難題集(32 題難度 1.0),正確路由本就該選高品質(高成本)模型;heuristic 的「低成本」源自低估難度而**充分率不足**。成本為資訊性指標、非 gating(§7)。
+- **跨 labeler 診斷（`crosseval`）**：fit-on-row 預測 col 標籤的 Spearman 介於 0.858–0.905,off-diagonal（跨 labeler 遷移）達 0.86–0.90,顯示難度訊號**真實且跨 labeler 穩健**,非 codex 專屬;gemma 欄最低(~0.86),印證其為最雜訊的標註者。
+- **意義**：v2.1 的判決原是**自我參照**(各 router vs 自身標籤);v2.2 以**獨立於受測模型的人工 gold** 重跑,結論一致——出貨的 codex-learned router 確實最貼近人類判斷,且難題上對 heuristic 的優勢決定性。無需任何出貨變更。
