@@ -23,13 +23,9 @@ fn main() {
             );
         }
         "eval" => eval::run(),
-        // arms wired in later tasks
-        "label" => {
-            eprintln!("`label` (LLM re-labeling) is deferred; see SPEC-v2 §7/§16.");
-            std::process::exit(2);
-        }
+        "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|fit|eval>  (label: deferred, see SPEC-v2 §16)");
+            eprintln!("usage: trainer <synth|label|fit|eval>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }

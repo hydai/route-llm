@@ -1,15 +1,12 @@
 use serde::{Deserialize, Serialize};
 
 /// A corpus query with no label — what `synth` produces and `label` consumes.
-// Wired into `corpus.rs`/`label.rs` in later v2.1 tasks; allow until then.
-#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CorpusQuery {
     pub query: String,
     pub category: String,
 }
 
-#[allow(dead_code)]
 pub fn parse_corpus_jsonl(text: &str) -> Result<Vec<CorpusQuery>, String> {
     let mut out = Vec::new();
     for (i, line) in text.lines().enumerate() {
@@ -24,7 +21,6 @@ pub fn parse_corpus_jsonl(text: &str) -> Result<Vec<CorpusQuery>, String> {
     Ok(out)
 }
 
-#[allow(dead_code)]
 pub fn to_corpus_jsonl(items: &[CorpusQuery]) -> String {
     let mut s = items
         .iter()
@@ -35,13 +31,11 @@ pub fn to_corpus_jsonl(items: &[CorpusQuery]) -> String {
     s
 }
 
-#[allow(dead_code)]
 pub fn load_corpus(path: &str) -> Result<Vec<CorpusQuery>, String> {
     let text = std::fs::read_to_string(path).map_err(|e| format!("read {path}: {e}"))?;
     parse_corpus_jsonl(&text)
 }
 
-#[allow(dead_code)]
 pub fn save_corpus(path: &str, items: &[CorpusQuery]) -> Result<(), String> {
     if let Some(dir) = std::path::Path::new(path).parent() {
         std::fs::create_dir_all(dir).map_err(|e| format!("mkdir: {e}"))?;
@@ -72,8 +66,6 @@ pub fn parse_jsonl(text: &str) -> Result<Vec<LabeledExample>, String> {
     Ok(out)
 }
 
-// `save`/`to_jsonl` are consumed by `label.rs` in a later v2.1 task (T5); allow until then.
-#[allow(dead_code)]
 pub fn to_jsonl(items: &[LabeledExample]) -> String {
     let mut s = items
         .iter()
@@ -89,7 +81,6 @@ pub fn load(path: &str) -> Result<Vec<LabeledExample>, String> {
     parse_jsonl(&text)
 }
 
-#[allow(dead_code)]
 pub fn save(path: &str, items: &[LabeledExample]) -> Result<(), String> {
     if let Some(dir) = std::path::Path::new(path).parent() {
         std::fs::create_dir_all(dir).map_err(|e| format!("mkdir: {e}"))?;

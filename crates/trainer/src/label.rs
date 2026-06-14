@@ -5,8 +5,6 @@
 /// Extract the first standalone 1–5 integer from model output. Prefers a
 /// `rating: N` cue but falls back to the first 1–5 token. Returns None if no
 /// valid 1–5 rating is present.
-// Consumed by `label::run()` in v2.1 Task 5; allow until then.
-#[allow(dead_code)]
 pub fn parse_rating(output: &str) -> Option<u8> {
     let lower = output.to_lowercase();
     // Prefer an explicit "rating: N" / "rating N".
@@ -37,8 +35,6 @@ fn first_1_to_5(s: &str) -> Option<u8> {
 }
 
 /// Map a 1–5 rating to difficulty in {0.0, 0.25, 0.5, 0.75, 1.0}.
-// Consumed by `label::run()` in v2.1 Task 5; allow until then.
-#[allow(dead_code)]
 pub fn rating_to_difficulty(rating: u8) -> f64 {
     (rating.clamp(1, 5) as f64 - 1.0) / 4.0
 }
@@ -49,8 +45,6 @@ use sha2::{Digest, Sha256};
 
 /// Stable cache key for a (query, model) pair. Including the model means
 /// switching models naturally invalidates old labels.
-// Consumed by `label::run()` in v2.1 Task 5; allow until then.
-#[allow(dead_code)]
 pub fn cache_key(query: &str, model: &str) -> String {
     let mut h = Sha256::new();
     h.update(model.as_bytes());
@@ -72,13 +66,10 @@ pub struct LabelCache {
 }
 
 impl LabelCache {
-    // get/insert consumed by `label::run()` in v2.1 Task 5; allow until then.
-    #[allow(dead_code)]
     pub fn get(&self, key: &str) -> Option<u8> {
         self.map.get(key).copied()
     }
 
-    #[allow(dead_code)]
     pub fn insert(&mut self, key: String, rating: u8) {
         self.map.insert(key, rating);
     }
@@ -118,8 +109,6 @@ impl LabelCache {
         s
     }
 
-    // Consumed by `label::run()` in v2.1 Task 5; allow until then.
-    #[allow(dead_code)]
     pub fn load(path: &str) -> Self {
         match std::fs::read_to_string(path) {
             Ok(text) => Self::from_jsonl(&text),
@@ -127,14 +116,129 @@ impl LabelCache {
         }
     }
 
-    // Consumed by `label::run()` in v2.1 Task 5; allow until then.
-    #[allow(dead_code)]
     pub fn save(&self, path: &str) -> Result<(), String> {
         if let Some(dir) = std::path::Path::new(path).parent() {
             std::fs::create_dir_all(dir).map_err(|e| format!("mkdir: {e}"))?;
         }
         std::fs::write(path, self.to_jsonl()).map_err(|e| format!("write {path}: {e}"))
     }
+}
+
+use crate::dataset::{self, LabeledExample};
+
+/// Where to reach the local model. Defaults per SPEC-v2.1 §5.
+pub struct LabelConfig {
+    pub url: String,
+    pub model: String,
+}
+
+impl LabelConfig {
+    pub fn from_env() -> Self {
+        Self {
+            url: std::env::var("ROUTE_LLM_LABEL_URL")
+                .unwrap_or_else(|_| "http://localhost:11434".to_string()),
+            model: std::env::var("ROUTE_LLM_LABEL_MODEL")
+                .unwrap_or_else(|_| "google/gemma-4-31b-qat".to_string()),
+        }
+    }
+}
+
+/// ★ Rubric prompt (owner-tunable, SPEC-v2.1 §5). Asks for `RATING: <n>` + reason.
+pub fn build_prompt(query: &str) -> String {
+    format!(
+        "You are rating how hard a user query is for an LLM to answer *well*.\n\
+         Use a 1-5 scale:\n\
+         1 = trivial chat/greeting\n\
+         2 = simple lookup or extraction\n\
+         3 = moderate (some reasoning or code)\n\
+         4 = hard, multi-step reasoning or non-trivial implementation\n\
+         5 = expert: rigorous proof, deep analysis, or intricate system design\n\
+         Reply with EXACTLY one line `RATING: <n>` (n in 1..5), then one short reason line.\n\n\
+         Query: {query}\n"
+    )
+}
+
+/// One Ollama generate call → raw model text. NETWORK; not unit-tested.
+fn ollama_generate(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
+    let body = serde_json::json!({
+        "model": cfg.model,
+        "prompt": prompt,
+        "stream": false,
+        "options": { "temperature": 0 }
+    });
+    let resp = reqwest::blocking::Client::new()
+        .post(format!("{}/api/generate", cfg.url))
+        .json(&body)
+        .send()
+        .map_err(|e| {
+            format!(
+                "Ollama request to {} failed: {e}\nIs `ollama serve` running and `{}` pulled?",
+                cfg.url, cfg.model
+            )
+        })?;
+    let v: serde_json::Value = resp
+        .json()
+        .map_err(|e| format!("Ollama returned bad JSON: {e}"))?;
+    v["response"]
+        .as_str()
+        .map(|s| s.to_string())
+        .ok_or_else(|| "Ollama response missing 'response' field".to_string())
+}
+
+/// Label one query: cache hit → reuse; else call Ollama (retry once) → parse.
+/// Returns None if the model output can't be parsed after a retry.
+fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Option<u8> {
+    let key = cache_key(query, &cfg.model);
+    if let Some(r) = cache.get(&key) {
+        return Some(r);
+    }
+    for _ in 0..2 {
+        if let Ok(out) = ollama_generate(cfg, &build_prompt(query)) {
+            if let Some(r) = parse_rating(&out) {
+                cache.insert(key.clone(), r);
+                return Some(r);
+            }
+        }
+    }
+    None
+}
+
+/// `label` subcommand: read corpus.jsonl, label each query via local Ollama,
+/// write labeled.jsonl (+ persist the cache). The only networked step.
+pub fn run() {
+    let cfg = LabelConfig::from_env();
+    let corpus = dataset::load_corpus("data/corpus.jsonl")
+        .expect("load data/corpus.jsonl (run `trainer synth` first)");
+    let mut cache = LabelCache::load("data/label_cache.jsonl");
+    let mut labeled: Vec<LabeledExample> = Vec::new();
+    let (mut ok, mut skipped) = (0usize, 0usize);
+
+    for (i, q) in corpus.iter().enumerate() {
+        match label_one(&cfg, &mut cache, &q.query) {
+            Some(r) => {
+                labeled.push(LabeledExample {
+                    query: q.query.clone(),
+                    difficulty: rating_to_difficulty(r),
+                    category: q.category.clone(),
+                });
+                ok += 1;
+            }
+            None => {
+                eprintln!("skip (unparseable) [{i}]: {}", q.query);
+                skipped += 1;
+            }
+        }
+        if (i + 1) % 50 == 0 {
+            eprintln!("labeled {}/{} (model={})", i + 1, corpus.len(), cfg.model);
+            let _ = cache.save("data/label_cache.jsonl"); // periodic checkpoint
+        }
+    }
+
+    cache
+        .save("data/label_cache.jsonl")
+        .expect("save label cache");
+    dataset::save("data/labeled.jsonl", &labeled).expect("save data/labeled.jsonl");
+    eprintln!("label: {ok} labeled, {skipped} skipped -> data/labeled.jsonl");
 }
 
 #[cfg(test)]
@@ -180,5 +284,35 @@ mod tests {
         assert_eq!(restored.get("k1"), Some(3));
         assert_eq!(restored.get("k2"), Some(5));
         assert_eq!(restored.get("missing"), None);
+    }
+
+    #[test]
+    fn config_defaults_match_spec() {
+        // With env unset, defaults come from the spec.
+        std::env::remove_var("ROUTE_LLM_LABEL_URL");
+        std::env::remove_var("ROUTE_LLM_LABEL_MODEL");
+        let cfg = LabelConfig::from_env();
+        assert_eq!(cfg.url, "http://localhost:11434");
+        assert_eq!(cfg.model, "google/gemma-4-31b-qat");
+    }
+
+    #[test]
+    fn prompt_includes_query_and_scale() {
+        let p = build_prompt("reverse a linked list");
+        assert!(p.contains("reverse a linked list"));
+        assert!(p.contains("1-5") || p.contains("1–5"));
+        assert!(p.to_lowercase().contains("rating"));
+    }
+
+    #[test]
+    #[ignore = "requires a running local Ollama with the model pulled"]
+    fn ollama_round_trip_smoke() {
+        // Run manually: `cargo test -p route-llm-trainer -- --ignored ollama`
+        let cfg = LabelConfig::from_env();
+        let out = ollama_generate(&cfg, &build_prompt("hi")).expect("ollama call");
+        assert!(
+            parse_rating(&out).is_some(),
+            "expected a 1-5 rating, got: {out}"
+        );
     }
 }
