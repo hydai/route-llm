@@ -52,10 +52,12 @@ mod logreg;
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `crates/trainer/src/gold.rs` with only the test module + a stub:
+Create `crates/trainer/src/gold.rs` with only the test module + a stub. Task 1
+imports only what `disagreements` needs (the `dataset` *module* import is added in
+Task 2 by `run_pool`), so each commit stays warning-clean:
 
 ```rust
-use crate::dataset::{self, CorpusQuery, LabeledExample};
+use crate::dataset::{CorpusQuery, LabeledExample};
 use std::collections::HashMap;
 
 /// Queries where claude and codex assigned a different difficulty — the gold pool.
@@ -143,7 +145,7 @@ pub fn disagreements(claude: &[LabeledExample], codex: &[LabeledExample]) -> Vec
 }
 ```
 
-Note: `dataset` is imported for Task 2 (`run_pool`); if the compiler warns it is unused at this step, that resolves in Task 2. To avoid a warning-as-error build, you may add `#[allow(unused_imports)]` above `use crate::dataset...` now and remove it in Task 2 — or simply proceed to Task 2 in the same commit.
+Note: `disagreements` uses `HashMap`, `CorpusQuery`, and `LabeledExample` — all imported. The `dataset` module import is added in Task 2 (`run_pool`), keeping this commit warning-clean.
 
 - [ ] **Step 5: Run tests to verify they pass**
 
@@ -173,7 +175,13 @@ EOF
 
 - [ ] **Step 1: Add `run_pool` to `gold.rs`**
 
-Append to `crates/trainer/src/gold.rs` (before the `#[cfg(test)]` module):
+First, update the import line at the top of `gold.rs` to bring the `dataset` module into scope (`run_pool` calls `dataset::load`/`dataset::save_corpus`):
+
+```rust
+use crate::dataset::{self, CorpusQuery, LabeledExample};
+```
+
+Then append to `crates/trainer/src/gold.rs` (before the `#[cfg(test)]` module):
 
 ```rust
 /// `gold-pool`: read the two strong-labeler sets, compute the claude≠codex
@@ -201,8 +209,6 @@ pub fn run_pool() {
     }
 }
 ```
-
-If you added `#[allow(unused_imports)]` in Task 1, remove it now (the `dataset` import is used here).
 
 - [ ] **Step 2: Wire dispatch in `main.rs`**
 
