@@ -226,8 +226,13 @@ pub fn evaluate(data: &[LabeledExample]) -> EvalReport {
     let (hc, ha) = cost_profile(&heuristic, &labels);
     let (sc, sa) = always_strongest_baseline(&labels);
 
-    // SPEC §12: fixed-adequacy cost metric at 90% adequacy target.
-    let target = 0.90;
+    // SPEC §12: cheapest routing that still matches the achievable adequacy
+    // ceiling. The ceiling is the always-strongest model's adequacy (sa): some
+    // queries can be labeled harder than ANY model's quality, so a fixed target
+    // like 0.90 may sit ABOVE the ceiling and be unreachable (n/a). Targeting sa
+    // is always reachable (cost_bias=0 routes everything to the strongest model)
+    // and adapts per labeled set.
+    let target = sa;
     EvalReport {
         n_holdout: holdout.len(),
         spearman_learned: spearman(&learned, &labels),
@@ -264,7 +269,7 @@ fn print_report(source: &str, r: &EvalReport) {
         r.cost_learned, r.adeq_learned, r.cost_heuristic, r.adeq_heuristic, r.cost_strongest, r.adeq_strongest
     );
     eprintln!(
-        "  cost @ adequacy>={:.2}  learned={}  heuristic={}  always-strongest={:.3}",
+        "  cost @ ceiling-adeq({:.2})  learned={}  heuristic={}  always-strongest={:.3}",
         r.target_adequacy,
         r.cost_at_adequacy_learned
             .map_or("n/a (target unreachable)".into(), |c| format!("{c:.3}")),
@@ -328,7 +333,7 @@ pub fn compare(paths: &[String]) {
     println!("labeler comparison — learned router on each set's holdout");
     println!(
         "{:<14} {:>5} {:>9} {:>9} {:>8} {:>10} {:>10}",
-        "labeler", "n", "sp_learn", "sp_heur", "ordinal", "avg_cost", "cost@.90"
+        "labeler", "n", "sp_learn", "sp_heur", "ordinal", "avg_cost", "cost@ceil"
     );
     for (name, r) in &reports {
         let ca = r
@@ -346,7 +351,7 @@ pub fn compare(paths: &[String]) {
         );
     }
     println!(
-        "note: sp/ordinal/cost@.90 are vs each set's OWN labels; avg_cost shares holdout queries."
+        "note: sp/ordinal/cost@ceil are vs each set's OWN labels; avg_cost shares holdout queries."
     );
 }
 
@@ -531,5 +536,29 @@ mod tests {
         assert_eq!(short_name("data/labeled.codex.jsonl"), "codex");
         assert_eq!(short_name("data/labeled.jsonl"), "labeled");
         assert_eq!(short_name("/tmp/foo.jsonl"), "foo");
+    }
+
+    #[test]
+    fn ceiling_target_reachable_with_some_impossible_labels() {
+        // Holdout = indices 0,5,10,15. Mark a holdout entry impossible (1.0,
+        // above every model's quality) so the achievable ceiling is < 1.0. The
+        // old fixed 0.90 target could be unreachable here; targeting the ceiling
+        // (sa) must stay reachable for both routers.
+        let mut data = sample_data();
+        data[15].difficulty = 1.0;
+        let r = evaluate(&data);
+        assert!(
+            r.target_adequacy < 1.0,
+            "ceiling should be < 1.0 with an impossible label, got {}",
+            r.target_adequacy
+        );
+        assert!(
+            r.cost_at_adequacy_learned.is_some(),
+            "ceiling adequacy must be reachable (learned)"
+        );
+        assert!(
+            r.cost_at_adequacy_heuristic.is_some(),
+            "ceiling adequacy must be reachable (heuristic)"
+        );
     }
 }
