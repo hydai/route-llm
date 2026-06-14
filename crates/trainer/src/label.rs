@@ -168,7 +168,11 @@ fn chat_complete(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
         "temperature": 0,
         "stream": false
     });
-    let resp = reqwest::blocking::Client::new()
+    let client = reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(120))
+        .build()
+        .map_err(|e| format!("failed to build HTTP client: {e}"))?;
+    let resp = client
         .post(format!("{}/chat/completions", cfg.url))
         .json(&body)
         .send()
@@ -188,27 +192,40 @@ fn chat_complete(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
         .ok_or_else(|| format!("LLM response missing choices[0].message.content: {v}"))
 }
 
-/// Label one query: cache hit → reuse; else call the LLM (retry once) → parse.
-/// `Ok(Some(r))` on success, `Ok(None)` if the output can't be parsed after a
-/// retry (skip), and `Err(e)` if the server is unreachable (a network failure
-/// won't fix on retry within the same run, so abort).
+/// Label one query: cache hit → reuse; else call the LLM → parse.
+/// `Ok(Some(r))` on success; `Ok(None)` if the output can't be parsed after a
+/// retry (skip, don't poison labels); `Err(e)` only if the server stays
+/// unreachable across several retries with backoff (a persistent outage → abort).
+/// Transient blips (one dropped request during a long run) are retried, not fatal.
 fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<Option<u8>, String> {
     let key = cache_key(query, &cfg.model);
     if let Some(r) = cache.get(&key) {
         return Ok(Some(r));
     }
-    for _ in 0..2 {
+    let mut parse_fails = 0u32;
+    let mut net_fails = 0u32;
+    loop {
         match chat_complete(cfg, &build_prompt(query)) {
             Ok(out) => {
                 if let Some(r) = parse_rating(&out) {
                     cache.insert(key.clone(), r);
                     return Ok(Some(r));
                 }
+                parse_fails += 1;
+                if parse_fails >= 2 {
+                    return Ok(None); // unparseable after a retry → skip this query
+                }
             }
-            Err(e) => return Err(e),
+            Err(e) => {
+                net_fails += 1;
+                if net_fails >= 5 {
+                    return Err(e); // persistently unreachable → abort the run
+                }
+                // Transient blip: back off (1s, 2s, 3s, 4s) and retry.
+                std::thread::sleep(std::time::Duration::from_secs(net_fails as u64));
+            }
         }
     }
-    Ok(None)
 }
 
 /// `label` subcommand: read corpus.jsonl, label each query via the local
