@@ -1,6 +1,8 @@
 # route-llm v2.2 — Trustworthy Verdict Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
+
+> **Status (2026-06-15): ✅ COMPLETE.** All tasks implemented, reviewed (per-cluster + final code review), and tested (trainer 37 green; workspace clean). Verdict (SPEC §16): the independent 143-query human gold **confirms v2.1** — default stays `learned`, shipped labeler stays **codex**, **zero code/weights changes**. codex-learned **0.932** Spearman / **0.874** ordinal vs heuristic 0.670 / 0.322.
 
 **Goal:** Build a label-independent human gold yardstick (the 143 queries where claude and codex disagree) and re-decide both shipping axes — learned-vs-heuristic default and which labeler's `weights.rs` ships — by scoring every router on the *human* labels.
 
@@ -36,7 +38,7 @@ Tasks 1–7 are pure engineering (do now). Task 8 is a **manual human step** (ha
 - Create: `crates/trainer/src/gold.rs`
 - Modify: `crates/trainer/src/main.rs` (add `mod gold;`)
 
-- [ ] **Step 1: Register the module**
+- [x] **Step 1: Register the module**
 
 In `crates/trainer/src/main.rs`, add `mod gold;` to the module list (after `mod eval;`):
 
@@ -50,7 +52,7 @@ mod label;
 mod logreg;
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `crates/trainer/src/gold.rs` with only the test module + a stub. Task 1
 imports only what `disagreements` needs (the `dataset` *module* import is added in
@@ -118,12 +120,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `cargo test -p route-llm-trainer --release disagreements`
 Expected: compile OK, tests **panic** with `not yet implemented` (the `todo!()`).
 
-- [ ] **Step 4: Implement `disagreements`**
+- [x] **Step 4: Implement `disagreements`**
 
 Replace the `todo!()` body:
 
@@ -147,12 +149,12 @@ pub fn disagreements(claude: &[LabeledExample], codex: &[LabeledExample]) -> Vec
 
 Note: `disagreements` uses `HashMap`, `CorpusQuery`, and `LabeledExample` — all imported. The `dataset` module import is added in Task 2 (`run_pool`), keeping this commit warning-clean.
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `cargo test -p route-llm-trainer --release disagreements`
 Expected: 4 tests **pass**.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add crates/trainer/src/gold.rs crates/trainer/src/main.rs
@@ -173,7 +175,7 @@ EOF
 - Modify: `crates/trainer/src/main.rs` (dispatch + usage)
 - Create (generated): `data/gold.unlabeled.jsonl`
 
-- [ ] **Step 1: Add `run_pool` to `gold.rs`**
+- [x] **Step 1: Add `run_pool` to `gold.rs`**
 
 First, update the import line at the top of `gold.rs` to bring the `dataset` module into scope (`run_pool` calls `dataset::load`/`dataset::save_corpus`):
 
@@ -210,7 +212,7 @@ pub fn run_pool() {
 }
 ```
 
-- [ ] **Step 2: Wire dispatch in `main.rs`**
+- [x] **Step 2: Wire dispatch in `main.rs`**
 
 In `crates/trainer/src/main.rs`, add a `gold-pool` arm (after the `"compare"` arm) and update the usage string:
 
@@ -226,7 +228,7 @@ Update the usage line in the `other =>` arm to advertise **only shipped** subcom
 
 Also keep the crate-level `//!` doc comment from drifting into a second hand-maintained command list — replace its enumerated subcommand line with a non-duplicating pointer, e.g. `//! Subcommands are dispatched in `main`; run with no/invalid args to print usage.`
 
-- [ ] **Step 3: Build and run gold-pool**
+- [x] **Step 3: Build and run gold-pool**
 
 Run:
 ```bash
@@ -242,7 +244,7 @@ gold-pool: 143 disagreements (claude≠codex) -> data/gold.unlabeled.jsonl
   reasoning: 16
 ```
 
-- [ ] **Step 4: Sanity-check the artifact**
+- [x] **Step 4: Sanity-check the artifact**
 
 Run:
 ```bash
@@ -252,7 +254,7 @@ jq -c 'has("difficulty")' data/gold.unlabeled.jsonl | sort -u   # only "false"
 ```
 Expected: 143 lines; no `difficulty` key on any line (blind).
 
-- [ ] **Step 5: Commit (code + generated artifact)**
+- [x] **Step 5: Commit (code + generated artifact)**
 
 ```bash
 git add crates/trainer/src/gold.rs crates/trainer/src/main.rs data/gold.unlabeled.jsonl
@@ -271,7 +273,7 @@ EOF
 **Files:**
 - Modify: `crates/trainer/src/eval.rs` (add struct + function + test)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `crates/trainer/src/eval.rs`, inside the existing `#[cfg(test)] mod tests { ... }` block (it already has `sample_data()`), add:
 
@@ -299,12 +301,12 @@ In `crates/trainer/src/eval.rs`, inside the existing `#[cfg(test)] mod tests { .
     }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cargo test -p route-llm-trainer --release evaluate_gold_produces`
 Expected: **compile error** — `GoldReport` / `evaluate_gold` not found.
 
-- [ ] **Step 3: Implement `GoldReport` + `evaluate_gold`**
+- [x] **Step 3: Implement `GoldReport` + `evaluate_gold`**
 
 In `crates/trainer/src/eval.rs`, after the `EvalReport` struct + `evaluate` function (before `print_report`), add:
 
@@ -353,12 +355,12 @@ pub fn evaluate_gold(train: &[LabeledExample], gold: &[LabeledExample]) -> GoldR
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cargo test -p route-llm-trainer --release evaluate_gold_produces`
 Expected: **PASS**.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add crates/trainer/src/eval.rs
@@ -378,7 +380,7 @@ EOF
 - Modify: `crates/trainer/src/eval.rs` (add `parse_flag`, rewrite `parse_in_flag` to delegate, add `run_gold`, test)
 - Modify: `crates/trainer/src/main.rs` (`eval` arm)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `eval.rs` tests module, add:
 
@@ -398,12 +400,12 @@ In `eval.rs` tests module, add:
     }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cargo test -p route-llm-trainer --release parse_flag_finds_named_value`
 Expected: **compile error** — `parse_flag` not found.
 
-- [ ] **Step 3: Add `parse_flag` and delegate `parse_in_flag`**
+- [x] **Step 3: Add `parse_flag` and delegate `parse_in_flag`**
 
 In `eval.rs`, replace the existing `parse_in_flag` with:
 
@@ -422,7 +424,7 @@ pub fn parse_in_flag(args: &[String]) -> Option<String> {
 
 (The existing `parse_in_flag_finds_path` test still passes.)
 
-- [ ] **Step 4: Add `run_gold`**
+- [x] **Step 4: Add `run_gold`**
 
 In `eval.rs`, after `run_path`, add:
 
@@ -450,7 +452,7 @@ pub fn run_gold(gold_path: &str) {
 }
 ```
 
-- [ ] **Step 5: Wire the `eval` arm in `main.rs`**
+- [x] **Step 5: Wire the `eval` arm in `main.rs`**
 
 Replace the existing `"eval" => { ... }` arm with:
 
@@ -467,7 +469,7 @@ Replace the existing `"eval" => { ... }` arm with:
         }
 ```
 
-- [ ] **Step 6: Run tests + smoke the wiring**
+- [x] **Step 6: Run tests + smoke the wiring**
 
 Run: `cargo test -p route-llm-trainer --release parse_flag`
 Expected: `parse_flag_finds_named_value` and `parse_in_flag_finds_path` both **pass**.
@@ -475,7 +477,7 @@ Expected: `parse_flag_finds_named_value` and `parse_in_flag_finds_path` both **p
 Build check: `cargo build --release -p route-llm-trainer`
 Expected: builds clean. (Running `eval --gold` is deferred to Task 9, after the human gold set exists.)
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add crates/trainer/src/eval.rs crates/trainer/src/main.rs
@@ -495,7 +497,7 @@ EOF
 - Modify: `crates/trainer/src/eval.rs` (add `parse_compare_args`, `compare_gold`, test)
 - Modify: `crates/trainer/src/main.rs` (`compare` arm)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `eval.rs` tests module, add:
 
@@ -518,12 +520,12 @@ In `eval.rs` tests module, add:
     }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cargo test -p route-llm-trainer --release parse_compare_args_splits`
 Expected: **compile error** — `parse_compare_args` not found.
 
-- [ ] **Step 3: Implement `parse_compare_args` + `compare_gold`**
+- [x] **Step 3: Implement `parse_compare_args` + `compare_gold`**
 
 In `eval.rs`, add `parse_compare_args` (near `parse_flag`):
 
@@ -589,7 +591,7 @@ pub fn compare_gold(gold_path: &str, labeled_paths: &[String]) {
 }
 ```
 
-- [ ] **Step 4: Wire the `compare` arm in `main.rs`**
+- [x] **Step 4: Wire the `compare` arm in `main.rs`**
 
 Replace the existing `"compare" => { ... }` arm with:
 
@@ -604,14 +606,14 @@ Replace the existing `"compare" => { ... }` arm with:
         }
 ```
 
-- [ ] **Step 5: Run tests + build**
+- [x] **Step 5: Run tests + build**
 
 Run: `cargo test -p route-llm-trainer --release parse_compare_args_splits`
 Expected: **PASS**.
 Run: `cargo build --release -p route-llm-trainer`
 Expected: clean build. (Real run deferred to Task 9.)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add crates/trainer/src/eval.rs crates/trainer/src/main.rs
@@ -631,7 +633,7 @@ EOF
 - Modify: `crates/trainer/src/eval.rs` (add `crosseval_matrix`, `crosseval`, test)
 - Modify: `crates/trainer/src/main.rs` (`crosseval` arm)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `eval.rs` tests module, add:
 
@@ -649,12 +651,12 @@ In `eval.rs` tests module, add:
     }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cargo test -p route-llm-trainer --release crosseval_matrix_is_square`
 Expected: **compile error** — `crosseval_matrix` not found.
 
-- [ ] **Step 3: Implement `crosseval_matrix` + `crosseval`**
+- [x] **Step 3: Implement `crosseval_matrix` + `crosseval`**
 
 In `eval.rs`, add:
 
@@ -717,7 +719,7 @@ pub fn crosseval(paths: &[String]) {
 }
 ```
 
-- [ ] **Step 4: Wire the `crosseval` arm in `main.rs`**
+- [x] **Step 4: Wire the `crosseval` arm in `main.rs`**
 
 Add (after the `gold-pool` arm):
 
@@ -728,7 +730,7 @@ Add (after the `gold-pool` arm):
         }
 ```
 
-- [ ] **Step 5: Run test + real run (uses committed labeler sets)**
+- [x] **Step 5: Run test + real run (uses committed labeler sets)**
 
 Run: `cargo test -p route-llm-trainer --release crosseval_matrix_is_square`
 Expected: **PASS**.
@@ -736,7 +738,7 @@ Expected: **PASS**.
 Run: `cargo run --release -p route-llm-trainer -- crosseval`
 Expected: a 3×3 table (rows/cols `gemma`/`claude`/`codex`), diagonal near each set's self-fit spearman, all values in [-1, 1]. Record the matrix for the spec write-up in Task 9.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add crates/trainer/src/eval.rs crates/trainer/src/main.rs
@@ -755,7 +757,7 @@ EOF
 **Files:**
 - Modify: `prompts/README.md`
 
-- [ ] **Step 1: Add a gold section**
+- [x] **Step 1: Add a gold section**
 
 Append this section to `prompts/README.md` (after the "fit / eval runbook" section, before "Comparing labelers — a fairness caveat"):
 
@@ -788,12 +790,12 @@ The gold set is **hard-cases-only** (chat/extraction have no disagreements), so 
 judges ranking quality on contested queries — the real test for learned-vs-heuristic.
 ````
 
-- [ ] **Step 2: Lint**
+- [x] **Step 2: Lint**
 
 Run: `lineguard prompts/README.md`
 Expected: passes (fix any reported issues).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add prompts/README.md
@@ -816,16 +818,16 @@ EOF
 **Files:**
 - Create: `data/gold.jsonl`
 
-- [ ] **Step 1: Read the blind pool**
+- [x] **Step 1: Read the blind pool**
 
 Open `data/gold.unlabeled.jsonl` (143 lines, `{query, category}` only — no model labels shown).
 
-- [ ] **Step 2: Rate each query 1–5, blind**
+- [x] **Step 2: Rate each query 1–5, blind**
 
 Apply the `prompts/label.prompt.md` rubric (1 = trivial chat … 5 = expert). Judge the
 query only; do not look at any model's label. Map `difficulty = (rating − 1) / 4`.
 
-- [ ] **Step 3: Write `data/gold.jsonl`**
+- [x] **Step 3: Write `data/gold.jsonl`**
 
 One line per input line, **same order**, `query`/`category` copied byte-for-byte:
 
@@ -833,7 +835,7 @@ One line per input line, **same order**, `query`/`category` copied byte-for-byte
 {"query":"...","difficulty":0.75,"category":"math","rating":4}
 ```
 
-- [ ] **Step 4: Validate**
+- [x] **Step 4: Validate**
 
 ```bash
 wc -l data/gold.unlabeled.jsonl data/gold.jsonl                  # counts must match (143)
@@ -842,7 +844,7 @@ cargo run --release -p route-llm-trainer -- eval --gold data/gold.jsonl     # pa
 ```
 Expected: equal line counts; no out-of-rubric difficulties; `eval --gold` prints a report.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add data/gold.jsonl
@@ -862,7 +864,7 @@ EOF
 - Modify: `SPEC-v2.2.md` (§16)
 - Possibly modify: `data/labeled.jsonl` + `crates/core/src/learned/weights.rs` (axis B) and/or `crates/server/src/main.rs` (axis A) — **only if the verdict requires it; human-approved.**
 
-- [ ] **Step 1: Produce the verdict tables**
+- [x] **Step 1: Produce the verdict tables**
 
 ```bash
 cargo run --release -p route-llm-trainer -- compare --gold data/gold.jsonl \
@@ -872,7 +874,7 @@ cargo run --release -p route-llm-trainer -- crosseval
 ```
 Record the `sp_gold` / `ord_gold` / `avg_cost` for `heuristic`, `codex`, `claude`, `gemma`, and the crosseval matrix.
 
-- [ ] **Step 2: Apply the decision rules (SPEC §8)**
+- [x] **Step 2: Apply the decision rules (SPEC §8)**
 
 - **Axis A — default router:** learned wins iff, on gold, `sp_gold(best learned) ≥ sp_gold(heuristic)` AND `ord_gold(best learned) ≥ ord_gold(heuristic)`.
   - Win → keep `learned` (no `choose_router` change).
@@ -881,11 +883,11 @@ Record the `sp_gold` / `ord_gold` / `avg_cost` for `heuristic`, `codex`, `claude
   - Already `codex` → no change.
   - Otherwise → `cp data/labeled.<winner>.jsonl data/labeled.jsonl && cargo run --release -p route-llm-trainer -- fit`, then re-run Step 1's `eval --gold` to confirm.
 
-- [ ] **Step 3: Fill `SPEC-v2.2.md` §16**
+- [x] **Step 3: Fill `SPEC-v2.2.md` §16**
 
 Replace the `_待填_` table cells with the measured numbers and write the two-axis decision sentences. Remove the `> 待跑` note.
 
-- [ ] **Step 4: Verify the whole workspace is green**
+- [x] **Step 4: Verify the whole workspace is green**
 
 ```bash
 cargo build --release
@@ -893,7 +895,7 @@ cargo test
 ```
 Expected: builds clean; all tests pass.
 
-- [ ] **Step 5: Lint + commit**
+- [x] **Step 5: Lint + commit**
 
 ```bash
 lineguard SPEC-v2.2.md
@@ -914,11 +916,11 @@ EOF
 **Files:**
 - Modify: `PLAN-v2.2.md` (status banner + checkboxes)
 
-- [ ] **Step 1: Tick completed checkboxes + add status banner**
+- [x] **Step 1: Tick completed checkboxes + add status banner**
 
 Mark `- [ ]` → `- [x]` for done tasks; add a status line at the top mirroring `PLAN-v2.1.md`.
 
-- [ ] **Step 2: Commit + push**
+- [x] **Step 2: Commit + push**
 
 ```bash
 git add PLAN-v2.2.md
@@ -931,7 +933,7 @@ EOF
 git push
 ```
 
-- [ ] **Step 3: Open the PR**
+- [x] **Step 3: Open the PR**
 
 ```bash
 gh pr create --base master --head spec/v2.2-trustworthy-verdict \
