@@ -201,20 +201,30 @@ fn chat_complete(
         .ok_or_else(|| format!("LLM response missing choices[0].message.content: {v}"))
 }
 
-/// Label one query: cache hit → reuse; else call the LLM → parse.
-/// `Ok(Some(r))` on success; `Ok(None)` if the output can't be parsed after a
-/// retry (skip, don't poison labels); `Err(e)` only if the server stays
-/// unreachable across many retries with backoff (a persistent outage → abort).
-/// Transient blips during a long run are retried, not fatal.
+/// Outcome of labeling one query.
+enum Outcome {
+    /// Successfully rated (and cached).
+    Rated(u8),
+    /// Model output couldn't be parsed after a retry — skip this query.
+    Unparseable,
+    /// Request failed after a few local retries (not cached). The caller
+    /// continues (a later re-run retries it) unless many occur consecutively
+    /// (a real outage), in which case the caller aborts.
+    NetFail(String),
+}
+
+/// Label one query: cache hit → reuse; else call the LLM (a few local retries +
+/// backoff). A network blip on one query is NOT fatal — it returns `NetFail` and
+/// the caller skips-and-continues; the query stays uncached so a re-run retries it.
 fn label_one(
     client: &reqwest::blocking::Client,
     cfg: &LabelConfig,
     cache: &mut LabelCache,
     query: &str,
-) -> Result<Option<u8>, String> {
+) -> Outcome {
     let key = cache_key(query, &cfg.model);
     if let Some(r) = cache.get(&key) {
-        return Ok(Some(r));
+        return Outcome::Rated(r);
     }
     let mut parse_fails = 0u32;
     let mut net_fails = 0u32;
@@ -223,21 +233,20 @@ fn label_one(
             Ok(out) => {
                 if let Some(r) = parse_rating(&out) {
                     cache.insert(key.clone(), r);
-                    return Ok(Some(r));
+                    return Outcome::Rated(r);
                 }
                 parse_fails += 1;
                 if parse_fails >= 2 {
-                    return Ok(None); // unparseable after a retry → skip this query
+                    return Outcome::Unparseable;
                 }
             }
             Err(e) => {
                 net_fails += 1;
-                if net_fails >= 8 {
-                    return Err(e); // persistently unreachable → abort the run
+                if net_fails >= 3 {
+                    return Outcome::NetFail(e); // give up on THIS query (uncached); caller continues
                 }
-                // Transient blip: back off (capped at 5s) and retry.
-                let backoff = std::cmp::min(net_fails, 5) as u64;
-                std::thread::sleep(std::time::Duration::from_secs(backoff));
+                std::thread::sleep(std::time::Duration::from_secs(net_fails as u64));
+                // 1s, 2s
             }
         }
     }
@@ -253,30 +262,49 @@ pub fn run() {
         .expect("load data/corpus.jsonl (run `trainer synth` first)");
     let mut cache = LabelCache::load("data/label_cache.jsonl");
     let mut labeled: Vec<LabeledExample> = Vec::new();
-    let (mut ok, mut skipped) = (0usize, 0usize);
+    let (mut ok, mut unparseable, mut net_skip) = (0usize, 0usize, 0usize);
+    let mut consecutive_net = 0u32;
+    const OUTAGE_LIMIT: u32 = 15;
 
     for (i, q) in corpus.iter().enumerate() {
         match label_one(&client, &cfg, &mut cache, &q.query) {
-            Ok(Some(r)) => {
+            Outcome::Rated(r) => {
                 labeled.push(LabeledExample {
                     query: q.query.clone(),
                     difficulty: rating_to_difficulty(r),
                     category: q.category.clone(),
                 });
                 ok += 1;
+                consecutive_net = 0;
             }
-            Ok(None) => {
+            Outcome::Unparseable => {
                 eprintln!("skip (unparseable) [{i}]: {}", q.query);
-                skipped += 1;
+                unparseable += 1;
+                consecutive_net = 0;
             }
-            Err(e) => {
+            Outcome::NetFail(e) => {
+                net_skip += 1;
+                consecutive_net += 1;
+                eprintln!(
+                    "net-skip [{i}] (consecutive {consecutive_net}): {}",
+                    e.lines().next().unwrap_or("network error")
+                );
                 let _ = cache.save("data/label_cache.jsonl");
-                eprintln!("\nlabel aborted after {ok} labeled / {skipped} skipped: {e}");
-                std::process::exit(1);
+                if consecutive_net >= OUTAGE_LIMIT {
+                    eprintln!(
+                        "\nlabel aborted: {consecutive_net} consecutive network failures — the server appears down.\n{e}"
+                    );
+                    std::process::exit(1);
+                }
+                // Otherwise leave this query unlabeled (uncached); a re-run retries it.
             }
         }
         if (i + 1) % 50 == 0 {
-            eprintln!("labeled {}/{} (model={})", i + 1, corpus.len(), cfg.model);
+            eprintln!(
+                "progress {}/{} (ok {ok}, unparseable {unparseable}, net-skip {net_skip})",
+                i + 1,
+                corpus.len()
+            );
             let _ = cache.save("data/label_cache.jsonl"); // periodic checkpoint
         }
     }
@@ -285,7 +313,14 @@ pub fn run() {
         .save("data/label_cache.jsonl")
         .expect("save label cache");
     dataset::save("data/labeled.jsonl", &labeled).expect("save data/labeled.jsonl");
-    eprintln!("label: {ok} labeled, {skipped} skipped -> data/labeled.jsonl");
+    eprintln!(
+        "label: {ok} labeled, {unparseable} unparseable-skipped, {net_skip} net-skipped -> data/labeled.jsonl"
+    );
+    if net_skip > 0 {
+        eprintln!(
+            "note: {net_skip} queries failed network-wise and are unlabeled; re-run `label` to fill them (cache resumes)."
+        );
+    }
 }
 
 #[cfg(test)]
