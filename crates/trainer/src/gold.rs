@@ -1,4 +1,4 @@
-use crate::dataset::{CorpusQuery, LabeledExample};
+use crate::dataset::{self, CorpusQuery, LabeledExample};
 use std::collections::HashMap;
 
 /// Queries where claude and codex assigned a different difficulty — the gold pool.
@@ -19,6 +19,31 @@ pub fn disagreements(claude: &[LabeledExample], codex: &[LabeledExample]) -> Vec
             category: e.category.clone(),
         })
         .collect()
+}
+
+/// `gold-pool`: read the two strong-labeler sets, compute the claude≠codex
+/// disagreement set, and write it BLIND to `data/gold.unlabeled.jsonl` for a
+/// human to hand-label. Prints a total + per-category summary.
+pub fn run_pool() {
+    let claude = dataset::load("data/labeled.claude.jsonl")
+        .unwrap_or_else(|e| panic!("load data/labeled.claude.jsonl: {e}"));
+    let codex = dataset::load("data/labeled.codex.jsonl")
+        .unwrap_or_else(|e| panic!("load data/labeled.codex.jsonl: {e}"));
+    let pool = disagreements(&claude, &codex);
+    dataset::save_corpus("data/gold.unlabeled.jsonl", &pool)
+        .expect("write data/gold.unlabeled.jsonl");
+
+    let mut by_cat: std::collections::BTreeMap<&str, usize> = std::collections::BTreeMap::new();
+    for q in &pool {
+        *by_cat.entry(q.category.as_str()).or_default() += 1;
+    }
+    eprintln!(
+        "gold-pool: {} disagreements (claude≠codex) -> data/gold.unlabeled.jsonl",
+        pool.len()
+    );
+    for (cat, n) in &by_cat {
+        eprintln!("  {cat}: {n}");
+    }
 }
 
 #[cfg(test)]

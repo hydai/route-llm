@@ -1,5 +1,5 @@
 //! Offline trainer for the learned router.
-//! Subcommands: `synth`, `label`, `fit`, `eval [--in <file>]`, `compare <files...>`.
+//! Subcommands are dispatched in `main`; run with no/invalid args to print usage.
 
 mod corpus;
 mod dataset;
@@ -34,9 +34,10 @@ fn main() {
             let files: Vec<String> = std::env::args().skip(2).collect();
             eval::compare(&files);
         }
+        "gold-pool" => gold::run_pool(),
         "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>]|compare <files...>>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>]|compare <files...>|gold-pool>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }
