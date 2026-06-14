@@ -218,11 +218,13 @@ In `crates/trainer/src/main.rs`, add a `gold-pool` arm (after the `"compare"` ar
         "gold-pool" => gold::run_pool(),
 ```
 
-Update the usage line in the `other =>` arm to:
+Update the usage line in the `other =>` arm to advertise **only shipped** subcommands (later clusters expand it as they add `--gold`/`crosseval` — never advertise a command before it dispatches):
 
 ```rust
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare [--gold <file>] <files...>|crosseval [files...]|gold-pool>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>]|compare <files...>|gold-pool>");
 ```
+
+Also keep the crate-level `//!` doc comment from drifting into a second hand-maintained command list — replace its enumerated subcommand line with a non-duplicating pointer, e.g. `//! Subcommands are dispatched in `main`; run with no/invalid args to print usage.`
 
 - [ ] **Step 3: Build and run gold-pool**
 
