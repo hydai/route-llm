@@ -159,19 +159,28 @@ pub fn build_prompt(query: &str) -> String {
     )
 }
 
+/// Build a pooled HTTP client (keep-alive) to be reused across all label calls.
+/// A fresh client per call churns connections and triggers intermittent resets.
+fn http_client() -> Result<reqwest::blocking::Client, String> {
+    reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(120))
+        .build()
+        .map_err(|e| format!("failed to build HTTP client: {e}"))
+}
+
 /// One OpenAI-compatible chat completion → assistant message text. NETWORK; not
 /// unit-tested. Works with LM Studio (default), Ollama's /v1, llama.cpp, vLLM.
-fn chat_complete(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
+fn chat_complete(
+    client: &reqwest::blocking::Client,
+    cfg: &LabelConfig,
+    prompt: &str,
+) -> Result<String, String> {
     let body = serde_json::json!({
         "model": cfg.model,
         "messages": [{ "role": "user", "content": prompt }],
         "temperature": 0,
         "stream": false
     });
-    let client = reqwest::blocking::Client::builder()
-        .timeout(std::time::Duration::from_secs(120))
-        .build()
-        .map_err(|e| format!("failed to build HTTP client: {e}"))?;
     let resp = client
         .post(format!("{}/chat/completions", cfg.url))
         .json(&body)
@@ -195,9 +204,14 @@ fn chat_complete(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
 /// Label one query: cache hit → reuse; else call the LLM → parse.
 /// `Ok(Some(r))` on success; `Ok(None)` if the output can't be parsed after a
 /// retry (skip, don't poison labels); `Err(e)` only if the server stays
-/// unreachable across several retries with backoff (a persistent outage → abort).
-/// Transient blips (one dropped request during a long run) are retried, not fatal.
-fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<Option<u8>, String> {
+/// unreachable across many retries with backoff (a persistent outage → abort).
+/// Transient blips during a long run are retried, not fatal.
+fn label_one(
+    client: &reqwest::blocking::Client,
+    cfg: &LabelConfig,
+    cache: &mut LabelCache,
+    query: &str,
+) -> Result<Option<u8>, String> {
     let key = cache_key(query, &cfg.model);
     if let Some(r) = cache.get(&key) {
         return Ok(Some(r));
@@ -205,7 +219,7 @@ fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<O
     let mut parse_fails = 0u32;
     let mut net_fails = 0u32;
     loop {
-        match chat_complete(cfg, &build_prompt(query)) {
+        match chat_complete(client, cfg, &build_prompt(query)) {
             Ok(out) => {
                 if let Some(r) = parse_rating(&out) {
                     cache.insert(key.clone(), r);
@@ -218,11 +232,12 @@ fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<O
             }
             Err(e) => {
                 net_fails += 1;
-                if net_fails >= 5 {
+                if net_fails >= 8 {
                     return Err(e); // persistently unreachable → abort the run
                 }
-                // Transient blip: back off (1s, 2s, 3s, 4s) and retry.
-                std::thread::sleep(std::time::Duration::from_secs(net_fails as u64));
+                // Transient blip: back off (capped at 5s) and retry.
+                let backoff = std::cmp::min(net_fails, 5) as u64;
+                std::thread::sleep(std::time::Duration::from_secs(backoff));
             }
         }
     }
@@ -233,6 +248,7 @@ fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<O
 /// networked step.
 pub fn run() {
     let cfg = LabelConfig::from_env();
+    let client = http_client().expect("build HTTP client");
     let corpus = dataset::load_corpus("data/corpus.jsonl")
         .expect("load data/corpus.jsonl (run `trainer synth` first)");
     let mut cache = LabelCache::load("data/label_cache.jsonl");
@@ -240,7 +256,7 @@ pub fn run() {
     let (mut ok, mut skipped) = (0usize, 0usize);
 
     for (i, q) in corpus.iter().enumerate() {
-        match label_one(&cfg, &mut cache, &q.query) {
+        match label_one(&client, &cfg, &mut cache, &q.query) {
             Ok(Some(r)) => {
                 labeled.push(LabeledExample {
                     query: q.query.clone(),
@@ -340,7 +356,8 @@ mod tests {
     fn chat_complete_round_trip_smoke() {
         // Run manually: `cargo test -p route-llm-trainer -- --ignored chat_complete`
         let cfg = LabelConfig::from_env();
-        let out = chat_complete(&cfg, &build_prompt("hi")).expect("chat completion call");
+        let client = http_client().expect("build HTTP client");
+        let out = chat_complete(&client, &cfg, &build_prompt("hi")).expect("chat completion call");
         assert!(
             parse_rating(&out).is_some(),
             "expected a 1-5 rating, got: {out}"
