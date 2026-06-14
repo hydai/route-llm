@@ -1,5 +1,7 @@
 # route-llm v2.1 — Real Local-LLM Difficulty Labeling Implementation Plan
 
+> **Status: ✅ Complete (T1–T7).** Verdict — learned beats heuristic on all three labelers (gemma / claude / codex) across Spearman, ordinal, and cost-at-ceiling; default stays `learned` (no server change). Shipped `weights.rs` fit on codex labels. See `SPEC-v2.1.md` §16. (PR #9)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace v2's category-fixed synthetic difficulty labels with per-query judgments from a local OpenAI-compatible LLM (e.g. LM Studio) over an expanded ~1000-query corpus, then re-fit and re-eval so the verdict can set the default router.
@@ -63,7 +65,7 @@ SPEC-v2.1.md §16  (verdict)                                                (T7)
 **Files:**
 - Modify: `crates/trainer/src/dataset.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to the `#[cfg(test)] mod tests` block in `crates/trainer/src/dataset.rs` (add new tests; keep existing ones):
 ```rust
@@ -84,12 +86,12 @@ Append to the `#[cfg(test)] mod tests` block in `crates/trainer/src/dataset.rs` 
     }
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer corpus_query`
 Expected: FAILS to compile (`CorpusQuery`, `to_corpus_jsonl`, `parse_corpus_jsonl` not found).
 
-- [ ] **Step 3: Implement the type + I/O**
+- [x] **Step 3: Implement the type + I/O**
 
 Prepend to `crates/trainer/src/dataset.rs` (after the existing `use` line, alongside `LabeledExample`):
 ```rust
@@ -137,12 +139,12 @@ pub fn save_corpus(path: &str, items: &[CorpusQuery]) -> Result<(), String> {
 }
 ```
 
-- [ ] **Step 4: Run to verify it passes**
+- [x] **Step 4: Run to verify it passes**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (existing dataset tests + 2 new corpus tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -161,7 +163,7 @@ git commit -m "feat(trainer): add CorpusQuery type and corpus jsonl I/O"
 **Files:**
 - Modify: `crates/trainer/src/corpus.rs`
 
-- [ ] **Step 1: Replace the corpus generator + tests**
+- [x] **Step 1: Replace the corpus generator + tests**
 
 Replace the entire contents of `crates/trainer/src/corpus.rs` with:
 ```rust
@@ -337,17 +339,17 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run to verify it fails, then passes**
+- [x] **Step 2: Run to verify it fails, then passes**
 
 Run: `cargo test -p route-llm-trainer corpus`
 Expected: after the replacement compiles, PASS (4 tests). If it fails to compile because other code referenced the old `corpus::build()` return type (`LabeledExample`), that is expected — Task 5 updates `main.rs`'s `synth` arm (it already calls `corpus::run()`, which still exists, so no change needed). Confirm `main.rs`'s `"synth" => corpus::run()` still compiles.
 
-- [ ] **Step 3: Run the whole trainer suite**
+- [x] **Step 3: Run the whole trainer suite**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS. (The old `corpus` tests are replaced; `dataset`, `logreg`, `emit`, `eval` tests unchanged.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cargo fmt --all
@@ -365,7 +367,7 @@ git commit -m "feat(trainer): combinatorial synth generating ~1000 queries-only 
 - Create: `crates/trainer/src/label.rs`
 - Modify: `crates/trainer/src/main.rs`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `crates/trainer/src/label.rs`:
 ```rust
@@ -402,12 +404,12 @@ mod tests {
 }
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer label`
 Expected: FAILS to compile (`label` module not declared; `parse_rating`/`rating_to_difficulty` missing).
 
-- [ ] **Step 3: Implement the pure functions + declare the module**
+- [x] **Step 3: Implement the pure functions + declare the module**
 
 Prepend to `crates/trainer/src/label.rs` (above the test module):
 ```rust
@@ -451,12 +453,12 @@ pub fn rating_to_difficulty(rating: u8) -> f64 {
 
 In `crates/trainer/src/main.rs`, add `mod label;` with the other `mod` declarations (below `mod eval;`).
 
-- [ ] **Step 4: Run to verify it passes**
+- [x] **Step 4: Run to verify it passes**
 
 Run: `cargo test -p route-llm-trainer label`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cargo fmt --all
@@ -474,14 +476,14 @@ git commit -m "feat(trainer): add rubric parse and 1-5 to difficulty mapping"
 - Modify: `crates/trainer/src/label.rs`
 - Modify: `crates/trainer/Cargo.toml` (add `sha2`)
 
-- [ ] **Step 1: Add `sha2` to the trainer manifest**
+- [x] **Step 1: Add `sha2` to the trainer manifest**
 
 In `crates/trainer/Cargo.toml`, under `[dependencies]`, add:
 ```toml
 sha2 = "0.10"
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
 ```rust
@@ -505,12 +507,12 @@ Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
     }
 ```
 
-- [ ] **Step 3: Run to verify it fails**
+- [x] **Step 3: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer cache`
 Expected: FAILS to compile (`cache_key`, `LabelCache` not found).
 
-- [ ] **Step 4: Implement the cache**
+- [x] **Step 4: Implement the cache**
 
 Prepend to `crates/trainer/src/label.rs` (above the test module, below the parse functions):
 ```rust
@@ -594,12 +596,12 @@ impl LabelCache {
 }
 ```
 
-- [ ] **Step 5: Run to verify it passes**
+- [x] **Step 5: Run to verify it passes**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS (label parse + cache tests + existing suite).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -618,7 +620,7 @@ git commit -m "feat(trainer): add hash-keyed label cache with stable jsonl"
 - Modify: `crates/trainer/Cargo.toml` (add `reqwest`)
 - Modify: `crates/trainer/src/main.rs` (wire `label` arm + usage)
 
-- [ ] **Step 1: Add `reqwest` to the trainer manifest**
+- [x] **Step 1: Add `reqwest` to the trainer manifest**
 
 In `crates/trainer/Cargo.toml`, under `[dependencies]`, add:
 ```toml
@@ -626,7 +628,7 @@ reqwest = { version = "0.12", default-features = false, features = ["blocking", 
 ```
 (`reqwest` lives ONLY in the trainer — `core`/`server` gain no network deps.)
 
-- [ ] **Step 2: Write the failing test (config + an ignored integration test)**
+- [x] **Step 2: Write the failing test (config + an ignored integration test)**
 
 Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
 ```rust
@@ -658,12 +660,12 @@ Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
     }
 ```
 
-- [ ] **Step 3: Run to verify it fails**
+- [x] **Step 3: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer config_defaults`
 Expected: FAILS to compile (`LabelConfig`, `build_prompt`, `chat_complete` not found).
 
-- [ ] **Step 4: Implement the client, prompt, and `run()`**
+- [x] **Step 4: Implement the client, prompt, and `run()`**
 
 Prepend to `crates/trainer/src/label.rs` (above the test module):
 ```rust
@@ -806,12 +808,12 @@ In `crates/trainer/src/main.rs`, replace the `"label"` arm and the usage string:
                 eprintln!("usage: trainer <synth|label|fit|eval>");
 ```
 
-- [ ] **Step 5: Run to verify it passes (pure tests only; ignored test skipped)**
+- [x] **Step 5: Run to verify it passes (pure tests only; ignored test skipped)**
 
 Run: `cargo test -p route-llm-trainer`
 Expected: PASS. The `chat_complete_round_trip_smoke` test is `#[ignore]`d (no server in CI). `cargo clippy -- -D warnings` clean.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cargo fmt --all
@@ -831,7 +833,7 @@ git commit -m "feat(trainer): add OpenAI-compatible chat client and label subcom
 - Create/regenerate: `data/corpus.jsonl`, `data/labeled.jsonl`, `data/label_cache.jsonl`
 - Regenerate: `crates/core/src/learned/weights.rs`
 
-- [ ] **Step 1: Prepare the local LLM server (LM Studio)**
+- [x] **Step 1: Prepare the local LLM server (LM Studio)**
 
 ```bash
 # In LM Studio: download/load `google/gemma-4-31b-qat`, then start the local server
@@ -841,22 +843,22 @@ git commit -m "feat(trainer): add OpenAI-compatible chat client and label subcom
 ```
 Expected: model available locally.
 
-- [ ] **Step 2: Generate the corpus**
+- [x] **Step 2: Generate the corpus**
 
 Run: `cargo run -p route-llm-trainer -- synth`
 Expected: writes `data/corpus.jsonl` with ~1000 queries.
 
-- [ ] **Step 3: Label (the slow, networked, local step)**
+- [x] **Step 3: Label (the slow, networked, local step)**
 
 Run: `cargo run -p route-llm-trainer -- label`
 Expected: progress every 50; writes `data/labeled.jsonl` + `data/label_cache.jsonl`. Re-running resumes from cache. If many lines say "skip (unparseable)", tune the prompt in `build_prompt` (★) and re-run.
 
-- [ ] **Step 4: Eval (record the verdict numbers BEFORE committing weights)**
+- [x] **Step 4: Eval (record the verdict numbers BEFORE committing weights)**
 
 Run: `cargo run -p route-llm-trainer -- eval`
 Expected: prints learned vs heuristic vs always-strongest (Spearman, ordinal, cost@adequacy). Copy this output for Task 7.
 
-- [ ] **Step 5: Fit and format**
+- [x] **Step 5: Fit and format**
 
 ```bash
 cargo run -p route-llm-trainer -- fit
@@ -865,7 +867,7 @@ cargo test -p route-llm-core learned
 ```
 Expected: regenerates `crates/core/src/learned/weights.rs`; `trivial_query_is_easier_than_hard_query` still passes with the trained weights. (If it fails, the labels/corpus need work — tune and re-run.)
 
-- [ ] **Step 6: Full suite + commit artifacts**
+- [x] **Step 6: Full suite + commit artifacts**
 
 ```bash
 cargo test
@@ -883,11 +885,11 @@ git commit -m "feat(core): retrain learned weights on real local-LLM difficulty 
 - Modify: `SPEC-v2.1.md` (§16)
 - Modify (only if learned lost): `crates/server/src/main.rs`
 
-- [ ] **Step 1: Decide the verdict from Task 6 Step 4**
+- [x] **Step 1: Decide the verdict from Task 6 Step 4**
 
 Apply SPEC-v2.1 §8: learned **wins** iff `Spearman(learned) ≥ Spearman(heuristic)` AND `ordinal(learned) ≥ ordinal(heuristic)` AND cost(learned) not worse than cost(heuristic) at fixed adequacy.
 
-- [ ] **Step 2: If learned LOST — flip the deployment default to heuristic**
+- [x] **Step 2: If learned LOST — flip the deployment default to heuristic**
 
 In `crates/server/src/main.rs`, in `choose_router`, change the unset/default arm from `learned` to `heuristic`:
 ```rust
@@ -898,7 +900,7 @@ Then update the `unset_defaults_to_learned` test to `unset_defaults_to_heuristic
 
 > If learned WON, skip this step — the default stays `learned`, now justified by evidence.
 
-- [ ] **Step 3: Record the verdict in the spec**
+- [x] **Step 3: Record the verdict in the spec**
 
 Replace SPEC-v2.1 §16's placeholder with the actual numbers and decision, e.g.:
 ```markdown
@@ -912,7 +914,7 @@ eval（holdout n=…）：
 判定：learned <勝出 / 未勝出>。預設 router = <learned / heuristic>。
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cargo fmt --all
@@ -926,11 +928,11 @@ git commit -m "docs: record v2.1 eval verdict and set default router accordingly
 
 ## Final verification checklist
 
-- [ ] `cargo build --release` — clean.
-- [ ] `cargo test` — all crates green (the LLM smoke test stays `#[ignore]`d).
-- [ ] `cargo clippy -- -D warnings` — clean.
-- [ ] v1 frozen files and v2 `learned/{features,model,mod}.rs` **unmodified**; only `weights.rs` changed in `core`.
-- [ ] `reqwest` appears **only** in `crates/trainer/Cargo.toml`; `core`/`server` have no network deps.
-- [ ] `data/labeled.jsonl` is committed; `fit` is deterministic on it (no LLM server needed for `fit`/CI).
-- [ ] `eval` verdict recorded in SPEC-v2.1 §16; default router matches the verdict.
-- [ ] Inference performs no network I/O.
+- [x] `cargo build --release` — clean.
+- [x] `cargo test` — all crates green (the LLM smoke test stays `#[ignore]`d).
+- [x] `cargo clippy -- -D warnings` — clean.
+- [x] v1 frozen files and v2 `learned/{features,model,mod}.rs` **unmodified**; only `weights.rs` changed in `core`.
+- [x] `reqwest` appears **only** in `crates/trainer/Cargo.toml`; `core`/`server` have no network deps.
+- [x] `data/labeled.jsonl` is committed; `fit` is deterministic on it (no LLM server needed for `fit`/CI).
+- [x] `eval` verdict recorded in SPEC-v2.1 §16; default router matches the verdict.
+- [x] Inference performs no network I/O.
