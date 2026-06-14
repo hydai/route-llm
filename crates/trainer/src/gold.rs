@@ -6,8 +6,10 @@ use std::collections::HashMap;
 /// human can re-judge without anchoring. Ordered by `codex`'s order (= corpus order);
 /// `category` is taken from codex. Queries absent from `claude` are skipped.
 pub fn disagreements(claude: &[LabeledExample], codex: &[LabeledExample]) -> Vec<CorpusQuery> {
-    let claude_by_q: HashMap<&str, f64> =
-        claude.iter().map(|e| (e.query.as_str(), e.difficulty)).collect();
+    let claude_by_q: HashMap<&str, f64> = claude
+        .iter()
+        .map(|e| (e.query.as_str(), e.difficulty))
+        .collect();
     codex
         .iter()
         .filter(|e| match claude_by_q.get(e.query.as_str()) {
@@ -60,8 +62,16 @@ mod tests {
 
     #[test]
     fn disagreements_selects_only_differing_queries() {
-        let claude = vec![ex("a", 0.25, "code"), ex("b", 0.5, "math"), ex("c", 1.0, "math")];
-        let codex = vec![ex("a", 0.25, "code"), ex("b", 0.75, "math"), ex("c", 0.75, "math")];
+        let claude = vec![
+            ex("a", 0.25, "code"),
+            ex("b", 0.5, "math"),
+            ex("c", 1.0, "math"),
+        ];
+        let codex = vec![
+            ex("a", 0.25, "code"),
+            ex("b", 0.75, "math"),
+            ex("c", 0.75, "math"),
+        ];
         let pool = disagreements(&claude, &codex);
         let qs: Vec<&str> = pool.iter().map(|p| p.query.as_str()).collect();
         assert_eq!(qs, vec!["b", "c"], "only b and c differ");
@@ -79,8 +89,16 @@ mod tests {
 
     #[test]
     fn disagreements_preserve_codex_order() {
-        let claude = vec![ex("x", 0.0, "chat"), ex("y", 0.0, "chat"), ex("z", 0.0, "chat")];
-        let codex = vec![ex("z", 0.25, "chat"), ex("y", 0.25, "chat"), ex("x", 0.25, "chat")];
+        let claude = vec![
+            ex("x", 0.0, "chat"),
+            ex("y", 0.0, "chat"),
+            ex("z", 0.0, "chat"),
+        ];
+        let codex = vec![
+            ex("z", 0.25, "chat"),
+            ex("y", 0.25, "chat"),
+            ex("x", 0.25, "chat"),
+        ];
         let pool = disagreements(&claude, &codex);
         let qs: Vec<&str> = pool.iter().map(|p| p.query.as_str()).collect();
         assert_eq!(qs, vec!["z", "y", "x"], "must follow codex order");
