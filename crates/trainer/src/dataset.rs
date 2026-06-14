@@ -72,6 +72,8 @@ pub fn parse_jsonl(text: &str) -> Result<Vec<LabeledExample>, String> {
     Ok(out)
 }
 
+// `save`/`to_jsonl` are consumed by `label.rs` in a later v2.1 task (T5); allow until then.
+#[allow(dead_code)]
 pub fn to_jsonl(items: &[LabeledExample]) -> String {
     let mut s = items
         .iter()
@@ -87,6 +89,7 @@ pub fn load(path: &str) -> Result<Vec<LabeledExample>, String> {
     parse_jsonl(&text)
 }
 
+#[allow(dead_code)]
 pub fn save(path: &str, items: &[LabeledExample]) -> Result<(), String> {
     if let Some(dir) = std::path::Path::new(path).parent() {
         std::fs::create_dir_all(dir).map_err(|e| format!("mkdir: {e}"))?;
