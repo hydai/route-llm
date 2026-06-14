@@ -1,6 +1,7 @@
-//! Local-LLM (Ollama) difficulty labeling for the learned router.
-//! Only this module talks to the network, and only to a local Ollama at
-//! request time of the offline `label` step — never in the inference path.
+//! Local-LLM difficulty labeling for the learned router via an OpenAI-compatible
+//! chat API (e.g. LM Studio, Ollama's /v1, llama.cpp server, vLLM). Only this
+//! module talks to the network, and only to a local server at request time of
+//! the offline `label` step — never in the inference path.
 
 /// Extract the first standalone 1–5 integer from model output. Prefers a
 /// `rating: N` cue but falls back to the first 1–5 token. Returns None if no
@@ -136,7 +137,7 @@ impl LabelConfig {
     pub fn from_env() -> Self {
         Self {
             url: std::env::var("ROUTE_LLM_LABEL_URL")
-                .unwrap_or_else(|_| "http://localhost:11434".to_string()),
+                .unwrap_or_else(|_| "http://localhost:1234/v1".to_string()),
             model: std::env::var("ROUTE_LLM_LABEL_MODEL")
                 .unwrap_or_else(|_| "google/gemma-4-31b-qat".to_string()),
         }
@@ -158,44 +159,46 @@ pub fn build_prompt(query: &str) -> String {
     )
 }
 
-/// One Ollama generate call → raw model text. NETWORK; not unit-tested.
-fn ollama_generate(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
+/// One OpenAI-compatible chat completion → assistant message text. NETWORK; not
+/// unit-tested. Works with LM Studio (default), Ollama's /v1, llama.cpp, vLLM.
+fn chat_complete(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
     let body = serde_json::json!({
         "model": cfg.model,
-        "prompt": prompt,
-        "stream": false,
-        "options": { "temperature": 0 }
+        "messages": [{ "role": "user", "content": prompt }],
+        "temperature": 0,
+        "stream": false
     });
     let resp = reqwest::blocking::Client::new()
-        .post(format!("{}/api/generate", cfg.url))
+        .post(format!("{}/chat/completions", cfg.url))
         .json(&body)
         .send()
         .map_err(|e| {
             format!(
-                "Ollama request to {} failed: {e}\nIs `ollama serve` running and `{}` pulled?",
-                cfg.url, cfg.model
+                "LLM request to {}/chat/completions failed: {e}\n\
+                 Is your OpenAI-compatible server running (e.g. LM Studio at {}) with `{}` loaded?",
+                cfg.url, cfg.url, cfg.model
             )
         })?;
     let v: serde_json::Value = resp
         .json()
-        .map_err(|e| format!("Ollama returned bad JSON: {e}"))?;
-    v["response"]
+        .map_err(|e| format!("LLM returned bad JSON: {e}"))?;
+    v["choices"][0]["message"]["content"]
         .as_str()
         .map(|s| s.to_string())
-        .ok_or_else(|| "Ollama response missing 'response' field".to_string())
+        .ok_or_else(|| format!("LLM response missing choices[0].message.content: {v}"))
 }
 
-/// Label one query: cache hit → reuse; else call Ollama (retry once) → parse.
+/// Label one query: cache hit → reuse; else call the LLM (retry once) → parse.
 /// `Ok(Some(r))` on success, `Ok(None)` if the output can't be parsed after a
-/// retry (skip), and `Err(e)` if Ollama is unreachable (a network failure won't
-/// fix on retry within the same run, so abort).
+/// retry (skip), and `Err(e)` if the server is unreachable (a network failure
+/// won't fix on retry within the same run, so abort).
 fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<Option<u8>, String> {
     let key = cache_key(query, &cfg.model);
     if let Some(r) = cache.get(&key) {
         return Ok(Some(r));
     }
     for _ in 0..2 {
-        match ollama_generate(cfg, &build_prompt(query)) {
+        match chat_complete(cfg, &build_prompt(query)) {
             Ok(out) => {
                 if let Some(r) = parse_rating(&out) {
                     cache.insert(key.clone(), r);
@@ -208,8 +211,9 @@ fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<O
     Ok(None)
 }
 
-/// `label` subcommand: read corpus.jsonl, label each query via local Ollama,
-/// write labeled.jsonl (+ persist the cache). The only networked step.
+/// `label` subcommand: read corpus.jsonl, label each query via the local
+/// OpenAI-compatible LLM, write labeled.jsonl (+ persist the cache). The only
+/// networked step.
 pub fn run() {
     let cfg = LabelConfig::from_env();
     let corpus = dataset::load_corpus("data/corpus.jsonl")
@@ -302,7 +306,7 @@ mod tests {
         std::env::remove_var("ROUTE_LLM_LABEL_URL");
         std::env::remove_var("ROUTE_LLM_LABEL_MODEL");
         let cfg = LabelConfig::from_env();
-        assert_eq!(cfg.url, "http://localhost:11434");
+        assert_eq!(cfg.url, "http://localhost:1234/v1");
         assert_eq!(cfg.model, "google/gemma-4-31b-qat");
     }
 
@@ -315,11 +319,11 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "requires a running local Ollama with the model pulled"]
-    fn ollama_round_trip_smoke() {
-        // Run manually: `cargo test -p route-llm-trainer -- --ignored ollama`
+    #[ignore = "requires a running local OpenAI-compatible LLM server (e.g. LM Studio) with the model loaded"]
+    fn chat_complete_round_trip_smoke() {
+        // Run manually: `cargo test -p route-llm-trainer -- --ignored chat_complete`
         let cfg = LabelConfig::from_env();
-        let out = ollama_generate(&cfg, &build_prompt("hi")).expect("ollama call");
+        let out = chat_complete(&cfg, &build_prompt("hi")).expect("chat completion call");
         assert!(
             parse_rating(&out).is_some(),
             "expected a 1-5 rating, got: {out}"
