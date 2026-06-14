@@ -255,10 +255,12 @@ pub fn evaluate(data: &[LabeledExample]) -> EvalReport {
 
 /// Result of scoring routers against an EXTERNAL gold set (human labels = truth).
 /// Holdout-free: the learned model is fit on ALL of `train`, then predicts the
-/// gold queries. The `LinearModel` is too low-capacity to memorize individual
-/// queries, so train/gold query overlap does not bias the comparison — and this
-/// reflects the actually-shipped router's behavior. Cost is informational
-/// (avg top-1 pick cost); the gold verdict's primary axes are spearman + ordinal.
+/// gold queries — this scores the ACTUALLY-shipped router. The `LinearModel` is
+/// too low-capacity to memorize individual queries, but the gold set IS a subset
+/// of `train`, so `learned` gets a mild in-sample edge the train-free `heuristic`
+/// does not — negligible when the margin is wide, but if a verdict is close,
+/// re-fit excluding the gold queries to confirm (see SPEC §15). Cost is
+/// informational (avg top-1 pick cost); the verdict's primary axes are spearman + ordinal.
 #[derive(Debug, Clone)]
 pub struct GoldReport {
     pub n: usize,
@@ -337,6 +339,7 @@ pub fn run_path(path: &str) {
 /// + heuristic against the human gold set. Deployment-faithful check on hard cases.
 pub fn run_gold(gold_path: &str) {
     let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
+    assert!(!gold.is_empty(), "gold set {gold_path} is empty");
     let train = crate::dataset::load("data/labeled.jsonl")
         .unwrap_or_else(|e| panic!("load data/labeled.jsonl: {e}"));
     let r = evaluate_gold(&train, &gold);

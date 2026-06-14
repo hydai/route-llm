@@ -115,7 +115,7 @@ labeled.{gemma,claude,codex}  ──▶ crosseval     ──▶   fit A / 評 B 
 - 對每個 `labeled-*.jsonl`：以其**全量**擬合 learned（沿用 `fit`/`logreg`）→ 在 gold 143 題上預測 → 對人類標籤算 Spearman/ordinal。
 - `heuristic` 評一次（無需擬合）。
 - 印一張表：`labeler | spearman_vs_gold | ordinal_vs_gold | avg_cost`。**這是「該出貨哪個 labeler」的決策表**——所有列用**同一把人類尺**,跨 labeler 公平可比。
-- 因 `LinearModel` 容量極低（§1）,full-fit 後在 gold 上評分**不構成洩漏**;且這正反映「實際會出貨的那個 router」的行為。
+- 因 `LinearModel` 容量極低（§1）,full-fit **不會記住個別查詢**,且這正反映「實際會出貨的那個 router」的行為。惟 gold 是 `train` 的子集,故 `learned` 相對 train-free 的 `heuristic` 仍有**輕微 in-sample 優勢**:margin 大時可忽略,接近時應以 §15.4 的 leakage-free 變體交叉確認。
 
 ### `crosseval`
 - 對 `{gemma, claude, codex}` 的每個有序對 (A, B)：fit 在 A、評 B 的 holdout（沿用既有 80/20 與指標）→ Spearman/ordinal。
@@ -189,6 +189,7 @@ labeled.{gemma,claude,codex}  ──▶ crosseval     ──▶   fit A / 評 B 
 1. **代表性 vs 鑑別力**：gold 僅含難題（無 chat/extraction）,故判決講的是「**有爭議難題**上的排序品質」,而非整個語料。簡單題本就無爭議,此取捨可接受;必要時可加一小撮三方一致的易題盲驗作錨點。
 2. **統計強度**：143 題對**整體**判決足夠,但**per-category**（code 15、reasoning 16）偏少。若某項比較過於接近,可擴充 gold（如再盲判被排除的 128 題 gemma-分歧、或補易題樣本）。
 3. **軸 B 翻轉的後果**：若 gold 判 claude > codex,出貨 `weights.rs` 將改變 → 需重 fit + 重跑 `eval --gold` 確認後才併入。
+4. **In-sample 優勢（holdout-free 的取捨）**：`eval --gold` / `compare --gold` 採 full-fit（反映實際出貨的 router）,但 gold 143 題是訓練語料的子集,故 `learned` 相對 train-free 的 `heuristic` 有輕微 in-sample 優勢。低容量線性模型下偏差很小;**若某判決邊際接近**,應補一個 leakage-free 變體(fit 時剔除 gold 題再對 gold 評分)交叉確認。
 
 ## 16. 驗收結論
 
