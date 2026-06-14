@@ -107,6 +107,33 @@ cargo run -p route-llm-trainer -- fit      # regenerates crates/core/src/learned
 cargo test -p route-llm-core learned
 ```
 
+## Gold verdict (v2.2) — a label-independent yardstick
+
+`compare`'s spearman/ordinal are measured against *each labeler's own labels*
+(self-consistency, not correctness). v2.2 adds a **human** gold set to break that
+self-reference, focusing judgment on the queries that actually discriminate routers.
+
+```sh
+# 1. Build the BLIND pool: the queries where claude and codex disagree (~143).
+cargo run --release -p route-llm-trainer -- gold-pool      # -> data/gold.unlabeled.jsonl
+
+# 2. A HUMAN hand-labels it (blind — do NOT feed it to a model; that would just
+#    add a 4th labeler and re-introduce the bias). Use the label.prompt.md 1–5
+#    rubric. Save as data/gold.jsonl, one line per input, SAME order:
+#      {"query":...,"difficulty":0.0|0.25|0.5|0.75|1.0,"category":...,"rating":1..5}
+
+# 3. Score every router on the SAME human labels (label-independent verdict):
+cargo run --release -p route-llm-trainer -- compare --gold data/gold.jsonl \
+  data/labeled.codex.jsonl data/labeled.claude.jsonl data/labeled.gemma.jsonl
+cargo run --release -p route-llm-trainer -- eval --gold data/gold.jsonl   # shipped router only
+
+# 4. (diagnostic) label-transfer matrix across labelers — no human, no network:
+cargo run --release -p route-llm-trainer -- crosseval
+```
+
+The gold set is **hard-cases-only** (chat/extraction have no disagreements), so it
+judges ranking quality on contested queries — the real test for learned-vs-heuristic.
+
 ## Comparing labelers — a fairness caveat
 
 `eval`'s Spearman/ordinal are measured against **that labeler's own labels** as
