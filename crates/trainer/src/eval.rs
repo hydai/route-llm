@@ -372,6 +372,24 @@ pub fn parse_in_flag(args: &[String]) -> Option<String> {
     parse_flag(args, "--in")
 }
 
+/// Split `compare` args (everything after the subcommand) into an optional
+/// `--gold <path>` and the positional labeled-file list.
+pub fn parse_compare_args(args: &[String]) -> (Option<String>, Vec<String>) {
+    let mut gold = None;
+    let mut files = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        if args[i] == "--gold" {
+            gold = args.get(i + 1).cloned();
+            i += 2;
+        } else {
+            files.push(args[i].clone());
+            i += 1;
+        }
+    }
+    (gold, files)
+}
+
 /// Shorten a labeled-set path to a table label: `data/labeled.claude.jsonl` → `claude`.
 fn short_name(path: &str) -> String {
     let base = std::path::Path::new(path)
@@ -429,6 +447,48 @@ pub fn compare(paths: &[String]) {
     println!(
         "note: sp/ordinal/cost@ceil are vs each set's OWN labels; avg_cost shares holdout queries."
     );
+}
+
+/// `compare --gold <gold.jsonl> <labeled...>`: fit a learned router on each
+/// labeled set (full), score it on the SAME human gold labels, and print one
+/// table. Unlike `compare`, every row is measured against the same external
+/// human yardstick → label-independent and cross-labeler comparable.
+pub fn compare_gold(gold_path: &str, labeled_paths: &[String]) {
+    if labeled_paths.is_empty() {
+        eprintln!("usage: trainer compare --gold <gold.jsonl> <labeled1.jsonl> [...]");
+        std::process::exit(2);
+    }
+    let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
+    assert!(!gold.is_empty(), "gold set {gold_path} is empty");
+    let reports: Vec<(String, GoldReport)> = labeled_paths
+        .iter()
+        .map(|p| {
+            let train = crate::dataset::load(p).unwrap_or_else(|e| panic!("load {p}: {e}"));
+            (short_name(p), evaluate_gold(&train, &gold))
+        })
+        .collect();
+
+    println!(
+        "gold comparison — routers vs human gold ({gold_path}), n={}",
+        gold.len()
+    );
+    println!(
+        "{:<14} {:>5} {:>9} {:>9} {:>10}",
+        "router", "n", "sp_gold", "ord_gold", "avg_cost"
+    );
+    // Heuristic is train-independent: print it once (from the first report).
+    let h = &reports[0].1;
+    println!(
+        "{:<14} {:>5} {:>9.3} {:>9.3} {:>10.3}",
+        "heuristic", h.n, h.spearman_heuristic, h.ordinal_heuristic, h.cost_heuristic
+    );
+    for (name, r) in &reports {
+        println!(
+            "{:<14} {:>5} {:>9.3} {:>9.3} {:>10.3}",
+            name, r.n, r.spearman_learned, r.ordinal_learned, r.cost_learned
+        );
+    }
+    println!("note: ALL rows scored vs the SAME human gold labels — label-independent, cross-labeler comparable.");
 }
 
 #[cfg(test)]
@@ -617,6 +677,23 @@ mod tests {
         assert_eq!(parse_flag(&args, "--gold"), Some("g.jsonl".to_string()));
         assert_eq!(parse_flag(&args, "--in"), None);
         assert_eq!(parse_flag(&["--gold".to_string()], "--gold"), None);
+    }
+
+    #[test]
+    fn parse_compare_args_splits_gold_and_files() {
+        let rest = vec![
+            "--gold".to_string(),
+            "g.jsonl".to_string(),
+            "a.jsonl".to_string(),
+            "b.jsonl".to_string(),
+        ];
+        let (gold, files) = parse_compare_args(&rest);
+        assert_eq!(gold, Some("g.jsonl".to_string()));
+        assert_eq!(files, vec!["a.jsonl".to_string(), "b.jsonl".to_string()]);
+
+        let (g2, f2) = parse_compare_args(&["a.jsonl".to_string()]);
+        assert_eq!(g2, None);
+        assert_eq!(f2, vec!["a.jsonl".to_string()]);
     }
 
     #[test]

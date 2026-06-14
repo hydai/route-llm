@@ -34,13 +34,17 @@ fn main() {
             }
         }
         "compare" => {
-            let files: Vec<String> = std::env::args().skip(2).collect();
-            eval::compare(&files);
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            let (gold, files) = eval::parse_compare_args(&rest);
+            match gold {
+                Some(g) => eval::compare_gold(&g, &files),
+                None => eval::compare(&files),
+            }
         }
         "gold-pool" => gold::run_pool(),
         "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare <files...>|gold-pool>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare [--gold <file>] <files...>|gold-pool>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }
