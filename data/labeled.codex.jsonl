@@ -1,0 +1,987 @@
+{"query":"hi the weather","difficulty":0.0,"category":"chat"}
+{"query":"hi your day","difficulty":0.0,"category":"chat"}
+{"query":"hi coffee","difficulty":0.0,"category":"chat"}
+{"query":"hi weekend plans","difficulty":0.0,"category":"chat"}
+{"query":"hi music","difficulty":0.0,"category":"chat"}
+{"query":"hi movies","difficulty":0.0,"category":"chat"}
+{"query":"hi cats","difficulty":0.0,"category":"chat"}
+{"query":"hi the news","difficulty":0.0,"category":"chat"}
+{"query":"hi lunch","difficulty":0.0,"category":"chat"}
+{"query":"hi travel","difficulty":0.0,"category":"chat"}
+{"query":"hi books","difficulty":0.0,"category":"chat"}
+{"query":"hi sports","difficulty":0.0,"category":"chat"}
+{"query":"hi the office","difficulty":0.0,"category":"chat"}
+{"query":"hi hobbies","difficulty":0.0,"category":"chat"}
+{"query":"hi nothing much","difficulty":0.0,"category":"chat"}
+{"query":"hi games","difficulty":0.0,"category":"chat"}
+{"query":"hi food","difficulty":0.0,"category":"chat"}
+{"query":"thanks, the weather!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, your day!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, coffee!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, weekend plans!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, music!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, movies!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, cats!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, the news!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, lunch!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, travel!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, books!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, sports!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, the office!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, hobbies!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, nothing much!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, games!","difficulty":0.0,"category":"chat"}
+{"query":"thanks, food!","difficulty":0.0,"category":"chat"}
+{"query":"what's up with the weather?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with your day?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with coffee?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with weekend plans?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with music?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with movies?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with cats?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with the news?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with lunch?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with travel?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with books?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with sports?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with the office?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with hobbies?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with nothing much?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with games?","difficulty":0.0,"category":"chat"}
+{"query":"what's up with food?","difficulty":0.0,"category":"chat"}
+{"query":"tell me about the weather","difficulty":0.0,"category":"chat"}
+{"query":"tell me about your day","difficulty":0.0,"category":"chat"}
+{"query":"tell me about coffee","difficulty":0.0,"category":"chat"}
+{"query":"tell me about weekend plans","difficulty":0.0,"category":"chat"}
+{"query":"tell me about music","difficulty":0.0,"category":"chat"}
+{"query":"tell me about movies","difficulty":0.0,"category":"chat"}
+{"query":"tell me about cats","difficulty":0.0,"category":"chat"}
+{"query":"tell me about the news","difficulty":0.0,"category":"chat"}
+{"query":"tell me about lunch","difficulty":0.0,"category":"chat"}
+{"query":"tell me about travel","difficulty":0.0,"category":"chat"}
+{"query":"tell me about books","difficulty":0.0,"category":"chat"}
+{"query":"tell me about sports","difficulty":0.0,"category":"chat"}
+{"query":"tell me about the office","difficulty":0.0,"category":"chat"}
+{"query":"tell me about hobbies","difficulty":0.0,"category":"chat"}
+{"query":"tell me about nothing much","difficulty":0.0,"category":"chat"}
+{"query":"tell me about games","difficulty":0.0,"category":"chat"}
+{"query":"tell me about food","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on the weather?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on your day?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on coffee?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on weekend plans?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on music?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on movies?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on cats?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on the news?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on lunch?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on travel?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on books?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on sports?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on the office?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on hobbies?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on nothing much?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on games?","difficulty":0.0,"category":"chat"}
+{"query":"good morning, any thoughts on food?","difficulty":0.0,"category":"chat"}
+{"query":"quick question about the weather","difficulty":0.0,"category":"chat"}
+{"query":"quick question about your day","difficulty":0.0,"category":"chat"}
+{"query":"quick question about coffee","difficulty":0.0,"category":"chat"}
+{"query":"quick question about weekend plans","difficulty":0.0,"category":"chat"}
+{"query":"quick question about music","difficulty":0.0,"category":"chat"}
+{"query":"quick question about movies","difficulty":0.0,"category":"chat"}
+{"query":"quick question about cats","difficulty":0.0,"category":"chat"}
+{"query":"quick question about the news","difficulty":0.0,"category":"chat"}
+{"query":"quick question about lunch","difficulty":0.0,"category":"chat"}
+{"query":"quick question about travel","difficulty":0.0,"category":"chat"}
+{"query":"quick question about books","difficulty":0.0,"category":"chat"}
+{"query":"quick question about sports","difficulty":0.0,"category":"chat"}
+{"query":"quick question about the office","difficulty":0.0,"category":"chat"}
+{"query":"quick question about hobbies","difficulty":0.0,"category":"chat"}
+{"query":"quick question about nothing much","difficulty":0.0,"category":"chat"}
+{"query":"quick question about games","difficulty":0.0,"category":"chat"}
+{"query":"quick question about food","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about the weather?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about your day?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about coffee?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about weekend plans?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about music?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about movies?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about cats?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about the news?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about lunch?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about travel?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about books?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about sports?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about the office?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about hobbies?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about nothing much?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about games?","difficulty":0.0,"category":"chat"}
+{"query":"how do you feel about food?","difficulty":0.0,"category":"chat"}
+{"query":"small talk about the weather","difficulty":0.0,"category":"chat"}
+{"query":"small talk about your day","difficulty":0.0,"category":"chat"}
+{"query":"small talk about coffee","difficulty":0.0,"category":"chat"}
+{"query":"small talk about weekend plans","difficulty":0.0,"category":"chat"}
+{"query":"small talk about music","difficulty":0.0,"category":"chat"}
+{"query":"small talk about movies","difficulty":0.0,"category":"chat"}
+{"query":"small talk about cats","difficulty":0.0,"category":"chat"}
+{"query":"small talk about the news","difficulty":0.0,"category":"chat"}
+{"query":"small talk about lunch","difficulty":0.0,"category":"chat"}
+{"query":"small talk about travel","difficulty":0.0,"category":"chat"}
+{"query":"small talk about books","difficulty":0.0,"category":"chat"}
+{"query":"small talk about sports","difficulty":0.0,"category":"chat"}
+{"query":"small talk about the office","difficulty":0.0,"category":"chat"}
+{"query":"small talk about hobbies","difficulty":0.0,"category":"chat"}
+{"query":"small talk about nothing much","difficulty":0.0,"category":"chat"}
+{"query":"small talk about games","difficulty":0.0,"category":"chat"}
+{"query":"small talk about food","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention the weather","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention your day","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention coffee","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention weekend plans","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention music","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention movies","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention cats","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention the news","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention lunch","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention travel","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention books","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention sports","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention the office","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention hobbies","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention nothing much","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention games","difficulty":0.0,"category":"chat"}
+{"query":"say hello and mention food","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about the weather?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about your day?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about coffee?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about weekend plans?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about music?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about movies?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about cats?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about the news?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about lunch?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about travel?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about books?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about sports?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about the office?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about hobbies?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about nothing much?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about games?","difficulty":0.0,"category":"chat"}
+{"query":"got a minute to chat about food?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about the weather?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about your day?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about coffee?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about weekend plans?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about music?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about movies?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about cats?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about the news?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about lunch?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about travel?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about books?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about sports?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about the office?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about hobbies?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about nothing much?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about games?","difficulty":0.0,"category":"chat"}
+{"query":"any fun stories about food?","difficulty":0.0,"category":"chat"}
+{"query":"What is photosynthesis?","difficulty":0.25,"category":"extraction"}
+{"query":"What is the Eiffel Tower?","difficulty":0.25,"category":"extraction"}
+{"query":"What is JSON?","difficulty":0.25,"category":"extraction"}
+{"query":"What is the water cycle?","difficulty":0.25,"category":"extraction"}
+{"query":"What is World War II?","difficulty":0.25,"category":"extraction"}
+{"query":"What is HTTP?","difficulty":0.25,"category":"extraction"}
+{"query":"What is the stock market?","difficulty":0.25,"category":"extraction"}
+{"query":"What is DNA?","difficulty":0.25,"category":"extraction"}
+{"query":"What is gravity?","difficulty":0.25,"category":"extraction"}
+{"query":"What is the internet?","difficulty":0.25,"category":"extraction"}
+{"query":"What is machine learning?","difficulty":0.25,"category":"extraction"}
+{"query":"What is the French Revolution?","difficulty":0.25,"category":"extraction"}
+{"query":"What is blockchain?","difficulty":0.25,"category":"extraction"}
+{"query":"What is the solar system?","difficulty":0.25,"category":"extraction"}
+{"query":"What is TCP?","difficulty":0.25,"category":"extraction"}
+{"query":"What is REST?","difficulty":0.25,"category":"extraction"}
+{"query":"What is OAuth?","difficulty":0.25,"category":"extraction"}
+{"query":"Define photosynthesis in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define the Eiffel Tower in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define JSON in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define the water cycle in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define World War II in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define HTTP in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define the stock market in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define DNA in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define gravity in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define the internet in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define machine learning in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define the French Revolution in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define blockchain in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define the solar system in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define TCP in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define REST in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Define OAuth in one sentence.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize photosynthesis briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize the Eiffel Tower briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize JSON briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize the water cycle briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize World War II briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize HTTP briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize the stock market briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize DNA briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize gravity briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize the internet briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize machine learning briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize the French Revolution briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize blockchain briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize the solar system briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize TCP briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize REST briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"Summarize OAuth briefly.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about photosynthesis.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about the Eiffel Tower.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about JSON.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about the water cycle.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about World War II.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about HTTP.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about the stock market.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about DNA.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about gravity.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about the internet.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about machine learning.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about the French Revolution.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about blockchain.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about the solar system.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about TCP.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about REST.","difficulty":0.25,"category":"extraction"}
+{"query":"List three facts about OAuth.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'photosynthesis' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'the Eiffel Tower' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'JSON' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'the water cycle' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'World War II' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'HTTP' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'the stock market' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'DNA' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'gravity' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'the internet' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'machine learning' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'the French Revolution' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'blockchain' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'the solar system' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'TCP' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'REST' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Translate 'OAuth' to Spanish.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about photosynthesis.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about the Eiffel Tower.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about JSON.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about the water cycle.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about World War II.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about HTTP.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about the stock market.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about DNA.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about gravity.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about the internet.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about machine learning.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about the French Revolution.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about blockchain.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about the solar system.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about TCP.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about REST.","difficulty":0.25,"category":"extraction"}
+{"query":"Extract the key entities from a passage about OAuth.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of photosynthesis.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of the Eiffel Tower.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of JSON.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of the water cycle.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of World War II.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of HTTP.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of the stock market.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of DNA.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of gravity.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of the internet.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of machine learning.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of the French Revolution.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of blockchain.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of the solar system.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of TCP.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of REST.","difficulty":0.25,"category":"extraction"}
+{"query":"Give a one-line summary of OAuth.","difficulty":0.25,"category":"extraction"}
+{"query":"When did photosynthesis happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did the Eiffel Tower happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did JSON happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did the water cycle happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did World War II happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did HTTP happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did the stock market happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did DNA happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did gravity happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did the internet happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did machine learning happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did the French Revolution happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did blockchain happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did the solar system happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did TCP happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did REST happen?","difficulty":0.25,"category":"extraction"}
+{"query":"When did OAuth happen?","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about photosynthesis as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about the Eiffel Tower as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about JSON as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about the water cycle as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about World War II as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about HTTP as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about the stock market as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about DNA as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about gravity as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about the internet as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about machine learning as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about the French Revolution as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about blockchain as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about the solar system as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about TCP as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about REST as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"Reformat this note about OAuth as bullet points.","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym photosynthesis stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym the Eiffel Tower stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym JSON stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym the water cycle stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym World War II stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym HTTP stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym the stock market stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym DNA stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym gravity stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym the internet stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym machine learning stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym the French Revolution stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym blockchain stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym the solar system stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym TCP stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym REST stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"What does the acronym OAuth stand for?","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on photosynthesis.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on the Eiffel Tower.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on JSON.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on the water cycle.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on World War II.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on HTTP.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on the stock market.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on DNA.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on gravity.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on the internet.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on machine learning.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on the French Revolution.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on blockchain.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on the solar system.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on TCP.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on REST.","difficulty":0.25,"category":"extraction"}
+{"query":"Pull out the main idea from a short text on OAuth.","difficulty":0.25,"category":"extraction"}
+{"query":"請用一句話說明 遞迴。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 快速排序。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 TCP 與 UDP。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 梯度下降。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 分散式快取。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 資料庫索引。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 一致性雜湊。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 垃圾回收。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 微服務架構。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 並行控制。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 B+ 樹。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 向量時鐘。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 共識演算法。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 RSA 加密。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 事件溯源。","difficulty":0.25,"category":"multilingual"}
+{"query":"請用一句話說明 讀寫分離。","difficulty":0.25,"category":"multilingual"}
+{"query":"比較 遞迴 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 快速排序 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 TCP 與 UDP 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 梯度下降 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 分散式快取 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 資料庫索引 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 一致性雜湊 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 垃圾回收 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 微服務架構 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 並行控制 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 B+ 樹 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 向量時鐘 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 共識演算法 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 RSA 加密 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 事件溯源 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"比較 讀寫分離 的優缺點並舉例。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 遞迴 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 快速排序 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 TCP 與 UDP 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 梯度下降 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 分散式快取 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 資料庫索引 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 一致性雜湊 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 垃圾回收 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 微服務架構 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 並行控制 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 B+ 樹 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 向量時鐘 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 共識演算法 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 RSA 加密 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 事件溯源 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"逐步解釋 讀寫分離 的運作原理。","difficulty":0.5,"category":"multilingual"}
+{"query":"分析 遞迴 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 快速排序 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 TCP 與 UDP 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 梯度下降 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 分散式快取 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 資料庫索引 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 一致性雜湊 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 垃圾回收 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 微服務架構 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 並行控制 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 B+ 樹 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 向量時鐘 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 共識演算法 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 RSA 加密 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 事件溯源 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"分析 讀寫分離 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 遞迴 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 快速排序 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 TCP 與 UDP 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 梯度下降 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 分散式快取 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 資料庫索引 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 一致性雜湊 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 垃圾回收 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 微服務架構 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 並行控制 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 B+ 樹 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 向量時鐘 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 共識演算法 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 RSA 加密 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 事件溯源 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 讀寫分離 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"證明關於 遞迴 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 快速排序 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 TCP 與 UDP 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 梯度下降 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 分散式快取 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 資料庫索引 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 一致性雜湊 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 垃圾回收 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 微服務架構 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 並行控制 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 B+ 樹 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 向量時鐘 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 共識演算法 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 RSA 加密 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 事件溯源 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"證明關於 讀寫分離 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
+{"query":"為什麼 遞迴 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 快速排序 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 TCP 與 UDP 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 梯度下降 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 分散式快取 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 資料庫索引 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 一致性雜湊 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 垃圾回收 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 微服務架構 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 並行控制 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 B+ 樹 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 向量時鐘 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 共識演算法 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 RSA 加密 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 事件溯源 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"為什麼 讀寫分離 重要?請推導。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 遞迴 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 快速排序 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 TCP 與 UDP 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 梯度下降 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 分散式快取 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 資料庫索引 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 一致性雜湊 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 垃圾回收 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 微服務架構 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 並行控制 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 B+ 樹 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 向量時鐘 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 共識演算法 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 RSA 加密 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 事件溯源 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 讀寫分離 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"簡單說明 遞迴 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 快速排序 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 TCP 與 UDP 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 梯度下降 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 分散式快取 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 資料庫索引 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 一致性雜湊 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 垃圾回收 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 微服務架構 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 並行控制 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 B+ 樹 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 向量時鐘 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 共識演算法 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 RSA 加密 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 事件溯源 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"簡單說明 讀寫分離 是什麼。","difficulty":0.25,"category":"multilingual"}
+{"query":"請評估 遞迴 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 快速排序 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 TCP 與 UDP 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 梯度下降 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 分散式快取 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 資料庫索引 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 一致性雜湊 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 垃圾回收 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 微服務架構 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 並行控制 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 B+ 樹 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 向量時鐘 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 共識演算法 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 RSA 加密 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 事件溯源 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"請評估 讀寫分離 的可擴展性並提出改進。","difficulty":0.75,"category":"multilingual"}
+{"query":"Fix this typo in Rust code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Python code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in TypeScript code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Go code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Java code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in C++ code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Ruby code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Kotlin code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Scala code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Swift code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Elixir code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in Haskell code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in C code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in SQL code.","difficulty":0.25,"category":"code"}
+{"query":"Fix this typo in PHP code.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Rust.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Python.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in TypeScript.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Go.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Java.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in C++.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Ruby.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Kotlin.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Scala.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Swift.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Elixir.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in Haskell.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in C.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in SQL.","difficulty":0.25,"category":"code"}
+{"query":"Write a hello-world in PHP.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Rust snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Python snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this TypeScript snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Go snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Java snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this C++ snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Ruby snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Kotlin snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Scala snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Swift snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Elixir snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Haskell snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this C snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this SQL snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this PHP snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Implement a binary search in Rust.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Python.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in TypeScript.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Go.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Java.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in C++.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Ruby.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Kotlin.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Scala.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Swift.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Elixir.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in Haskell.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in C.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in SQL.","difficulty":0.5,"category":"code"}
+{"query":"Implement a binary search in PHP.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Rust function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Python function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a TypeScript function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Go function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Java function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a C++ function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Ruby function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Kotlin function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Scala function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Swift function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Elixir function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a Haskell function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a C function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a SQL function.","difficulty":0.5,"category":"code"}
+{"query":"Write unit tests for a PHP function.","difficulty":0.5,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Rust.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Python.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in TypeScript.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Go.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Java.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in C++.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Ruby.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Kotlin.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Scala.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Swift.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Elixir.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in Haskell.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in C.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in SQL.","difficulty":0.75,"category":"code"}
+{"query":"Implement a thread-safe LRU cache in PHP.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Rust.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Python.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in TypeScript.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Go.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Java.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in C++.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Ruby.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Kotlin.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Scala.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Swift.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Elixir.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in Haskell.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in C.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in SQL.","difficulty":0.75,"category":"code"}
+{"query":"Design and implement a rate limiter in PHP.","difficulty":0.75,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Rust and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Python and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in TypeScript and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Go and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Java and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in C++ and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Ruby and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Kotlin and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Scala and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Swift and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Elixir and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in Haskell and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in C and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in SQL and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Implement a lock-free concurrent queue in PHP and discuss ABA.","difficulty":1.0,"category":"code"}
+{"query":"Refactor a tangled Rust module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Python module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled TypeScript module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Go module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Java module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled C++ module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Ruby module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Kotlin module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Scala module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Swift module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Elixir module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled Haskell module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled C module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled SQL module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Refactor a tangled PHP module and justify each change.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Rust.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Python.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in TypeScript.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Go.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Java.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in C++.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Ruby.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Kotlin.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Scala.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Swift.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Elixir.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in Haskell.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in C.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in SQL.","difficulty":0.75,"category":"code"}
+{"query":"Profile and optimize a hot loop in PHP.","difficulty":0.75,"category":"code"}
+{"query":"Format this Rust code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Python code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this TypeScript code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Go code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Java code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this C++ code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Ruby code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Kotlin code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Scala code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Swift code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Elixir code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this Haskell code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this C code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this SQL code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Format this PHP code snippet.","difficulty":0.25,"category":"code"}
+{"query":"Compute x + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute a quadratic + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute a geometric series + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute the sine function + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute primes + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute the harmonic series + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute a 2x2 matrix + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute logarithms + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute the binomial coefficients + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute an integral of x^2 + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute eigenvalues + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute the Fibonacci sequence + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute modular arithmetic + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute a limit + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute a derivative + 7.","difficulty":0.25,"category":"math"}
+{"query":"Compute a probability + 7.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for x.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for a quadratic.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for a geometric series.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for the sine function.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for primes.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for the harmonic series.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for a 2x2 matrix.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for logarithms.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for the binomial coefficients.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for an integral of x^2.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for eigenvalues.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for the Fibonacci sequence.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for modular arithmetic.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for a limit.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for a derivative.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for a probability.","difficulty":0.25,"category":"math"}
+{"query":"Solve a basic equation involving x.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving a quadratic.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving a geometric series.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving the sine function.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving primes.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving the harmonic series.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving a 2x2 matrix.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving logarithms.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving the binomial coefficients.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving an integral of x^2.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving eigenvalues.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving the Fibonacci sequence.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving modular arithmetic.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving a limit.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving a derivative.","difficulty":0.5,"category":"math"}
+{"query":"Solve a basic equation involving a probability.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of x.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of a quadratic.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of a geometric series.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of the sine function.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of primes.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of the harmonic series.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of a 2x2 matrix.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of logarithms.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of the binomial coefficients.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of an integral of x^2.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of eigenvalues.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of the Fibonacci sequence.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of modular arithmetic.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of a limit.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of a derivative.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of a probability.","difficulty":0.5,"category":"math"}
+{"query":"Prove a standard identity about x.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about a quadratic.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about a geometric series.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about the sine function.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about primes.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about the harmonic series.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about a 2x2 matrix.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about logarithms.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about the binomial coefficients.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about an integral of x^2.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about eigenvalues.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about the Fibonacci sequence.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about modular arithmetic.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about a limit.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about a derivative.","difficulty":0.75,"category":"math"}
+{"query":"Prove a standard identity about a probability.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for x from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for a quadratic from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for a geometric series from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for the sine function from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for primes from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for the harmonic series from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for a 2x2 matrix from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for logarithms from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for the binomial coefficients from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for an integral of x^2 from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for eigenvalues from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for the Fibonacci sequence from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for modular arithmetic from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for a limit from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for a derivative from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Derive the closed form for a probability from first principles.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about x.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about a quadratic.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about a geometric series.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about the sine function.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about primes.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about the harmonic series.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about a 2x2 matrix.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about logarithms.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about the binomial coefficients.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about an integral of x^2.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about eigenvalues.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about the Fibonacci sequence.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about modular arithmetic.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about a limit.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about a derivative.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about a probability.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving x.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving a quadratic.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving a geometric series.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving the sine function.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving primes.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving the harmonic series.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving a 2x2 matrix.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving logarithms.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving the binomial coefficients.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving an integral of x^2.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving eigenvalues.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving the Fibonacci sequence.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving modular arithmetic.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving a limit.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving a derivative.","difficulty":0.75,"category":"math"}
+{"query":"Analyze the convergence of a series involving a probability.","difficulty":0.75,"category":"math"}
+{"query":"Evaluate x for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate a quadratic for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate a geometric series for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate the sine function for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate primes for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate the harmonic series for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate a 2x2 matrix for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate logarithms for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate the binomial coefficients for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate an integral of x^2 for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate eigenvalues for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate the Fibonacci sequence for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate modular arithmetic for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate a limit for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate a derivative for a small value.","difficulty":0.25,"category":"math"}
+{"query":"Evaluate a probability for a small value.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of x.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of a quadratic.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of a geometric series.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of the sine function.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of primes.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of the harmonic series.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of a 2x2 matrix.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of logarithms.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of the binomial coefficients.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of an integral of x^2.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of eigenvalues.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of the Fibonacci sequence.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of modular arithmetic.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of a limit.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of a derivative.","difficulty":0.25,"category":"math"}
+{"query":"State a basic property of a probability.","difficulty":0.25,"category":"math"}
+{"query":"Briefly: why might consensus protocols matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might the CAP theorem matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might A* search matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might Byzantine fault tolerance matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might quicksort's worst case matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might Dijkstra's algorithm matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might two-phase commit matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might garbage collection matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might a distributed lock matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might MVCC matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might Raft matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might a bloom filter matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might rate limiting at scale matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might leader election matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might a CRDT matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Briefly: why might sharding matter?","difficulty":0.25,"category":"reasoning"}
+{"query":"Compare two approaches to consensus protocols.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to the CAP theorem.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to A* search.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to Byzantine fault tolerance.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to quicksort's worst case.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to Dijkstra's algorithm.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to two-phase commit.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to garbage collection.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to a distributed lock.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to MVCC.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to Raft.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to a bloom filter.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to rate limiting at scale.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to leader election.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to a CRDT.","difficulty":0.5,"category":"reasoning"}
+{"query":"Compare two approaches to sharding.","difficulty":0.5,"category":"reasoning"}
+{"query":"Analyze the trade-offs in consensus protocols and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in the CAP theorem and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in A* search and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in Byzantine fault tolerance and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in quicksort's worst case and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in Dijkstra's algorithm and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in two-phase commit and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in garbage collection and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in a distributed lock and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in MVCC and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in Raft and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in a bloom filter and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in rate limiting at scale and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in leader election and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in a CRDT and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Analyze the trade-offs in sharding and recommend one.","difficulty":0.75,"category":"reasoning"}
+{"query":"Prove a key property of consensus protocols and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of the CAP theorem and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of A* search and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of Byzantine fault tolerance and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of quicksort's worst case and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of Dijkstra's algorithm and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of two-phase commit and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of garbage collection and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of a distributed lock and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of MVCC and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of Raft and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of a bloom filter and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of rate limiting at scale and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of leader election and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of a CRDT and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove a key property of sharding and derive its complexity.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design consensus protocols, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design the CAP theorem, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design A* search, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design Byzantine fault tolerance, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design quicksort's worst case, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design Dijkstra's algorithm, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design two-phase commit, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design garbage collection, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design a distributed lock, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design MVCC, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design Raft, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design a bloom filter, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design rate limiting at scale, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design leader election, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design a CRDT, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Design sharding, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of consensus protocols under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of the CAP theorem under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of A* search under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of Byzantine fault tolerance under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of quicksort's worst case under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of Dijkstra's algorithm under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of two-phase commit under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of garbage collection under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of a distributed lock under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of MVCC under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of Raft under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of a bloom filter under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of rate limiting at scale under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of leader election under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of a CRDT under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of sharding under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for consensus protocols and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for the CAP theorem and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for A* search and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for Byzantine fault tolerance and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for quicksort's worst case and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for Dijkstra's algorithm and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for two-phase commit and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for garbage collection and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for a distributed lock and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for MVCC and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for Raft and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for a bloom filter and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for rate limiting at scale and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for leader election and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for a CRDT and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"Prove the lower bound for sharding and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
+{"query":"In one line, what problem does consensus protocols solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does the CAP theorem solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does A* search solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does Byzantine fault tolerance solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does quicksort's worst case solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does Dijkstra's algorithm solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does two-phase commit solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does garbage collection solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does a distributed lock solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does MVCC solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does Raft solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does a bloom filter solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does rate limiting at scale solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does leader election solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does a CRDT solve?","difficulty":0.25,"category":"reasoning"}
+{"query":"In one line, what problem does sharding solve?","difficulty":0.25,"category":"reasoning"}
