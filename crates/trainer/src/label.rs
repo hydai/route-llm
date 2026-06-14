@@ -186,21 +186,26 @@ fn ollama_generate(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
 }
 
 /// Label one query: cache hit → reuse; else call Ollama (retry once) → parse.
-/// Returns None if the model output can't be parsed after a retry.
-fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Option<u8> {
+/// `Ok(Some(r))` on success, `Ok(None)` if the output can't be parsed after a
+/// retry (skip), and `Err(e)` if Ollama is unreachable (a network failure won't
+/// fix on retry within the same run, so abort).
+fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<Option<u8>, String> {
     let key = cache_key(query, &cfg.model);
     if let Some(r) = cache.get(&key) {
-        return Some(r);
+        return Ok(Some(r));
     }
     for _ in 0..2 {
-        if let Ok(out) = ollama_generate(cfg, &build_prompt(query)) {
-            if let Some(r) = parse_rating(&out) {
-                cache.insert(key.clone(), r);
-                return Some(r);
+        match ollama_generate(cfg, &build_prompt(query)) {
+            Ok(out) => {
+                if let Some(r) = parse_rating(&out) {
+                    cache.insert(key.clone(), r);
+                    return Ok(Some(r));
+                }
             }
+            Err(e) => return Err(e),
         }
     }
-    None
+    Ok(None)
 }
 
 /// `label` subcommand: read corpus.jsonl, label each query via local Ollama,
@@ -215,7 +220,7 @@ pub fn run() {
 
     for (i, q) in corpus.iter().enumerate() {
         match label_one(&cfg, &mut cache, &q.query) {
-            Some(r) => {
+            Ok(Some(r)) => {
                 labeled.push(LabeledExample {
                     query: q.query.clone(),
                     difficulty: rating_to_difficulty(r),
@@ -223,9 +228,14 @@ pub fn run() {
                 });
                 ok += 1;
             }
-            None => {
+            Ok(None) => {
                 eprintln!("skip (unparseable) [{i}]: {}", q.query);
                 skipped += 1;
+            }
+            Err(e) => {
+                let _ = cache.save("data/label_cache.jsonl");
+                eprintln!("\nlabel aborted after {ok} labeled / {skipped} skipped: {e}");
+                std::process::exit(1);
             }
         }
         if (i + 1) % 50 == 0 {
