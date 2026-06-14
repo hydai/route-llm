@@ -43,17 +43,16 @@ async fn main() {
         }
     };
 
-    let (router, router_name): (route_llm_server::SharedRouter, &'static str) =
-        match router_name {
-            "heuristic" => (
-                std::sync::Arc::new(route_llm_core::HeuristicRouter),
-                "heuristic",
-            ),
-            _ => (
-                std::sync::Arc::new(route_llm_core::LearnedRouter::new()),
-                "learned",
-            ),
-        };
+    let (router, router_name): (route_llm_server::SharedRouter, &'static str) = match router_name {
+        "heuristic" => (
+            std::sync::Arc::new(route_llm_core::HeuristicRouter),
+            "heuristic",
+        ),
+        _ => (
+            std::sync::Arc::new(route_llm_core::LearnedRouter::new()),
+            "learned",
+        ),
+    };
     tracing::info!("route-llm using router strategy: {}", router_name);
     let app = route_llm_server::app_with_router(router);
 
@@ -112,9 +111,6 @@ mod tests {
         let result = choose_router(Err(&err));
         assert!(result.is_err());
         let msg = result.unwrap_err();
-        assert!(
-            msg.contains("not valid UTF-8"),
-            "unexpected error: {msg}"
-        );
+        assert!(msg.contains("not valid UTF-8"), "unexpected error: {msg}");
     }
 }

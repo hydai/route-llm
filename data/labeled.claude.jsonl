@@ -436,22 +436,22 @@
 {"query":"分析 RSA 加密 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
 {"query":"分析 事件溯源 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
 {"query":"分析 讀寫分離 的效能瓶頸並提出優化。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 遞迴 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 快速排序 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 TCP 與 UDP 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 梯度下降 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 分散式快取 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 資料庫索引 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 一致性雜湊 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 垃圾回收 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 微服務架構 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 並行控制 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 B+ 樹 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 向量時鐘 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 共識演算法 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 RSA 加密 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 事件溯源 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
-{"query":"設計一個與 讀寫分離 相關的系統並說明取捨。","difficulty":0.75,"category":"multilingual"}
+{"query":"設計一個與 遞迴 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 快速排序 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 TCP 與 UDP 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 梯度下降 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 分散式快取 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 資料庫索引 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 一致性雜湊 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 垃圾回收 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 微服務架構 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 並行控制 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 B+ 樹 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 向量時鐘 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 共識演算法 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 RSA 加密 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 事件溯源 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
+{"query":"設計一個與 讀寫分離 相關的系統並說明取捨。","difficulty":1.0,"category":"multilingual"}
 {"query":"證明關於 遞迴 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
 {"query":"證明關於 快速排序 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
 {"query":"證明關於 TCP 與 UDP 的一個重要性質。","difficulty":1.0,"category":"multilingual"}
@@ -484,22 +484,22 @@
 {"query":"為什麼 RSA 加密 重要?請推導。","difficulty":0.75,"category":"multilingual"}
 {"query":"為什麼 事件溯源 重要?請推導。","difficulty":0.75,"category":"multilingual"}
 {"query":"為什麼 讀寫分離 重要?請推導。","difficulty":0.75,"category":"multilingual"}
-{"query":"用中文比較 遞迴 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 快速排序 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 TCP 與 UDP 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 梯度下降 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 分散式快取 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 資料庫索引 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 一致性雜湊 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 垃圾回收 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 微服務架構 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 並行控制 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 B+ 樹 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 向量時鐘 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 共識演算法 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 RSA 加密 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 事件溯源 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
-{"query":"用中文比較 讀寫分離 的兩種實作方式。","difficulty":0.5,"category":"multilingual"}
+{"query":"用中文比較 遞迴 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 快速排序 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 TCP 與 UDP 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 梯度下降 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 分散式快取 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 資料庫索引 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 一致性雜湊 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 垃圾回收 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 微服務架構 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 並行控制 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 B+ 樹 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 向量時鐘 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 共識演算法 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 RSA 加密 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 事件溯源 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
+{"query":"用中文比較 讀寫分離 的兩種實作方式。","difficulty":0.75,"category":"multilingual"}
 {"query":"簡單說明 遞迴 是什麼。","difficulty":0.25,"category":"multilingual"}
 {"query":"簡單說明 快速排序 是什麼。","difficulty":0.25,"category":"multilingual"}
 {"query":"簡單說明 TCP 與 UDP 是什麼。","difficulty":0.25,"category":"multilingual"}
@@ -562,21 +562,21 @@
 {"query":"Write a hello-world in C.","difficulty":0.25,"category":"code"}
 {"query":"Write a hello-world in SQL.","difficulty":0.25,"category":"code"}
 {"query":"Write a hello-world in PHP.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Rust snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Python snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this TypeScript snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Go snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Java snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this C++ snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Ruby snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Kotlin snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Scala snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Swift snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Elixir snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this Haskell snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this C snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this SQL snippet does.","difficulty":0.25,"category":"code"}
-{"query":"Explain what this PHP snippet does.","difficulty":0.25,"category":"code"}
+{"query":"Explain what this Rust snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Python snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this TypeScript snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Go snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Java snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this C++ snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Ruby snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Kotlin snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Scala snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Swift snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Elixir snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this Haskell snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this C snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this SQL snippet does.","difficulty":0.5,"category":"code"}
+{"query":"Explain what this PHP snippet does.","difficulty":0.5,"category":"code"}
 {"query":"Implement a binary search in Rust.","difficulty":0.5,"category":"code"}
 {"query":"Implement a binary search in Python.","difficulty":0.5,"category":"code"}
 {"query":"Implement a binary search in TypeScript.","difficulty":0.5,"category":"code"}
@@ -713,22 +713,22 @@
 {"query":"Compute a limit + 7.","difficulty":0.25,"category":"math"}
 {"query":"Compute a derivative + 7.","difficulty":0.25,"category":"math"}
 {"query":"Compute a probability + 7.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for x.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for a quadratic.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for a geometric series.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for the sine function.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for primes.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for the harmonic series.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for a 2x2 matrix.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for logarithms.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for the binomial coefficients.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for an integral of x^2.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for eigenvalues.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for the Fibonacci sequence.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for modular arithmetic.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for a limit.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for a derivative.","difficulty":0.25,"category":"math"}
-{"query":"Simplify the expression for a probability.","difficulty":0.25,"category":"math"}
+{"query":"Simplify the expression for x.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for a quadratic.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for a geometric series.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for the sine function.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for primes.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for the harmonic series.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for a 2x2 matrix.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for logarithms.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for the binomial coefficients.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for an integral of x^2.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for eigenvalues.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for the Fibonacci sequence.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for modular arithmetic.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for a limit.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for a derivative.","difficulty":0.5,"category":"math"}
+{"query":"Simplify the expression for a probability.","difficulty":0.5,"category":"math"}
 {"query":"Solve a basic equation involving x.","difficulty":0.5,"category":"math"}
 {"query":"Solve a basic equation involving a quadratic.","difficulty":0.5,"category":"math"}
 {"query":"Solve a basic equation involving a geometric series.","difficulty":0.5,"category":"math"}
@@ -745,22 +745,22 @@
 {"query":"Solve a basic equation involving a limit.","difficulty":0.5,"category":"math"}
 {"query":"Solve a basic equation involving a derivative.","difficulty":0.5,"category":"math"}
 {"query":"Solve a basic equation involving a probability.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of x.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of a quadratic.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of a geometric series.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of the sine function.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of primes.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of the harmonic series.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of a 2x2 matrix.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of logarithms.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of the binomial coefficients.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of an integral of x^2.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of eigenvalues.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of the Fibonacci sequence.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of modular arithmetic.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of a limit.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of a derivative.","difficulty":0.5,"category":"math"}
-{"query":"Differentiate a function of a probability.","difficulty":0.5,"category":"math"}
+{"query":"Differentiate a function of x.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of a quadratic.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of a geometric series.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of the sine function.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of primes.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of the harmonic series.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of a 2x2 matrix.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of logarithms.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of the binomial coefficients.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of an integral of x^2.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of eigenvalues.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of the Fibonacci sequence.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of modular arithmetic.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of a limit.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of a derivative.","difficulty":0.75,"category":"math"}
+{"query":"Differentiate a function of a probability.","difficulty":0.75,"category":"math"}
 {"query":"Prove a standard identity about x.","difficulty":0.75,"category":"math"}
 {"query":"Prove a standard identity about a quadratic.","difficulty":0.75,"category":"math"}
 {"query":"Prove a standard identity about a geometric series.","difficulty":0.75,"category":"math"}
@@ -777,54 +777,54 @@
 {"query":"Prove a standard identity about a limit.","difficulty":0.75,"category":"math"}
 {"query":"Prove a standard identity about a derivative.","difficulty":0.75,"category":"math"}
 {"query":"Prove a standard identity about a probability.","difficulty":0.75,"category":"math"}
-{"query":"Derive the closed form for x from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for a quadratic from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for a geometric series from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for the sine function from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for primes from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for the harmonic series from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for a 2x2 matrix from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for logarithms from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for the binomial coefficients from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for an integral of x^2 from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for eigenvalues from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for the Fibonacci sequence from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for modular arithmetic from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for a limit from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for a derivative from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Derive the closed form for a probability from first principles.","difficulty":1.0,"category":"math"}
-{"query":"Prove by induction a statement about x.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about a quadratic.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about a geometric series.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about the sine function.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about primes.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about the harmonic series.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about a 2x2 matrix.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about logarithms.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about the binomial coefficients.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about an integral of x^2.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about eigenvalues.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about the Fibonacci sequence.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about modular arithmetic.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about a limit.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about a derivative.","difficulty":0.75,"category":"math"}
-{"query":"Prove by induction a statement about a probability.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving x.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving a quadratic.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving a geometric series.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving the sine function.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving primes.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving the harmonic series.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving a 2x2 matrix.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving logarithms.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving the binomial coefficients.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving an integral of x^2.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving eigenvalues.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving the Fibonacci sequence.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving modular arithmetic.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving a limit.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving a derivative.","difficulty":0.75,"category":"math"}
-{"query":"Analyze the convergence of a series involving a probability.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for x from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for a quadratic from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for a geometric series from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for the sine function from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for primes from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for the harmonic series from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for a 2x2 matrix from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for logarithms from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for the binomial coefficients from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for an integral of x^2 from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for eigenvalues from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for the Fibonacci sequence from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for modular arithmetic from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for a limit from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for a derivative from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Derive the closed form for a probability from first principles.","difficulty":0.75,"category":"math"}
+{"query":"Prove by induction a statement about x.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about a quadratic.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about a geometric series.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about the sine function.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about primes.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about the harmonic series.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about a 2x2 matrix.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about logarithms.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about the binomial coefficients.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about an integral of x^2.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about eigenvalues.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about the Fibonacci sequence.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about modular arithmetic.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about a limit.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about a derivative.","difficulty":1.0,"category":"math"}
+{"query":"Prove by induction a statement about a probability.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving x.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving a quadratic.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving a geometric series.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving the sine function.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving primes.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving the harmonic series.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving a 2x2 matrix.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving logarithms.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving the binomial coefficients.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving an integral of x^2.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving eigenvalues.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving the Fibonacci sequence.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving modular arithmetic.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving a limit.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving a derivative.","difficulty":1.0,"category":"math"}
+{"query":"Analyze the convergence of a series involving a probability.","difficulty":1.0,"category":"math"}
 {"query":"Evaluate x for a small value.","difficulty":0.25,"category":"math"}
 {"query":"Evaluate a quadratic for a small value.","difficulty":0.25,"category":"math"}
 {"query":"Evaluate a geometric series for a small value.","difficulty":0.25,"category":"math"}
@@ -937,22 +937,22 @@
 {"query":"Design leader election, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
 {"query":"Design a CRDT, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
 {"query":"Design sharding, prove its correctness, and analyze failure modes.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of consensus protocols under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of the CAP theorem under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of A* search under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of Byzantine fault tolerance under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of quicksort's worst case under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of Dijkstra's algorithm under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of two-phase commit under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of garbage collection under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of a distributed lock under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of MVCC under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of Raft under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of a bloom filter under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of rate limiting at scale under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of leader election under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of a CRDT under partitions.","difficulty":1.0,"category":"reasoning"}
-{"query":"Step by step, derive and justify the design of sharding under partitions.","difficulty":1.0,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of consensus protocols under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of the CAP theorem under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of A* search under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of Byzantine fault tolerance under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of quicksort's worst case under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of Dijkstra's algorithm under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of two-phase commit under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of garbage collection under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of a distributed lock under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of MVCC under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of Raft under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of a bloom filter under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of rate limiting at scale under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of leader election under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of a CRDT under partitions.","difficulty":0.75,"category":"reasoning"}
+{"query":"Step by step, derive and justify the design of sharding under partitions.","difficulty":0.75,"category":"reasoning"}
 {"query":"Prove the lower bound for consensus protocols and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
 {"query":"Prove the lower bound for the CAP theorem and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
 {"query":"Prove the lower bound for A* search and design an optimal strategy.","difficulty":1.0,"category":"reasoning"}
