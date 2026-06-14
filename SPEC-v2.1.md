@@ -12,22 +12,22 @@ v2 造好了完整、正確、測試齊全的學習式 router，但 `eval`（修
 
 例：以下兩題現在**都被標 0.65**——`Debug this: let x: i32 = "s";`（一行型別錯誤，極易）與 `Implement a lock-free concurrent hash map with ABA mitigation`（極難）。heuristic 也分不出，**「同類別內的難易差異」正是 heuristic 看不到、學習式模型有機會抓到的訊號**。
 
-v2.1 的修法：**讓本地 LLM（Ollama）逐題打難度分數**，取代照抄 heuristic 的固定標籤，並把語料擴展到 ~1000 題以提供足夠且多樣的訊號；重新 `fit`、`eval`，由結果決定預設策略。
+v2.1 的修法：**讓本地 LLM（OpenAI 相容 API,如 LM Studio）逐題打難度分數**,取代照抄 heuristic 的固定標籤,並把語料擴展到 ~1000 題以提供足夠且多樣的訊號;重新 `fit`、`eval`,由結果決定預設策略。
 
 ## 2. 目標與非目標
 
 ### 目標 (v2.1)
 
-1. 新增 `trainer label` 子指令：呼叫**本地 Ollama**，對每題 query 逐題評難度，產出真實、逐題的 `labeled.jsonl`。
+1. 新增 `trainer label` 子指令：呼叫**本地 LLM（OpenAI 相容 API,如 LM Studio）**,對每題 query 逐題評難度,產出真實、逐題的 `labeled.jsonl`。
 2. 把 `synth` 從「固定清單」改為**決定性組合式產生器**，產出 ~1000 題、含同類別內難易差異的 query（**只出題、不附難度**）。
 3. 重新 `fit` 產生新的內嵌 `weights.rs`；`eval` 比較 learned vs heuristic vs always-strongest。
 4. **eval-driven 完成定義**：由留出集結果決定伺服器預設 router（learned 贏則維持 `learned`，輸則誠實切回 `heuristic`），並提交可重現的結論。
-5. 標註步驟全程**本地、零外部網路**（只連 `localhost` 的 Ollama）；推論路徑維持零網路。
+5. 標註步驟全程**本地、零外部網路**(只連 `localhost` 的本地 LLM 伺服器);推論路徑維持零網路。
 
 ### 非目標 (v2.1，YAGNI)
 
 - **不**改推論路徑的網路特性：`core`/`server` 推論仍零網路、零新相依。
-- **不**用雲端 / API-key LLM；只用本地 Ollama。
+- **不**用雲端 / API-key LLM;只用本地 LLM（OpenAI 相容 API,如 LM Studio）。
 - **不**改 API、DTO、`Recommendation` 形狀，**不**新增端點。
 - **不**動 v2 的 `features` / `model` / `ranker` / `LinearModel`（只有內嵌 `weights.rs` 因更好的標註而重新生成）。
 - **不**動 v1（凍結）。
@@ -41,7 +41,7 @@ trainer 是一條四站生產線；v2.1 只新增/改動前兩站，後兩站不
 synth（出題）   → data/corpus.jsonl     query + 類別，「不附難度」；組合式產生 ~1000 題
    │                                     （決定性、離線、可重現）
    ▼
-label（評分）★  → 讀 corpus.jsonl，逐題呼叫本地 Ollama（localhost）→ 1–5 分 → 映射 [0,1]
+label（評分）★  → 讀 corpus.jsonl,逐題呼叫本地 LLM 伺服器（localhost）→ 1–5 分 → 映射 [0,1]
    │              → 寫 data/labeled.jsonl（真實逐題標註）
    │              → 寫 data/label_cache.jsonl（以 query+model 的 hash 為 key 的快取）
    ▼
@@ -57,7 +57,7 @@ eval（驗收）     → learned vs heuristic vs always-strongest（Spearman / o
 
 ### 模組變更（皆在 `crates/trainer`）
 
-- `src/label.rs`（**新**）：Ollama HTTP client、rubric prompt、解析、快取、`label` 子指令進入點。
+- `src/label.rs`（**新**）：OpenAI 相容 chat client、rubric prompt、解析、快取、`label` 子指令進入點。
 - `src/corpus.rs`（**改**）：組合式產生器；`synth` 改寫 queries-only 的 `corpus.jsonl`。
 - `src/main.rs`（**改**）：`label` arm 從 stub 改為呼叫 `label::run()`；usage 字串更新。
 - `Cargo.toml`（**改**）：新增 `reqwest`（`blocking`, `json` features）；（可能）`sha2` 供快取 hash。
@@ -73,14 +73,14 @@ eval（驗收）     → learned vs heuristic vs always-strongest（Spearman / o
 ## 5. 標註 (`label.rs`)
 
 - **設定（env，僅 label 步驟）**：
-  - `ROUTE_LLM_LABEL_URL`（預設 `http://localhost:11434`）
+  - `ROUTE_LLM_LABEL_URL`（預設 `http://localhost:1234/v1`;LM Studio。Ollama 用 `http://localhost:11434/v1`）
   - `ROUTE_LLM_LABEL_MODEL`（預設 `google/gemma-4-31b-qat`）
-  - `ROUTE_LLM_LABEL_CONCURRENCY`（預設 `1`；可調小並發加速，見 §10）
-- **呼叫**：對每題 query，POST 到 Ollama（`/api/generate`，`stream:false`，`options.temperature = 0` 以求穩定/近決定性）。
+  - `ROUTE_LLM_LABEL_CONCURRENCY`（預設 `1`;可調小並發加速,見 §10）
+- **呼叫**:對每題 query,POST 到 OpenAI 相容端點 `{url}/chat/completions`,body `{model, messages:[{role:"user",content:prompt}], temperature:0, stream:false}`,解析回應的 `choices[0].message.content`(temperature 0 以求穩定/近決定性)。
 - **Rubric（1–5 → [0,1]）**：prompt 要求模型對「處理此 query 的難度」給 **1–5 整數評分**（1 = 瑣碎閒聊；5 = 專家級多步推理）外加一句簡短理由，並以可解析格式輸出（如 `RATING: <n>`）。映射 `difficulty = (n − 1) / 4` → {0.0, 0.25, 0.5, 0.75, 1.0}。
   - 離散刻度對較弱標註者更穩定；31B QAT 模型品質足夠，雜訊低。
 - **解析與容錯**：抽出 1–5 整數；解析失敗 → 重試一次；仍失敗 → **跳過該題並記錄**（不寫入壞標註，避免污染）。
-- **快取**：`data/label_cache.jsonl`，key = `hash(query + model)`，value = rating。`label` 執行時：命中快取則沿用，否則呼叫 Ollama 並寫入快取。換模型（key 含 model）會自然失效。
+- **快取**:`data/label_cache.jsonl`,key = `hash(query + model)`,value = rating。`label` 執行時:命中快取則沿用,否則呼叫本地 LLM 並寫入快取。換模型（key 含 model）會自然失效。
 - **輸出**：`labeled.jsonl`，每行 `{ "query", "difficulty"(來自 LLM), "category" }`，供 `fit`/`eval` 使用（格式與 v2 相同）。
 
 ## 6. 可重現性與資料 (`data/`)
@@ -106,19 +106,19 @@ eval（驗收）     → learned vs heuristic vs always-strongest（Spearman / o
 ## 9. 錯誤處理
 
 - **推論無新錯誤面**：`core`/`server` 不變。
-- `label`：Ollama 無法連線 → 清楚錯誤（提示「請先啟動 ollama 並 pull 模型」），非零退出；模型輸出無法解析 → 重試一次後跳過並記錄。
+- `label`:LLM 伺服器無法連線 → 清楚錯誤(提示啟動 LM Studio 的本地伺服器並載入模型),非零退出;模型輸出無法解析 → 重試一次後跳過並記錄。
 - `synth`/`fit`/`eval`：沿用既有錯誤處理。
 
 ## 10. 相依與效能
 
 - **`crates/trainer`**：新增 `reqwest`（`blocking` + `json`；blocking 因 trainer 是簡單 CLI，無需 async）、（可能）`sha2`。**全部限定於 trainer**；`core`/`server` 不新增任何相依，推論零網路不變。
-- **效能**：以本地 31B QAT 逐題標 ~1000 題是一次性離線工作（視硬體數十分鐘~數小時），有快取故重跑便宜。`ROUTE_LLM_LABEL_CONCURRENCY > 1` 可對 Ollama 發數個並行請求加速；預設循序（安全）。
+- **效能**:以本地 31B QAT 逐題標 ~1000 題是一次性離線工作(視硬體數十分鐘~數小時),有快取故重跑便宜。`ROUTE_LLM_LABEL_CONCURRENCY > 1` 可對本地 LLM 伺服器發數個並行請求加速;預設循序(安全)。
 - 維持 `[profile.dev.package."*"] debug = false`；release build。
 
 ## 11. 測試策略 (TDD)
 
-- `label.rs`：單元測試**純函式部分**——rubric 解析（`RATING: n` → 1–5 → [0,1]；壞輸出處理）、映射、快取命中/寫入邏輯；**以 mock / 不實際連線** Ollama 的方式測。
-- **真實 Ollama 呼叫**：integration-only，以 `#[ignore]`（或 env gate）標記，**不進 `cargo test` / CI**（CI 無 daemon、無網路）。
+- `label.rs`:單元測試**純函式部分**——rubric 解析（`RATING: n` → 1–5 → [0,1];壞輸出處理）、映射、快取命中/寫入邏輯;**以 mock / 不實際連線**本地 LLM 伺服器的方式測。
+- **真實本地 LLM 呼叫**:integration-only,以 `#[ignore]`（或 env gate）標記,**不進 `cargo test` / CI**（CI 無伺服器、無網路）。
 - `corpus.rs`：組合式產生器測試——總量達標（~1000）、各類別非空、含易與難、決定性、`corpus.jsonl` 為 queries-only。
 - `fit`/`eval`：沿用；`fit` 對固定 `labeled.jsonl` 決定性。
 - 推論側（core/server）測試不變且維持全綠。
@@ -136,7 +136,7 @@ eval（驗收）     → learned vs heuristic vs always-strongest（Spearman / o
 
 ## 14. 待定 / 起始預設（可調）
 
-- 預設標註模型 `google/gemma-4-31b-qat`、Ollama URL `localhost:11434`（皆 env 可覆寫）。
+- 預設標註模型 `google/gemma-4-31b-qat`、本地 LLM URL `localhost:1234/v1`（LM Studio;皆 env 可覆寫）。
 - rubric：1–5 → `(n−1)/4`；prompt 模板與分級定義於實作階段定稿。
 - 語料規模 ~1000、各類別配比與「難度階梯句型 × 參數池」的具體內容（★ 擁有者撰寫）。
 - 標註並發預設 1；逾時 / 重試次數於實作定稿。

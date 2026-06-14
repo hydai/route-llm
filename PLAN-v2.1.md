@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace v2's category-fixed synthetic difficulty labels with per-query judgments from a local Ollama model over an expanded ~1000-query corpus, then re-fit and re-eval so the verdict can set the default router.
+**Goal:** Replace v2's category-fixed synthetic difficulty labels with per-query judgments from a local OpenAI-compatible LLM (e.g. LM Studio) over an expanded ~1000-query corpus, then re-fit and re-eval so the verdict can set the default router.
 
-**Architecture:** All changes live in `crates/trainer`. `synth` becomes a deterministic combinatorial query generator (queries-only `corpus.jsonl`); a new `label` step calls a local Ollama model (`localhost`) to rate each query 1–5 → `[0,1]`, writing `labeled.jsonl` with a hash-cache; `fit`/`eval` are unchanged. Network (`reqwest`) is confined to the trainer; inference stays zero-network. v1 and v2's `features`/`model`/`ranker` are frozen — only the embedded `weights.rs` regenerates from better labels.
+**Architecture:** All changes live in `crates/trainer`. `synth` becomes a deterministic combinatorial query generator (queries-only `corpus.jsonl`); a new `label` step calls a local OpenAI-compatible LLM (e.g. LM Studio) (`localhost`) to rate each query 1–5 → `[0,1]`, writing `labeled.jsonl` with a hash-cache; `fit`/`eval` are unchanged. Network (`reqwest`) is confined to the trainer; inference stays zero-network. v1 and v2's `features`/`model`/`ranker` are frozen — only the embedded `weights.rs` regenerates from better labels.
 
-**Tech Stack:** Rust 2021; `reqwest` (blocking, json) + `sha2` added to the trainer only; local Ollama HTTP API. See `SPEC-v2.1.md`.
+**Tech Stack:** Rust 2021; `reqwest` (blocking, json) + `sha2` added to the trainer only; local OpenAI-compatible chat API. See `SPEC-v2.1.md`.
 
 ---
 
@@ -18,7 +18,7 @@
   `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
 - **Branch:** work on `spec/v2.1-real-labeling` (PR #9). Never commit to `master`.
 - **Isolation (do NOT modify):** v1 frozen files (`crates/core/src/difficulty.rs`, `ranker.rs`, `registry.rs`, `router.rs`); v2's `crates/core/src/learned/{features.rs, model.rs, mod.rs}`. The only `core` file that changes is the generated `crates/core/src/learned/weights.rs` (via `fit`, Task 6). `crates/core/Cargo.toml` and `crates/server/` are untouched except the optional one-line default flip in `crates/server/src/main.rs` (Task 7).
-- **Network rule:** `reqwest` only in `crates/trainer/Cargo.toml`. The Ollama call appears only in `label.rs`. No network in `cargo test` (the real call is `#[ignore]`d).
+- **Network rule:** `reqwest` only in `crates/trainer/Cargo.toml`. The OpenAI-compatible chat call appears only in `label.rs`. No network in `cargo test` (the real call is `#[ignore]`d).
 
 ## File Structure (decomposition)
 
@@ -30,7 +30,7 @@ crates/trainer/
     corpus.rs    (modify)   combinatorial build() -> Vec<CorpusQuery>;
                             synth writes queries-only corpus.jsonl ★       (T2)
     label.rs     (new)      parse_rating + rating_to_difficulty (T3),
-                            LabelCache (T4), Ollama client + run() (T5)
+                            LabelCache (T4), OpenAI-compatible chat client + run() (T5)
     main.rs      (modify)   "label" => label::run(); usage string          (T5)
 data/
   corpus.jsonl   (regen, queries-only)                                     (T6)
@@ -50,7 +50,7 @@ SPEC-v2.1.md §16  (verdict)                                                (T7)
 | §4 combinatorial synth, queries-only corpus | 1, 2 |
 | §5 rubric parse/map | 3 |
 | §5 cache | 4 |
-| §5 Ollama client + label run; §10 deps | 5 |
+| §5 OpenAI-compatible chat client + label run; §10 deps | 5 |
 | §6 reproducible data; §3 pipeline | 6 |
 | §7 fit/eval; §8 verdict + default flip; §16 | 6, 7 |
 | §11 testing | every task |
@@ -369,9 +369,10 @@ git commit -m "feat(trainer): combinatorial synth generating ~1000 queries-only 
 
 Create `crates/trainer/src/label.rs`:
 ```rust
-//! Local-LLM (Ollama) difficulty labeling for the learned router.
-//! Only this module talks to the network, and only to a local Ollama at
-//! request time of the offline `label` step — never in the inference path.
+//! Local-LLM difficulty labeling for the learned router via an OpenAI-compatible
+//! chat API (e.g. LM Studio, Ollama's /v1, llama.cpp server, vLLM). Only this
+//! module talks to the network, and only to a local server at request time of
+//! the offline `label` step — never in the inference path.
 
 #[cfg(test)]
 mod tests {
@@ -610,7 +611,7 @@ git commit -m "feat(trainer): add hash-keyed label cache with stable jsonl"
 
 ---
 
-## Task 5: Ollama client + `label` run
+## Task 5: OpenAI-compatible chat client + `label` run
 
 **Files:**
 - Modify: `crates/trainer/src/label.rs`
@@ -635,7 +636,7 @@ Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
         std::env::remove_var("ROUTE_LLM_LABEL_URL");
         std::env::remove_var("ROUTE_LLM_LABEL_MODEL");
         let cfg = LabelConfig::from_env();
-        assert_eq!(cfg.url, "http://localhost:11434");
+        assert_eq!(cfg.url, "http://localhost:1234/v1");
         assert_eq!(cfg.model, "google/gemma-4-31b-qat");
     }
 
@@ -648,11 +649,11 @@ Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
     }
 
     #[test]
-    #[ignore = "requires a running local Ollama with the model pulled"]
-    fn ollama_round_trip_smoke() {
-        // Run manually: `cargo test -p route-llm-trainer -- --ignored ollama`
+    #[ignore = "requires a running local OpenAI-compatible LLM server (e.g. LM Studio) with the model loaded"]
+    fn chat_complete_round_trip_smoke() {
+        // Run manually: `cargo test -p route-llm-trainer -- --ignored chat_complete`
         let cfg = LabelConfig::from_env();
-        let out = ollama_generate(&cfg, &build_prompt("hi")).expect("ollama call");
+        let out = chat_complete(&cfg, &build_prompt("hi")).expect("chat completion call");
         assert!(parse_rating(&out).is_some(), "expected a 1-5 rating, got: {out}");
     }
 ```
@@ -660,7 +661,7 @@ Add to the `#[cfg(test)] mod tests` block in `crates/trainer/src/label.rs`:
 - [ ] **Step 3: Run to verify it fails**
 
 Run: `cargo test -p route-llm-trainer config_defaults`
-Expected: FAILS to compile (`LabelConfig`, `build_prompt`, `ollama_generate` not found).
+Expected: FAILS to compile (`LabelConfig`, `build_prompt`, `chat_complete` not found).
 
 - [ ] **Step 4: Implement the client, prompt, and `run()`**
 
@@ -678,7 +679,7 @@ impl LabelConfig {
     pub fn from_env() -> Self {
         Self {
             url: std::env::var("ROUTE_LLM_LABEL_URL")
-                .unwrap_or_else(|_| "http://localhost:11434".to_string()),
+                .unwrap_or_else(|_| "http://localhost:1234/v1".to_string()),
             model: std::env::var("ROUTE_LLM_LABEL_MODEL")
                 .unwrap_or_else(|_| "google/gemma-4-31b-qat".to_string()),
         }
@@ -700,51 +701,61 @@ pub fn build_prompt(query: &str) -> String {
     )
 }
 
-/// One Ollama generate call → raw model text. NETWORK; not unit-tested.
-fn ollama_generate(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
+/// One OpenAI-compatible chat completion → assistant message text. NETWORK; not
+/// unit-tested. Works with LM Studio (default), Ollama's /v1, llama.cpp, vLLM.
+fn chat_complete(cfg: &LabelConfig, prompt: &str) -> Result<String, String> {
     let body = serde_json::json!({
         "model": cfg.model,
-        "prompt": prompt,
-        "stream": false,
-        "options": { "temperature": 0 }
+        "messages": [{ "role": "user", "content": prompt }],
+        "temperature": 0,
+        "stream": false
     });
     let resp = reqwest::blocking::Client::new()
-        .post(format!("{}/api/generate", cfg.url))
+        .post(format!("{}/chat/completions", cfg.url))
         .json(&body)
         .send()
         .map_err(|e| {
             format!(
-                "Ollama request to {} failed: {e}\nIs `ollama serve` running and `{}` pulled?",
-                cfg.url, cfg.model
+                "LLM request to {}/chat/completions failed: {e}\n\
+                 Is your OpenAI-compatible server running (e.g. LM Studio at {}) with `{}` loaded?",
+                cfg.url, cfg.url, cfg.model
             )
         })?;
-    let v: serde_json::Value = resp.json().map_err(|e| format!("Ollama returned bad JSON: {e}"))?;
-    v["response"]
+    let v: serde_json::Value = resp
+        .json()
+        .map_err(|e| format!("LLM returned bad JSON: {e}"))?;
+    v["choices"][0]["message"]["content"]
         .as_str()
         .map(|s| s.to_string())
-        .ok_or_else(|| "Ollama response missing 'response' field".to_string())
+        .ok_or_else(|| format!("LLM response missing choices[0].message.content: {v}"))
 }
 
-/// Label one query: cache hit → reuse; else call Ollama (retry once) → parse.
-/// Returns None if the model output can't be parsed after a retry.
-fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Option<u8> {
+/// Label one query: cache hit → reuse; else call the LLM (retry once) → parse.
+/// `Ok(Some(r))` on success, `Ok(None)` if the output can't be parsed after a
+/// retry (skip), and `Err(e)` if the server is unreachable (a network failure
+/// won't fix on retry within the same run, so abort).
+fn label_one(cfg: &LabelConfig, cache: &mut LabelCache, query: &str) -> Result<Option<u8>, String> {
     let key = cache_key(query, &cfg.model);
     if let Some(r) = cache.get(&key) {
-        return Some(r);
+        return Ok(Some(r));
     }
     for _ in 0..2 {
-        if let Ok(out) = ollama_generate(cfg, &build_prompt(query)) {
-            if let Some(r) = parse_rating(&out) {
-                cache.insert(key.clone(), r);
-                return Some(r);
+        match chat_complete(cfg, &build_prompt(query)) {
+            Ok(out) => {
+                if let Some(r) = parse_rating(&out) {
+                    cache.insert(key.clone(), r);
+                    return Ok(Some(r));
+                }
             }
+            Err(e) => return Err(e),
         }
     }
-    None
+    Ok(None)
 }
 
-/// `label` subcommand: read corpus.jsonl, label each query via local Ollama,
-/// write labeled.jsonl (+ persist the cache). The only networked step.
+/// `label` subcommand: read corpus.jsonl, label each query via the local
+/// OpenAI-compatible LLM, write labeled.jsonl (+ persist the cache). The only
+/// networked step.
 pub fn run() {
     let cfg = LabelConfig::from_env();
     let corpus = dataset::load_corpus("data/corpus.jsonl")
@@ -755,7 +766,7 @@ pub fn run() {
 
     for (i, q) in corpus.iter().enumerate() {
         match label_one(&cfg, &mut cache, &q.query) {
-            Some(r) => {
+            Ok(Some(r)) => {
                 labeled.push(LabeledExample {
                     query: q.query.clone(),
                     difficulty: rating_to_difficulty(r),
@@ -763,9 +774,14 @@ pub fn run() {
                 });
                 ok += 1;
             }
-            None => {
+            Ok(None) => {
                 eprintln!("skip (unparseable) [{i}]: {}", q.query);
                 skipped += 1;
+            }
+            Err(e) => {
+                let _ = cache.save("data/label_cache.jsonl");
+                eprintln!("\nlabel aborted after {ok} labeled / {skipped} skipped: {e}");
+                std::process::exit(1);
             }
         }
         if (i + 1) % 50 == 0 {
@@ -774,7 +790,9 @@ pub fn run() {
         }
     }
 
-    cache.save("data/label_cache.jsonl").expect("save label cache");
+    cache
+        .save("data/label_cache.jsonl")
+        .expect("save label cache");
     dataset::save("data/labeled.jsonl", &labeled).expect("save data/labeled.jsonl");
     eprintln!("label: {ok} labeled, {skipped} skipped -> data/labeled.jsonl");
 }
@@ -791,7 +809,7 @@ In `crates/trainer/src/main.rs`, replace the `"label"` arm and the usage string:
 - [ ] **Step 5: Run to verify it passes (pure tests only; ignored test skipped)**
 
 Run: `cargo test -p route-llm-trainer`
-Expected: PASS. The `ollama_round_trip_smoke` test is `#[ignore]`d (no daemon in CI). `cargo clippy -- -D warnings` clean.
+Expected: PASS. The `chat_complete_round_trip_smoke` test is `#[ignore]`d (no server in CI). `cargo clippy -- -D warnings` clean.
 
 - [ ] **Step 6: Commit**
 
@@ -800,24 +818,26 @@ cargo fmt --all
 cargo clippy -- -D warnings
 lineguard crates/trainer/src/label.rs crates/trainer/src/main.rs crates/trainer/Cargo.toml
 git add crates/trainer/src/label.rs crates/trainer/src/main.rs crates/trainer/Cargo.toml
-git commit -m "feat(trainer): add Ollama client and label subcommand"
+git commit -m "feat(trainer): add OpenAI-compatible chat client and label subcommand"
 ```
 
 ---
 
-## Task 6: Run the pipeline for real (REQUIRES local Ollama)
+## Task 6: Run the pipeline for real (REQUIRES a local OpenAI-compatible LLM server, e.g. LM Studio)
 
-> This task needs a running Ollama with `google/gemma-4-31b-qat` pulled, and labels ~1000 queries (minutes–hours, cached). Run it on a machine with Ollama. The committed `labeled.jsonl` + `weights.rs` are the reproducible artifacts; CI/`fit` never need Ollama.
+> This task needs a running local OpenAI-compatible LLM server (e.g. LM Studio) with `google/gemma-4-31b-qat` loaded, and labels ~1000 queries (minutes–hours, cached). Run it on a machine with the LLM server. The committed `labeled.jsonl` + `weights.rs` are the reproducible artifacts; CI/`fit` never need the LLM server.
 
 **Files:**
 - Create/regenerate: `data/corpus.jsonl`, `data/labeled.jsonl`, `data/label_cache.jsonl`
 - Regenerate: `crates/core/src/learned/weights.rs`
 
-- [ ] **Step 1: Prepare Ollama**
+- [ ] **Step 1: Prepare the local LLM server (LM Studio)**
 
 ```bash
-ollama serve &              # if not already running
-ollama pull google/gemma-4-31b-qat
+# In LM Studio: download/load `google/gemma-4-31b-qat`, then start the local server
+# (Developer tab → Start Server; default http://localhost:1234).
+# Override if needed: export ROUTE_LLM_LABEL_URL / ROUTE_LLM_LABEL_MODEL
+# (model id must match what GET http://localhost:1234/v1/models reports)
 ```
 Expected: model available locally.
 
@@ -907,10 +927,10 @@ git commit -m "docs: record v2.1 eval verdict and set default router accordingly
 ## Final verification checklist
 
 - [ ] `cargo build --release` — clean.
-- [ ] `cargo test` — all crates green (Ollama test stays `#[ignore]`d).
+- [ ] `cargo test` — all crates green (the LLM smoke test stays `#[ignore]`d).
 - [ ] `cargo clippy -- -D warnings` — clean.
 - [ ] v1 frozen files and v2 `learned/{features,model,mod}.rs` **unmodified**; only `weights.rs` changed in `core`.
 - [ ] `reqwest` appears **only** in `crates/trainer/Cargo.toml`; `core`/`server` have no network deps.
-- [ ] `data/labeled.jsonl` is committed; `fit` is deterministic on it (no Ollama needed for `fit`/CI).
+- [ ] `data/labeled.jsonl` is committed; `fit` is deterministic on it (no LLM server needed for `fit`/CI).
 - [ ] `eval` verdict recorded in SPEC-v2.1 §16; default router matches the verdict.
 - [ ] Inference performs no network I/O.
