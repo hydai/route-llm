@@ -63,7 +63,11 @@ fn bucket(x: f64) -> u8 {
 }
 
 pub fn ordinal_accuracy(pred: &[f64], label: &[f64]) -> f64 {
-    debug_assert_eq!(pred.len(), label.len(), "ordinal_accuracy: slice length mismatch");
+    debug_assert_eq!(
+        pred.len(),
+        label.len(),
+        "ordinal_accuracy: slice length mismatch"
+    );
     if pred.is_empty() {
         return 0.0;
     }
@@ -94,7 +98,11 @@ fn always_strongest_baseline(labels: &[f64]) -> (f64, f64) {
 /// Average cost of the top-1 pick over the builtin registry, plus the fraction
 /// of picks that are "adequate" (chosen quality >= the query's true difficulty).
 fn cost_profile(diffs: &[f64], labels: &[f64]) -> (f64, f64) {
-    debug_assert_eq!(diffs.len(), labels.len(), "cost_profile: slice length mismatch");
+    debug_assert_eq!(
+        diffs.len(),
+        labels.len(),
+        "cost_profile: slice length mismatch"
+    );
     let models: Vec<ModelProfile> = registry::builtin();
     let prefs = RoutingPreferences::default();
     let (mut cost_sum, mut adequate) = (0.0, 0.0);
@@ -121,7 +129,11 @@ fn cost_profile(diffs: &[f64], labels: &[f64]) -> (f64, f64) {
 /// and measures (adequacy_rate, avg_cost). Returns the minimum avg_cost among grid
 /// points that reach `target` adequacy, or `None` if no grid point does.
 fn cost_at_adequacy(diffs: &[f64], labels: &[f64], target: f64) -> Option<f64> {
-    debug_assert_eq!(diffs.len(), labels.len(), "cost_at_adequacy: slice length mismatch");
+    debug_assert_eq!(
+        diffs.len(),
+        labels.len(),
+        "cost_at_adequacy: slice length mismatch"
+    );
     let models: Vec<ModelProfile> = registry::builtin();
     let n = diffs.len();
     if n == 0 {
@@ -280,10 +292,7 @@ mod tests {
         assert!(result.is_some(), "expected Some cost for reachable target");
         let cost = result.unwrap();
         let (strongest_cost, _) = always_strongest_baseline(&labels);
-        assert!(
-            cost.is_finite(),
-            "cost must be finite, got {cost}"
-        );
+        assert!(cost.is_finite(), "cost must be finite, got {cost}");
         assert!(
             cost <= strongest_cost + 1e-9,
             "cost {cost} should be <= always-strongest cost {strongest_cost}"
@@ -296,7 +305,10 @@ mod tests {
         let diffs = vec![0.5, 0.5];
         let labels = vec![0.5, 0.5];
         let result = cost_at_adequacy(&diffs, &labels, 1.01);
-        assert!(result.is_none(), "expected None for unreachable target 1.01");
+        assert!(
+            result.is_none(),
+            "expected None for unreachable target 1.01"
+        );
     }
 
     #[test]

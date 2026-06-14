@@ -84,10 +84,7 @@ pub fn features(query: &str) -> Vec<f64> {
         "設計",
         "比較",
     ];
-    let hits = reasoning
-        .iter()
-        .filter(|k| lower.contains(*k))
-        .count();
+    let hits = reasoning.iter().filter(|k| lower.contains(*k)).count();
     v[3] = (hits.min(3)) as f64;
     // 4 multi_constraint
     let numbered = count_numbered_items(query);
