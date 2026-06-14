@@ -491,6 +491,65 @@ pub fn compare_gold(gold_path: &str, labeled_paths: &[String]) {
     println!("note: ALL rows scored vs the SAME human gold labels — label-independent, cross-labeler comparable.");
 }
 
+/// Spearman matrix for cross-labeler transfer: cell [i][j] = fit a learned model
+/// on `sets[i]` (full), predict `sets[j]`'s queries, spearman vs `sets[j]`'s
+/// labels. Diagonal is in-sample (optimistic); off-diagonal = transfer.
+pub fn crosseval_matrix(sets: &[Vec<LabeledExample>]) -> Vec<Vec<f64>> {
+    sets.iter()
+        .map(|train| {
+            let model = logreg::fit(train, &FitConfig::default());
+            sets.iter()
+                .map(|test| {
+                    let labels: Vec<f64> = test.iter().map(|e| e.difficulty).collect();
+                    let pred: Vec<f64> = test
+                        .iter()
+                        .map(|e| model.difficulty(&e.query).score)
+                        .collect();
+                    spearman(&pred, &labels)
+                })
+                .collect()
+        })
+        .collect()
+}
+
+/// `crosseval [files...]`: print the cross-labeler spearman matrix. Defaults to
+/// the three committed labeler sets when no files are given.
+pub fn crosseval(paths: &[String]) {
+    let owned: Vec<String> = if paths.is_empty() {
+        [
+            "data/labeled.gemma.jsonl",
+            "data/labeled.claude.jsonl",
+            "data/labeled.codex.jsonl",
+        ]
+        .iter()
+        .map(|s| s.to_string())
+        .collect()
+    } else {
+        paths.to_vec()
+    };
+    let sets: Vec<Vec<LabeledExample>> = owned
+        .iter()
+        .map(|p| crate::dataset::load(p).unwrap_or_else(|e| panic!("load {p}: {e}")))
+        .collect();
+    let names: Vec<String> = owned.iter().map(|p| short_name(p)).collect();
+    let m = crosseval_matrix(&sets);
+
+    println!("crosseval — spearman of (fit on row) predicting (col)'s labels");
+    print!("{:<14}", "train\\test");
+    for n in &names {
+        print!(" {n:>9}");
+    }
+    println!();
+    for (i, row) in m.iter().enumerate() {
+        print!("{:<14}", names[i]);
+        for v in row {
+            print!(" {v:>9.3}");
+        }
+        println!();
+    }
+    println!("note: diagonal is in-sample (optimistic); off-diagonal = cross-labeler transfer.");
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -694,6 +753,18 @@ mod tests {
         let (g2, f2) = parse_compare_args(&["a.jsonl".to_string()]);
         assert_eq!(g2, None);
         assert_eq!(f2, vec!["a.jsonl".to_string()]);
+    }
+
+    #[test]
+    fn crosseval_matrix_is_square_with_finite_diagonal() {
+        let sets = vec![sample_data(), sample_data()];
+        let m = crosseval_matrix(&sets);
+        assert_eq!(m.len(), 2, "one row per train set");
+        assert!(m.iter().all(|row| row.len() == 2), "one col per test set");
+        for i in 0..2 {
+            assert!(m[i][i].is_finite(), "diagonal must be finite");
+            assert!((-1.0..=1.0).contains(&m[i][i]), "spearman in range");
+        }
     }
 
     #[test]

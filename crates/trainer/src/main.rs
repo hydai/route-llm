@@ -42,9 +42,13 @@ fn main() {
             }
         }
         "gold-pool" => gold::run_pool(),
+        "crosseval" => {
+            let files: Vec<String> = std::env::args().skip(2).collect();
+            eval::crosseval(&files);
+        }
         "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare [--gold <file>] <files...>|gold-pool>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare [--gold <file>] <files...>|crosseval [files...]|gold-pool>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }
