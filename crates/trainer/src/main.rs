@@ -24,10 +24,13 @@ fn main() {
             );
         }
         "eval" => {
-            let args: Vec<String> = std::env::args().collect();
-            match eval::parse_in_flag(&args) {
-                Some(path) => eval::run_path(&path),
-                None => eval::run(),
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            if let Some(gold) = eval::parse_flag(&rest, "--gold") {
+                eval::run_gold(&gold);
+            } else if let Some(path) = eval::parse_in_flag(&rest) {
+                eval::run_path(&path);
+            } else {
+                eval::run();
             }
         }
         "compare" => {
@@ -37,7 +40,7 @@ fn main() {
         "gold-pool" => gold::run_pool(),
         "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>]|compare <files...>|gold-pool>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare <files...>|gold-pool>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }

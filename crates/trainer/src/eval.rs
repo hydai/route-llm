@@ -333,10 +333,40 @@ pub fn run_path(path: &str) {
     print_report(path, &evaluate(&data));
 }
 
-/// Parse an optional `--in <path>` flag from CLI args (after the subcommand).
-pub fn parse_in_flag(args: &[String]) -> Option<String> {
-    let pos = args.iter().position(|a| a == "--in")?;
+/// `eval --gold <gold.jsonl>`: score the shipped router (fit on `data/labeled.jsonl`)
+/// + heuristic against the human gold set. Deployment-faithful check on hard cases.
+pub fn run_gold(gold_path: &str) {
+    let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
+    let train = crate::dataset::load("data/labeled.jsonl")
+        .unwrap_or_else(|e| panic!("load data/labeled.jsonl: {e}"));
+    let r = evaluate_gold(&train, &gold);
+    println!(
+        "gold eval — shipped router vs human gold ({gold_path}), n={}",
+        r.n
+    );
+    println!(
+        "  spearman  learned={:.3}  heuristic={:.3}",
+        r.spearman_learned, r.spearman_heuristic
+    );
+    println!(
+        "  ordinal   learned={:.3}  heuristic={:.3}",
+        r.ordinal_learned, r.ordinal_heuristic
+    );
+    println!(
+        "  avg cost  learned={:.3}  heuristic={:.3}  (informational)",
+        r.cost_learned, r.cost_heuristic
+    );
+}
+
+/// Parse an optional `--<name> <value>` flag from CLI args.
+pub fn parse_flag(args: &[String], name: &str) -> Option<String> {
+    let pos = args.iter().position(|a| a == name)?;
     args.get(pos + 1).cloned()
+}
+
+/// Parse an optional `--in <path>` flag (back-compat alias for `parse_flag`).
+pub fn parse_in_flag(args: &[String]) -> Option<String> {
+    parse_flag(args, "--in")
 }
 
 /// Shorten a labeled-set path to a table label: `data/labeled.claude.jsonl` → `claude`.
@@ -574,13 +604,42 @@ mod tests {
     }
 
     #[test]
+    fn parse_flag_finds_named_value() {
+        let args = vec![
+            "compare".to_string(),
+            "--gold".to_string(),
+            "g.jsonl".to_string(),
+            "a.jsonl".to_string(),
+        ];
+        assert_eq!(parse_flag(&args, "--gold"), Some("g.jsonl".to_string()));
+        assert_eq!(parse_flag(&args, "--in"), None);
+        assert_eq!(parse_flag(&["--gold".to_string()], "--gold"), None);
+    }
+
+    #[test]
     fn evaluate_gold_produces_in_range_metrics() {
         let train = sample_data();
         let gold = vec![
-            LabeledExample { query: "hi".into(), difficulty: 0.0, category: "chat".into() },
-            LabeledExample { query: "prove a tight lower bound".into(), difficulty: 1.0, category: "math".into() },
-            LabeledExample { query: "implement a binary search in Rust".into(), difficulty: 0.5, category: "code".into() },
-            LabeledExample { query: "define HTTP".into(), difficulty: 0.25, category: "extraction".into() },
+            LabeledExample {
+                query: "hi".into(),
+                difficulty: 0.0,
+                category: "chat".into(),
+            },
+            LabeledExample {
+                query: "prove a tight lower bound".into(),
+                difficulty: 1.0,
+                category: "math".into(),
+            },
+            LabeledExample {
+                query: "implement a binary search in Rust".into(),
+                difficulty: 0.5,
+                category: "code".into(),
+            },
+            LabeledExample {
+                query: "define HTTP".into(),
+                difficulty: 0.25,
+                category: "extraction".into(),
+            },
         ];
         let r = evaluate_gold(&train, &gold);
         assert_eq!(r.n, 4);
