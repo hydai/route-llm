@@ -5,6 +5,7 @@ mod corpus;
 mod dataset;
 mod emit;
 mod eval;
+mod gold;
 mod label;
 mod logreg;
 
