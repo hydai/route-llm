@@ -1,7 +1,7 @@
 # route-llm v2.2 — 設計規格：標籤獨立的人工黃金集（可信判決）
 
-> 狀態：v2.2 設計定稿，待複審 → 待實作
-> 日期：2026-06-14
+> 狀態：v2.2 已實作並驗收（見 §16 結論）;PR #10 待 review/merge。
+> 日期：2026-06-14（設計）/ 2026-06-15（實作 + 驗收）
 > 關係：本規格在 v2.1（見 `SPEC-v2.1.md`）之上做**加法**——新增「標籤獨立的人工黃金集」與「跨 labeler 評估」,用以**權威重決出貨**;不動推論路徑、不動 v1/v2 核心、零網路、零新相依。
 
 ## 1. 概述與動機
@@ -207,5 +207,5 @@ labeled.{gemma,claude,codex}  ──▶ crosseval     ──▶   fit A / 評 B 
 - **軸 A 決定（預設 router）：維持 `learned`。** 最佳 learned（codex）`Spearman 0.932 ≥ heuristic 0.670` 且 `ordinal 0.874 ≥ 0.322`,依 §8 勝出。margin 極寬（Spearman 差 0.26、ordinal 差 0.55），遠超 §15.4 的 in-sample 優勢所能解釋,故**無需** leakage-free 重 fit;`choose_router` 不動。
 - **軸 B 決定（出貨 labeler）：維持 codex。** codex 在 gold 上 Spearman/ordinal **雙項最佳**,即現出貨者 → `weights.rs` 不變。(gold 題對三套 labeler-router 皆為 in-sample,故此三方比較對稱、無偏。)
 - **成本說明**：learned 的 avg_cost（0.318）高於 heuristic（0.164）是**正確行為**——gold 為難題集(32 題難度 1.0),正確路由本就該選高品質(高成本)模型;heuristic 的「低成本」源自低估難度而**充分率不足**。成本為資訊性指標、非 gating(§7)。
-- **跨 labeler 診斷（`crosseval`）**：fit-on-row 預測 col 標籤的 Spearman 介於 0.858–0.905,off-diagonal（跨 labeler 遷移）達 0.86–0.90,顯示難度訊號**真實且跨 labeler 穩健**,非 codex 專屬;gemma 欄最低(~0.86),印證其為最雜訊的標註者。
+- **跨 labeler 診斷（`crosseval`,80/20 holdout）**：fit-on-row 預測 col 之 holdout 的 Spearman 介於 0.864–0.913,off-diagonal（跨 labeler 遷移）達 0.86–0.91,顯示難度訊號**真實且跨 labeler 穩健**,非 codex 專屬;gemma 欄最低(~0.86–0.87),印證其為最雜訊的標註者。
 - **意義**：v2.1 的判決原是**自我參照**(各 router vs 自身標籤);v2.2 以**獨立於受測模型的人工 gold** 重跑,結論一致——出貨的 codex-learned router 確實最貼近人類判斷,且難題上對 heuristic 的優勢決定性。無需任何出貨變更。
