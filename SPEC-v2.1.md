@@ -90,15 +90,16 @@ eval（驗收）     → learned vs heuristic vs always-strongest（Spearman / o
 - `label_cache.jsonl`：提交，使重標增量化、重跑便宜。
 - **可重現性模型**：把「不可重現的那一刻」（LLM 標註）凍結成提交的 `labeled.jsonl`；重標是顯式、偶發的步驟。網路永不進入 `fit` / 推論 / CI。
 
-## 7. fit / eval（沿用 v2，不改邏輯）
+## 7. fit / eval（fit 沿用 v2；eval 指標微調）
 
 - `fit`：不變——讀 `labeled.jsonl`、抽特徵、標準化、擬合邏輯迴歸、輸出 `weights.rs`。
-- `eval`：不變——80/20 留出切分，報 learned vs heuristic vs always-strongest 的 Spearman、ordinal accuracy、固定充分率（adequacy ≥ 門檻）下的平均成本。
+- `eval`：80/20 留出切分，報 learned vs heuristic vs always-strongest 的 Spearman、ordinal accuracy，以及**達到可達成充分率上限所需的最低平均成本**（掃 `cost_bias`）。亦提供 `eval --in <file>` 與 `compare <files...>`（多 labeler 並排）。
+- **指標修正 (v2.1)**：原固定 0.90 充分率門檻在真實標註下不可達（約 5–13% 查詢標難度 1.0 > 最強模型 quality 0.97，充分率天花板僅 ~0.87–0.95）；改用每組**自適應可達成上限**（always-strongest 的 adequacy，於 `cost_bias=0` 必可達成），使成本指標恆有意義且跨 labeler 可比。
 
 ## 8. 驗收與預設切換（完成定義）
 
 - 重標 + `fit` 後執行 `eval`，取得留出集上的 learned vs heuristic 三項指標。
-- **判定規則（勝出）**：`Spearman(learned) ≥ Spearman(heuristic)` **且** `ordinal(learned) ≥ ordinal(heuristic)` **且** 固定充分率下 `cost(learned)` 不差於 `cost(heuristic)`。
+- **判定規則（勝出）**：`Spearman(learned) ≥ Spearman(heuristic)` **且** `ordinal(learned) ≥ ordinal(heuristic)` **且** 可達成充分率上限下 `cost(learned)` 不差於 `cost(heuristic)`。
   - 勝出 → 維持伺服器預設 `learned`（`choose_router` 不動）。
   - 未勝出 → 把伺服器預設切回 `heuristic`（`crates/server/src/main.rs` 的 `choose_router` 一行：未設定時回 `heuristic` 而非 `learned`），並記錄結論。
 - **完成 = 一份可重現、有證據的結論**（不論勝負）；結論連同 `eval` 數據提交（短記於本檔 §16 或 PR 描述）。
@@ -147,6 +148,20 @@ eval（驗收）     → learned vs heuristic vs always-strongest（Spearman / o
 1. prompt 模板的精確措辭與 1–5 分級定義（影響標註品質，實作階段可迭代）。
 2. 若 31B 標註仍無法讓 learned 勝出，是否要在 v2.1 內嘗試「更豐富特徵」或留待 v2.2（目前 §8 採「誠實切回 heuristic + 記錄」）。
 
-## 16. 驗收結論（實作後填入）
+## 16. 驗收結論
 
-> 待 `eval` 執行後填入：learned vs heuristic 的 Spearman / ordinal / 成本數據，勝負判定，與最終預設 router 決定。
+**結論：learned 三方標註一致勝出 → 伺服器預設維持 `learned`（`choose_router` 不動）；出貨 `weights.rs` 以 codex 標註擬合。**
+
+語料 987 題（`corpus.jsonl`，凍結）。以三套獨立標註各自 80/20 留出評估 learned vs heuristic（各指標 vs 該套自身標籤；`cost@ceil` = 達可達成充分率上限的最低平均成本，掃 `cost_bias`；always-strongest 成本 0.900 為上界）：
+
+| labeler | Spearman (L / H) | ordinal (L / H) | cost@ceil (L / H) | 充分率上限 |
+|---|---|---|---|---|
+| gemma（本地 31B，986 題） | 0.868 / 0.742 | 0.783 / 0.606 | 0.115 / 0.120 | 0.95 |
+| claude | 0.904 / 0.791 | 0.773 / 0.540 | 0.115 / 0.120 | 0.87 |
+| codex | 0.913 / 0.787 | 0.833 / 0.591 | 0.114 / 0.120 | 0.89 |
+
+- **三套標註 × 三項指標全部 learned ≥ heuristic** → 依 §8 判定規則勝出，預設維持 `learned`，server 無程式變更。
+- **出貨 labeler = codex**（learned 排序最佳：Spearman 0.913、ordinal 0.833；ceiling 成本最低 0.114）。`labeled.jsonl` 即 codex 標註；`weights.rs` 以其 987 題擬合（bias=-0.373）。learned 以 ~0.115 達成與 always-strongest 同等充分率，約其 1/8 成本（0.900）。
+- gemma（本地）亦決定性勝出且 avg_cost 最低（0.171），完整佐證 v2.1「真實本地 LLM 標註」論點；三套標註（`labeled.{gemma,claude,codex}.jsonl`）全數提交為比較證據。
+- 標註一致性：三套皆以 `prompts/label.prompt.md` 同一 rubric 產生（gemma 經 LM Studio 本地伺服器，claude/codex 由各自工具獨立執行）。Claude 與 Codex 逐題完全一致 85.5%，分歧全為相鄰一級。
+- 指標修正見 §7（固定 0.90 門檻 → 自適應可達成上限），否則 `cost@adequacy` 因 ~13% 難度 1.0 查詢而恆為 n/a。

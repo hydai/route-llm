@@ -96,7 +96,7 @@ each set's holdout — no file swapping, safe to run while a `label` job is goin
 
 ```sh
 cargo run -p route-llm-trainer -- compare \
-  data/labeled.jsonl data/labeled.claude.jsonl data/labeled.codex.jsonl
+  data/labeled.gemma.jsonl data/labeled.claude.jsonl data/labeled.codex.jsonl
 ```
 
 To ship a winner:
