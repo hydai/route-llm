@@ -339,7 +339,10 @@ pub fn run_path(path: &str) {
 /// + heuristic against the human gold set. Deployment-faithful check on hard cases.
 pub fn run_gold(gold_path: &str) {
     let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
-    assert!(!gold.is_empty(), "gold set {gold_path} is empty");
+    if gold.is_empty() {
+        eprintln!("gold set {gold_path} is empty");
+        std::process::exit(2);
+    }
     let train = crate::dataset::load("data/labeled.jsonl")
         .unwrap_or_else(|e| panic!("load data/labeled.jsonl: {e}"));
     let r = evaluate_gold(&train, &gold);
@@ -373,21 +376,27 @@ pub fn parse_in_flag(args: &[String]) -> Option<String> {
 }
 
 /// Split `compare` args (everything after the subcommand) into an optional
-/// `--gold <path>` and the positional labeled-file list.
-pub fn parse_compare_args(args: &[String]) -> (Option<String>, Vec<String>) {
+/// `--gold <path>` and the positional labeled-file list. Errors if `--gold` is
+/// present without a following value, rather than silently running the non-gold path.
+pub fn parse_compare_args(args: &[String]) -> Result<(Option<String>, Vec<String>), String> {
     let mut gold = None;
     let mut files = Vec::new();
     let mut i = 0;
     while i < args.len() {
         if args[i] == "--gold" {
-            gold = args.get(i + 1).cloned();
-            i += 2;
+            match args.get(i + 1) {
+                Some(v) => {
+                    gold = Some(v.clone());
+                    i += 2;
+                }
+                None => return Err("--gold requires a value".to_string()),
+            }
         } else {
             files.push(args[i].clone());
             i += 1;
         }
     }
-    (gold, files)
+    Ok((gold, files))
 }
 
 /// Shorten a labeled-set path to a table label: `data/labeled.claude.jsonl` → `claude`.
@@ -459,7 +468,10 @@ pub fn compare_gold(gold_path: &str, labeled_paths: &[String]) {
         std::process::exit(2);
     }
     let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
-    assert!(!gold.is_empty(), "gold set {gold_path} is empty");
+    if gold.is_empty() {
+        eprintln!("gold set {gold_path} is empty");
+        std::process::exit(2);
+    }
     let reports: Vec<(String, GoldReport)> = labeled_paths
         .iter()
         .map(|p| {
@@ -491,17 +503,39 @@ pub fn compare_gold(gold_path: &str, labeled_paths: &[String]) {
     println!("note: ALL rows scored vs the SAME human gold labels — label-independent, cross-labeler comparable.");
 }
 
-/// Spearman matrix for cross-labeler transfer: cell [i][j] = fit a learned model
-/// on `sets[i]` (full), predict `sets[j]`'s queries, spearman vs `sets[j]`'s
-/// labels. Diagonal is in-sample (optimistic); off-diagonal = transfer.
+/// 80/20 split by index (matching `evaluate`): train = i%5!=0, holdout = i%5==0.
+fn split_train_holdout(set: &[LabeledExample]) -> (Vec<LabeledExample>, Vec<LabeledExample>) {
+    let train = set
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| i % 5 != 0)
+        .map(|(_, e)| e.clone())
+        .collect();
+    let holdout = set
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| i % 5 == 0)
+        .map(|(_, e)| e.clone())
+        .collect();
+    (train, holdout)
+}
+
+/// Spearman matrix for cross-labeler transfer (SPEC §7): cell [i][j] = fit a
+/// learned model on `sets[i]`'s 80% train split, predict `sets[j]`'s 20% holdout,
+/// spearman vs `sets[j]`'s holdout labels. Evaluating on the holdout (not the full
+/// set) keeps the diagonal a fair held-out self-eval, not an in-sample number.
 pub fn crosseval_matrix(sets: &[Vec<LabeledExample>]) -> Vec<Vec<f64>> {
-    sets.iter()
-        .map(|train| {
+    let split: Vec<(Vec<LabeledExample>, Vec<LabeledExample>)> =
+        sets.iter().map(|s| split_train_holdout(s)).collect();
+    split
+        .iter()
+        .map(|(train, _)| {
             let model = logreg::fit(train, &FitConfig::default());
-            sets.iter()
-                .map(|test| {
-                    let labels: Vec<f64> = test.iter().map(|e| e.difficulty).collect();
-                    let pred: Vec<f64> = test
+            split
+                .iter()
+                .map(|(_, holdout)| {
+                    let labels: Vec<f64> = holdout.iter().map(|e| e.difficulty).collect();
+                    let pred: Vec<f64> = holdout
                         .iter()
                         .map(|e| model.difficulty(&e.query).score)
                         .collect();
@@ -513,7 +547,8 @@ pub fn crosseval_matrix(sets: &[Vec<LabeledExample>]) -> Vec<Vec<f64>> {
 }
 
 /// `crosseval [files...]`: print the cross-labeler spearman matrix. Defaults to
-/// the three committed labeler sets when no files are given.
+/// the three committed labeler sets when no files are given. Per SPEC §9, a
+/// missing/unreadable labeled set is skipped (with a logged note), not fatal.
 pub fn crosseval(paths: &[String]) {
     let owned: Vec<String> = if paths.is_empty() {
         [
@@ -527,14 +562,27 @@ pub fn crosseval(paths: &[String]) {
     } else {
         paths.to_vec()
     };
-    let sets: Vec<Vec<LabeledExample>> = owned
-        .iter()
-        .map(|p| crate::dataset::load(p).unwrap_or_else(|e| panic!("load {p}: {e}")))
-        .collect();
-    let names: Vec<String> = owned.iter().map(|p| short_name(p)).collect();
+    let mut names: Vec<String> = Vec::new();
+    let mut sets: Vec<Vec<LabeledExample>> = Vec::new();
+    for p in &owned {
+        match crate::dataset::load(p) {
+            Ok(s) => {
+                names.push(short_name(p));
+                sets.push(s);
+            }
+            Err(e) => eprintln!("crosseval: skipping {p}: {e}"),
+        }
+    }
+    if sets.len() < 2 {
+        eprintln!(
+            "crosseval: need >=2 readable labeled sets, got {}",
+            sets.len()
+        );
+        return;
+    }
     let m = crosseval_matrix(&sets);
 
-    println!("crosseval — spearman of (fit on row) predicting (col)'s labels");
+    println!("crosseval — spearman of (fit on row) predicting (col)'s 20% holdout");
     print!("{:<14}", "train\\test");
     for n in &names {
         print!(" {n:>9}");
@@ -547,7 +595,7 @@ pub fn crosseval(paths: &[String]) {
         }
         println!();
     }
-    println!("note: diagonal is in-sample (optimistic); off-diagonal = cross-labeler transfer.");
+    println!("note: diagonal = held-out self-eval (80/20); off-diagonal = cross-labeler transfer.");
 }
 
 #[cfg(test)]
@@ -746,13 +794,16 @@ mod tests {
             "a.jsonl".to_string(),
             "b.jsonl".to_string(),
         ];
-        let (gold, files) = parse_compare_args(&rest);
+        let (gold, files) = parse_compare_args(&rest).unwrap();
         assert_eq!(gold, Some("g.jsonl".to_string()));
         assert_eq!(files, vec!["a.jsonl".to_string(), "b.jsonl".to_string()]);
 
-        let (g2, f2) = parse_compare_args(&["a.jsonl".to_string()]);
+        let (g2, f2) = parse_compare_args(&["a.jsonl".to_string()]).unwrap();
         assert_eq!(g2, None);
         assert_eq!(f2, vec!["a.jsonl".to_string()]);
+
+        // `--gold` with no following value is an error, not a silent non-gold run.
+        assert!(parse_compare_args(&["--gold".to_string()]).is_err());
     }
 
     #[test]

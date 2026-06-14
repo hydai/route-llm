@@ -25,6 +25,15 @@ fn main() {
         }
         "eval" => {
             let rest: Vec<String> = std::env::args().skip(2).collect();
+            // A flag present without a value is a usage error, not a silent fallback.
+            for flag in ["--gold", "--in"] {
+                if rest.iter().any(|a| a == flag) && eval::parse_flag(&rest, flag).is_none() {
+                    eprintln!(
+                        "usage: trainer eval [--in <file>|--gold <file>] — {flag} requires a value"
+                    );
+                    std::process::exit(2);
+                }
+            }
             if let Some(gold) = eval::parse_flag(&rest, "--gold") {
                 eval::run_gold(&gold);
             } else if let Some(path) = eval::parse_in_flag(&rest) {
@@ -35,10 +44,13 @@ fn main() {
         }
         "compare" => {
             let rest: Vec<String> = std::env::args().skip(2).collect();
-            let (gold, files) = eval::parse_compare_args(&rest);
-            match gold {
-                Some(g) => eval::compare_gold(&g, &files),
-                None => eval::compare(&files),
+            match eval::parse_compare_args(&rest) {
+                Ok((Some(g), files)) => eval::compare_gold(&g, &files),
+                Ok((None, files)) => eval::compare(&files),
+                Err(e) => {
+                    eprintln!("usage: trainer compare [--gold <file>] <files...> — {e}");
+                    std::process::exit(2);
+                }
             }
         }
         "gold-pool" => gold::run_pool(),
