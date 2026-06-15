@@ -1,6 +1,7 @@
 //! Offline trainer for the learned router.
 //! Subcommands are dispatched in `main`; run with no/invalid args to print usage.
 
+mod budget_label;
 mod corpus;
 mod dataset;
 mod emit;

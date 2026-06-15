@@ -161,7 +161,7 @@ pub fn build_prompt(query: &str) -> String {
 
 /// Build a pooled HTTP client (keep-alive) to be reused across all label calls.
 /// A fresh client per call churns connections and triggers intermittent resets.
-fn http_client() -> Result<reqwest::blocking::Client, String> {
+pub(crate) fn http_client() -> Result<reqwest::blocking::Client, String> {
     reqwest::blocking::Client::builder()
         .timeout(std::time::Duration::from_secs(120))
         .build()
@@ -170,7 +170,7 @@ fn http_client() -> Result<reqwest::blocking::Client, String> {
 
 /// One OpenAI-compatible chat completion → assistant message text. NETWORK; not
 /// unit-tested. Works with LM Studio (default), Ollama's /v1, llama.cpp, vLLM.
-fn chat_complete(
+pub(crate) fn chat_complete(
     client: &reqwest::blocking::Client,
     cfg: &LabelConfig,
     prompt: &str,
