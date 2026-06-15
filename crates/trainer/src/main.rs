@@ -54,14 +54,42 @@ fn main() {
                 }
             }
         }
+        "fit-budget" => {
+            let data = dataset::load_dims("data/budget.jsonl").expect("load data/budget.jsonl");
+            let models = budget_label::fit_dims(&data);
+            emit::write_budget(&models, "crates/core/src/budget/weights.rs")
+                .expect("write budget/weights.rs");
+            eprintln!(
+                "fit-budget: {} examples -> crates/core/src/budget/weights.rs (6 heads)",
+                data.len()
+            );
+        }
+        "eval-budget" => {
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            let gold =
+                eval::parse_flag(&rest, "--gold").unwrap_or_else(|| "data/gold.jsonl".to_string());
+            eval::run_eval_budget(&gold);
+        }
         "gold-pool" => gold::run_pool(),
         "crosseval" => {
-            let files: Vec<String> = std::env::args().skip(2).collect();
-            eval::crosseval(&files);
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            if rest.iter().any(|a| a == "--dims") {
+                let files: Vec<String> = rest.into_iter().filter(|a| a != "--dims").collect();
+                eval::run_crosseval_dims(&files);
+            } else {
+                eval::crosseval(&rest);
+            }
         }
-        "label" => label::run(),
+        "label" => {
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            if rest.iter().any(|a| a == "--dims") {
+                budget_label::run_dims();
+            } else {
+                label::run();
+            }
+        }
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare [--gold <file>] <files...>|crosseval [files...]|gold-pool>");
+            eprintln!("usage: trainer <synth|label [--dims]|fit|fit-budget|eval [--in <file>|--gold <file>]|eval-budget [--gold <file>]|compare [--gold <file>] <files...>|crosseval [--dims] [files...]|gold-pool>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }
