@@ -33,9 +33,13 @@ pub fn build_dims_prompt(query: &str) -> String {
 /// Each is clamped to its axis range. Returns None if fewer than six integers.
 pub fn parse_dims(output: &str) -> Option<[u8; 6]> {
     let lower = output.to_lowercase();
+    // Search and slice the *same* lowercased string: a byte index from `lower`
+    // need not be a valid boundary in `output` (lowercasing can change byte
+    // length), which would panic. Digits are ASCII-invariant under lowercasing,
+    // so parsing from `lower` yields identical integers.
     let slice = match lower.find("dims") {
-        Some(idx) => &output[idx..],
-        None => output,
+        Some(idx) => &lower[idx..],
+        None => lower.as_str(),
     };
     let nums: Vec<u8> = slice
         .split(|c: char| !c.is_ascii_digit())
@@ -148,13 +152,16 @@ fn label_one_dims(
 
 /// Assemble the dims output for `corpus` **in corpus order**, reusing `cache`
 /// (query → dims) and calling `fetch` on cache misses. Each corpus line emits one
-/// row; a repeated query reuses its first label via the cache, so the output
-/// stays 1:1 with the corpus minus unparseable skips — preserving the duplicate
-/// rows the corpus intentionally allows and honoring the "N in → N out" contract
-/// in `prompts/label.budget.prompt.md`. `checkpoint` persists partial progress
-/// every 50 rows and once more right before an outage abort. Returns `Err` after
-/// `OUTAGE_LIMIT` consecutive net failures. Network and disk are injected, so
-/// this is unit-tested with fakes.
+/// row and a repeated query reuses its first label via the cache, so the
+/// duplicate rows the corpus intentionally allows are preserved. Unparseable
+/// rows are skipped, so a single run can be shorter than the corpus; a later run
+/// reuses the cache and refills those gaps in order, converging to one row per
+/// corpus line. (The strict "N in → N out" guarantee in
+/// `prompts/label.budget.prompt.md` is the external bulk-labeler's contract;
+/// this local path is the v2.1-style resumable skip-and-continue.) `checkpoint`
+/// persists partial progress every 50 rows and once more right before an outage
+/// abort. Returns `Err` after `OUTAGE_LIMIT` consecutive net failures. Network
+/// and disk are injected, so this is unit-tested with fakes.
 fn assemble_dims<F, C>(
     corpus: &[dataset::CorpusQuery],
     mut cache: HashMap<String, DimScores>,
@@ -281,6 +288,14 @@ mod tests {
     fn parse_dims_rejects_too_few() {
         assert_eq!(parse_dims("DIMS: 3 2 1"), None);
         assert_eq!(parse_dims("no numbers here"), None);
+    }
+
+    #[test]
+    fn parse_dims_handles_non_ascii_without_panicking() {
+        // 'ẞ' (3 bytes) lowercases to the shorter 'ß' (2 bytes), so a byte index
+        // from the lowercased copy is not a valid boundary in the original — the
+        // old `&output[idx..]` slice panicked on inputs like this.
+        assert_eq!(parse_dims("ẞDIMS: 1 2 3 4 1 2"), Some([1, 2, 3, 4, 1, 2]));
     }
 
     #[test]
