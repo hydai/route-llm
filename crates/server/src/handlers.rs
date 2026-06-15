@@ -34,9 +34,13 @@ pub(crate) fn summary_line(rec: &Recommendation) -> String {
         .first()
         .map(|r| r.id.as_str())
         .unwrap_or("(none)");
+    let budget = match &rec.budget {
+        Some(b) => format!(" [{} / {}]", b.level, b.recommended_model_tier),
+        None => String::new(),
+    };
     format!(
-        "Recommended: {} (difficulty {:.2}). Order: {}.",
-        top, rec.difficulty.score, order
+        "Recommended: {} (difficulty {:.2}){}. Order: {}.",
+        top, rec.difficulty.score, budget, order
     )
 }
 

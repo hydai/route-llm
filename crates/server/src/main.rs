@@ -9,12 +9,28 @@ fn choose_router(var: Result<&str, &std::env::VarError>) -> Result<&'static str,
     match var {
         Ok("heuristic") => Ok("heuristic"),
         Ok("learned") => Ok("learned"),
+        Ok("budget") => Ok("budget"),
         // Genuinely unset → default to learned (SPEC-v2 §9)
         Err(std::env::VarError::NotPresent) => Ok("learned"),
         // Non-UTF-8 value: fail fast instead of silently defaulting
         Err(_) => Err("ROUTE_LLM_ROUTER value is not valid UTF-8".to_string()),
         Ok(other) => Err(format!(
-            "invalid ROUTE_LLM_ROUTER: {other:?} (expected 'learned' or 'heuristic')"
+            "invalid ROUTE_LLM_ROUTER: {other:?} (expected 'learned', 'heuristic', or 'budget')"
+        )),
+    }
+}
+
+/// Resolves ROUTE_LLM_POLICY (for the budget router) to a `Policy`.
+fn choose_policy(var: Result<&str, &std::env::VarError>) -> Result<route_llm_core::Policy, String> {
+    use route_llm_core::Policy;
+    match var {
+        Ok("balanced") => Ok(Policy::Balanced),
+        Ok("strict") => Ok(Policy::Strict),
+        Ok("cheap") => Ok(Policy::Cheap),
+        Err(std::env::VarError::NotPresent) => Ok(Policy::Balanced),
+        Err(_) => Err("ROUTE_LLM_POLICY value is not valid UTF-8".to_string()),
+        Ok(other) => Err(format!(
+            "invalid ROUTE_LLM_POLICY: {other:?} (expected 'balanced', 'strict', or 'cheap')"
         )),
     }
 }
@@ -43,10 +59,22 @@ async fn main() {
         }
     };
 
+    let policy = match choose_policy(std::env::var("ROUTE_LLM_POLICY").as_deref()) {
+        Ok(p) => p,
+        Err(msg) => {
+            eprintln!("{msg}");
+            std::process::exit(1);
+        }
+    };
+
     let (router, router_name): (route_llm_server::SharedRouter, &'static str) = match router_name {
         "heuristic" => (
             std::sync::Arc::new(route_llm_core::HeuristicRouter),
             "heuristic",
+        ),
+        "budget" => (
+            std::sync::Arc::new(route_llm_core::BudgetRouter::with_policy(policy)),
+            "budget",
         ),
         _ => (
             std::sync::Arc::new(route_llm_core::LearnedRouter::new()),
@@ -85,6 +113,23 @@ mod tests {
     #[test]
     fn explicit_heuristic_selects_heuristic() {
         assert_eq!(choose_router(Ok("heuristic")), Ok("heuristic"));
+    }
+
+    #[test]
+    fn explicit_budget_selects_budget() {
+        assert_eq!(super::choose_router(Ok("budget")), Ok("budget"));
+    }
+
+    #[test]
+    fn policy_parses_known_values_and_defaults() {
+        use route_llm_core::Policy;
+        assert_eq!(super::choose_policy(Ok("strict")), Ok(Policy::Strict));
+        assert_eq!(super::choose_policy(Ok("cheap")), Ok(Policy::Cheap));
+        assert_eq!(
+            super::choose_policy(Err(&std::env::VarError::NotPresent)),
+            Ok(Policy::Balanced)
+        );
+        assert!(super::choose_policy(Ok("bogus")).is_err());
     }
 
     #[test]
