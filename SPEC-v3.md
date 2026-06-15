@@ -1,7 +1,7 @@
 # route-llm v3 — 設計規格：Reasoning Budget Router（預算式路由）
 
-> 狀態：設計（待複審 → 實作 → 驗收）。
-> 日期：2026-06-15（設計）
+> 狀態：v3 已實作並驗收（見 §16 結論）。判決：budget 輸 gold gate → 採「learned 主幹 + budget 決策層」，出貨 codex 6-head，預設維持 `learned`。
+> 日期：2026-06-15（設計）/ 2026-06-16（實作 + 驗收）
 > 關係：本規格在 v2（learned router，見 `SPEC-v2.md`）與 v2.1/v2.2（真實標註 + 可信判決，見 `SPEC-v2.1.md`/`SPEC-v2.2.md`）之上做**加法**——新增**第三個路由策略** `BudgetRouter`，與 `heuristic`/`learned` 平起平坐。核心思路改寫自朋友提出的 **Reasoning Budget Classifier（RBC）**：不先問「這是哪一類任務」，而是估算「這個 prompt 需要多少 reasoning budget 才能穩定做對」。v1/v2 推論核心**凍結不動**；inference 仍**零網路、純決定性**；frontier LLM 僅用於**離線**產生標籤。
 
 ## 1. 概述與動機
@@ -307,4 +307,22 @@ inference 時呼叫 LLM、服務代執行 verify/fallback/工具、改 v1/v2 推
 
 ## 16. 驗收結論
 
-> 待實作與 gold 驗收後填入（比照 v2.2 §16）。屆時記錄：(a) 軸 A 判決（budget 是否取代難度主幹，附 gold 上 Spearman/ordinal 對 learned 0.932/0.874 的數字）、(b) 軸 B 出貨 labeler 的 6-head 與逐維 `crosseval` 診斷、(c) level 門檻定值、(d) 預設 router 是否變更（保守預期維持 `learned`，`budget` 為可選第三策略）。所有變更需人工核可後方併入。
+**結論：budget 估計器輸掉 gold gate（決定性）→ 採「learned 主幹 + budget 決策層」；出貨 codex 6-head；預設維持 `learned`，`budget` 為 opt-in 第三策略。難度路由零退步，額外得到可解釋／風險升級層。**
+
+擁有者用 **claude、codex** 兩個 frontier labeler 對 987 題語料盲標 6 維（gemma 太慢、暫缺；claude≠codex 本就是 v2.2 gold 的分歧軸，2 labeler 足以裁決）。實測：兩套標籤逐題 90.3% 至少一維不同，最爭議維是 ambiguity／error_cost／verification（~48–52% exact），最客觀是 context_integration（88.9%）。各 budget-router（fit 各 labeler）與 learned 對 143 題人工 gold 評分：
+
+| router（n=143） | Spearman vs human | ordinal vs human | 備註 |
+|---|---|---|---|
+| heuristic（v2.2） | 0.670 | 0.322 | 基準 |
+| budget-fit-claude | 0.876 | 0.266 | |
+| **budget-fit-codex（出貨）** | 0.871 | 0.406 | 軸 B 勝出 |
+| **learned-fit-codex（現役）** | **0.932** | **0.874** | gold 最佳 |
+
+- **軸 A 決定：`learned` 續任難度主幹（budget 落敗，決定性）。** budget Spearman 0.871/0.876 < learned 0.932，且 ordinal 0.27–0.41 << 0.874；依 §8 軸 A（Spearman 且 ordinal 雙過）→ 不成立。
+- **校準無法翻案。** `ordinal_accuracy` 的 `bucket()` 為 3 桶（<0.4／<0.7／≥0.7）。budget 系統性低估難題——分桶 {易 57, 中 70, 難 16} vs 人工 {31, 32, **80**}；learned {29, 36, **78**} 幾乎完美複製人工（這正是其 ordinal 0.874 的來源）。budget_raw 範圍 [0.131, 0.844]，多數難題卡在 ~0.62（<0.7 難門檻）。**最佳單調重映（in-sample 上界）ordinal 天花板 = 0.832，仍 < 0.874**；簡單 min-max 拉伸僅 0.462。且 Spearman 與校準無關（0.871 < 0.932 恆成立）。故 §15.4 的門檻校準無法救，**不採 budget 為主幹**。
+- **實作（人工核可）：** `crates/core/src/budget/mod.rs` 的 runtime difficulty 改為 `learned_diff.max(level_floor(escalated_level))`——learned 出難度，escalation（high_risk／policy／分歧）仍能向上拉、但**不會低於 learned**（回歸測試 `difficulty_backbone_is_learned_never_below` 守住；red/green 驗證過）。`budget_score` 只驅動 budget 區塊。
+- **軸 B 決定：出貨 codex 6-head。** gold 上 codex Spearman 0.871 ≈ claude 0.876（差 0.005，噪訊級），但 ordinal 0.406 明顯優於 claude 0.266；且 codex 即 v2.2 learned 出貨者 → 一致。`weights.rs` 由 `cp data/budget.codex.jsonl data/budget.jsonl && trainer fit-budget` 生成。
+- **逐維 `crosseval --dims`（2 labeler，fit-row/eval-col holdout）：** reasoning_depth、verification_difficulty 最穩（對角 0.88–0.90，跨 labeler 0.81–0.88）；constraint_density、error_cost 中等（0.76–0.82）；**context_integration 最弱**（連自評僅 0.55–0.57——文字特徵難預測「給了多少上下文」）；ambiguity 自評尚可但跨 labeler 掉至 ~0.43（主觀）。印證 6 維非等價：reasoning／verification 是可靠訊號，context_integration 是最弱維。
+- **預設 router：維持 `learned`（不變）。** budget 為 opt-in 第三策略（`ROUTE_LLM_ROUTER=budget`），提供與 learned 同級路由 + 可解釋／tier／needs_tool／風險升級層。
+- **level 門檻：維持 §5.1 起始值（4/8/12/17）。** budget 不任主幹，顯示 level 為 advisory；gold-fit 門檻會 in-sample 過擬合（天花板分析已示其極限），故不校準，留待日後若有獨立驗證集。
+- **意義：** v3 的 gate 達成設計目的——以獨立人工 gold **否決**「6 維 composite 取代單一 learned 難度」的假設。budget 估計器在爭議難題上排序／分級不如 learned 且校準無法補救，故 v3 出貨為「learned 路由 + budget 決策層」：零路由退步、外加可解釋與風險升級。gemma 維度標註與 per-dimension 人工 gold 留待後續（不影響本判決）。
