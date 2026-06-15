@@ -114,12 +114,18 @@ mod tests {
     #[test]
     fn recommendation_without_budget_omits_the_field() {
         let rec = Recommendation {
-            difficulty: Difficulty { score: 0.3, signals: vec![] },
+            difficulty: Difficulty {
+                score: 0.3,
+                signals: vec![],
+            },
             ranking: vec![],
             budget: None,
         };
         let v = serde_json::to_value(&rec).unwrap();
-        assert!(v.get("budget").is_none(), "budget must be omitted when None");
+        assert!(
+            v.get("budget").is_none(),
+            "budget must be omitted when None"
+        );
     }
 
     #[test]
