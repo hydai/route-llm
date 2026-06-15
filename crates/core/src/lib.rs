@@ -1,5 +1,6 @@
 //! route-llm core: pure routing logic (no I/O).
 
+pub mod budget;
 pub mod difficulty;
 pub mod learned;
 pub mod model;
