@@ -39,6 +39,7 @@ impl Router for LearnedRouter {
         Recommendation {
             difficulty,
             ranking,
+            budget: None,
         }
     }
 }
