@@ -15,6 +15,9 @@ use crate::router::Router;
 /// v3 strategy: six learned budget dimensions → R0..R4 + decision layer → shared ranker.
 pub struct BudgetRouter {
     dim_models: Vec<LinearModel>,
+    /// v2 learned difficulty backbone (SPEC-v3 §16). Constructed once at build
+    /// time and reused for every request, mirroring `LearnedRouter`.
+    learned: LinearModel,
     policy: Policy,
 }
 
@@ -22,6 +25,7 @@ impl Default for BudgetRouter {
     fn default() -> Self {
         Self {
             dim_models: weights::shipped_dim_models(),
+            learned: learned_shipped_model(),
             policy: Policy::Balanced,
         }
     }
@@ -36,13 +40,18 @@ impl BudgetRouter {
     pub fn with_policy(policy: Policy) -> Self {
         Self {
             dim_models: weights::shipped_dim_models(),
+            learned: learned_shipped_model(),
             policy,
         }
     }
 
     /// For tests: inject dimension heads directly.
     pub fn with_models(dim_models: Vec<LinearModel>, policy: Policy) -> Self {
-        Self { dim_models, policy }
+        Self {
+            dim_models,
+            learned: learned_shipped_model(),
+            policy,
+        }
     }
 
     /// Raw estimator difficulty (pre-escalation) — for offline gold eval (SPEC-v3 §5.3 / §8 axis A).
@@ -65,7 +74,8 @@ impl Router for BudgetRouter {
         let base_level = level::level_of(score);
 
         // Second, independent estimator: v2 learned scalar mapped onto the R-scale.
-        let learned_diff = learned_shipped_model().difficulty(query).score;
+        // Reuses the cached backbone model (constructed once, not per request).
+        let learned_diff = self.learned.difficulty(query).score;
         let learned_level = level::level_of(learned_diff * dims::MAX_BUDGET);
 
         let decision = escalation::decide(
