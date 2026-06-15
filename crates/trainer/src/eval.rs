@@ -253,6 +253,51 @@ pub fn evaluate(data: &[LabeledExample]) -> EvalReport {
     }
 }
 
+/// Result of scoring routers against an EXTERNAL gold set (human labels = truth).
+/// Holdout-free: the learned model is fit on ALL of `train`, then predicts the
+/// gold queries — this scores the ACTUALLY-shipped router. The `LinearModel` is
+/// too low-capacity to memorize individual queries, but the gold set IS a subset
+/// of `train`, so `learned` gets a mild in-sample edge the train-free `heuristic`
+/// does not — negligible when the margin is wide, but if a verdict is close,
+/// re-fit excluding the gold queries to confirm (see SPEC §15). Cost is
+/// informational (avg top-1 pick cost); the verdict's primary axes are spearman + ordinal.
+#[derive(Debug, Clone)]
+pub struct GoldReport {
+    pub n: usize,
+    pub spearman_learned: f64,
+    pub spearman_heuristic: f64,
+    pub ordinal_learned: f64,
+    pub ordinal_heuristic: f64,
+    pub cost_learned: f64,
+    pub cost_heuristic: f64,
+}
+
+/// Fit learned on ALL of `train`; score learned + heuristic on `gold` vs gold's
+/// human `difficulty`. Pure (no I/O).
+pub fn evaluate_gold(train: &[LabeledExample], gold: &[LabeledExample]) -> GoldReport {
+    let model = logreg::fit(train, &FitConfig::default());
+    let labels: Vec<f64> = gold.iter().map(|e| e.difficulty).collect();
+    let learned: Vec<f64> = gold
+        .iter()
+        .map(|e| model.difficulty(&e.query).score)
+        .collect();
+    let heuristic: Vec<f64> = gold
+        .iter()
+        .map(|e| difficulty::score(&e.query).score)
+        .collect();
+    let (lc, _) = cost_profile(&learned, &labels);
+    let (hc, _) = cost_profile(&heuristic, &labels);
+    GoldReport {
+        n: gold.len(),
+        spearman_learned: spearman(&learned, &labels),
+        spearman_heuristic: spearman(&heuristic, &labels),
+        ordinal_learned: ordinal_accuracy(&learned, &labels),
+        ordinal_heuristic: ordinal_accuracy(&heuristic, &labels),
+        cost_learned: lc,
+        cost_heuristic: hc,
+    }
+}
+
 /// Print one report in the original `eval` format, tagged with its source.
 fn print_report(source: &str, r: &EvalReport) {
     eprintln!("eval {source} (holdout n={})", r.n_holdout);
@@ -290,10 +335,68 @@ pub fn run_path(path: &str) {
     print_report(path, &evaluate(&data));
 }
 
-/// Parse an optional `--in <path>` flag from CLI args (after the subcommand).
-pub fn parse_in_flag(args: &[String]) -> Option<String> {
-    let pos = args.iter().position(|a| a == "--in")?;
+/// `eval --gold <gold.jsonl>`: score the shipped router (fit on `data/labeled.jsonl`)
+/// + heuristic against the human gold set. Deployment-faithful check on hard cases.
+pub fn run_gold(gold_path: &str) {
+    let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
+    if gold.is_empty() {
+        eprintln!("gold set {gold_path} is empty");
+        std::process::exit(2);
+    }
+    let train = crate::dataset::load("data/labeled.jsonl")
+        .unwrap_or_else(|e| panic!("load data/labeled.jsonl: {e}"));
+    let r = evaluate_gold(&train, &gold);
+    println!(
+        "gold eval — shipped router vs human gold ({gold_path}), n={}",
+        r.n
+    );
+    println!(
+        "  spearman  learned={:.3}  heuristic={:.3}",
+        r.spearman_learned, r.spearman_heuristic
+    );
+    println!(
+        "  ordinal   learned={:.3}  heuristic={:.3}",
+        r.ordinal_learned, r.ordinal_heuristic
+    );
+    println!(
+        "  avg cost  learned={:.3}  heuristic={:.3}  (informational)",
+        r.cost_learned, r.cost_heuristic
+    );
+}
+
+/// Parse an optional `--<name> <value>` flag from CLI args.
+pub fn parse_flag(args: &[String], name: &str) -> Option<String> {
+    let pos = args.iter().position(|a| a == name)?;
     args.get(pos + 1).cloned()
+}
+
+/// Parse an optional `--in <path>` flag (back-compat alias for `parse_flag`).
+pub fn parse_in_flag(args: &[String]) -> Option<String> {
+    parse_flag(args, "--in")
+}
+
+/// Split `compare` args (everything after the subcommand) into an optional
+/// `--gold <path>` and the positional labeled-file list. Errors if `--gold` is
+/// present without a following value, rather than silently running the non-gold path.
+pub fn parse_compare_args(args: &[String]) -> Result<(Option<String>, Vec<String>), String> {
+    let mut gold = None;
+    let mut files = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        if args[i] == "--gold" {
+            match args.get(i + 1) {
+                Some(v) => {
+                    gold = Some(v.clone());
+                    i += 2;
+                }
+                None => return Err("--gold requires a value".to_string()),
+            }
+        } else {
+            files.push(args[i].clone());
+            i += 1;
+        }
+    }
+    Ok((gold, files))
 }
 
 /// Shorten a labeled-set path to a table label: `data/labeled.claude.jsonl` → `claude`.
@@ -353,6 +456,146 @@ pub fn compare(paths: &[String]) {
     println!(
         "note: sp/ordinal/cost@ceil are vs each set's OWN labels; avg_cost shares holdout queries."
     );
+}
+
+/// `compare --gold <gold.jsonl> <labeled...>`: fit a learned router on each
+/// labeled set (full), score it on the SAME human gold labels, and print one
+/// table. Unlike `compare`, every row is measured against the same external
+/// human yardstick → label-independent and cross-labeler comparable.
+pub fn compare_gold(gold_path: &str, labeled_paths: &[String]) {
+    if labeled_paths.is_empty() {
+        eprintln!("usage: trainer compare --gold <gold.jsonl> <labeled1.jsonl> [...]");
+        std::process::exit(2);
+    }
+    let gold = crate::dataset::load(gold_path).unwrap_or_else(|e| panic!("load {gold_path}: {e}"));
+    if gold.is_empty() {
+        eprintln!("gold set {gold_path} is empty");
+        std::process::exit(2);
+    }
+    let reports: Vec<(String, GoldReport)> = labeled_paths
+        .iter()
+        .map(|p| {
+            let train = crate::dataset::load(p).unwrap_or_else(|e| panic!("load {p}: {e}"));
+            (short_name(p), evaluate_gold(&train, &gold))
+        })
+        .collect();
+
+    println!(
+        "gold comparison — routers vs human gold ({gold_path}), n={}",
+        gold.len()
+    );
+    println!(
+        "{:<14} {:>5} {:>9} {:>9} {:>10}",
+        "router", "n", "sp_gold", "ord_gold", "avg_cost"
+    );
+    // Heuristic is train-independent: print it once (from the first report).
+    let h = &reports[0].1;
+    println!(
+        "{:<14} {:>5} {:>9.3} {:>9.3} {:>10.3}",
+        "heuristic", h.n, h.spearman_heuristic, h.ordinal_heuristic, h.cost_heuristic
+    );
+    for (name, r) in &reports {
+        println!(
+            "{:<14} {:>5} {:>9.3} {:>9.3} {:>10.3}",
+            name, r.n, r.spearman_learned, r.ordinal_learned, r.cost_learned
+        );
+    }
+    println!("note: ALL rows scored vs the SAME human gold labels — label-independent, cross-labeler comparable.");
+}
+
+/// 80/20 split by index (matching `evaluate`): train = i%5!=0, holdout = i%5==0.
+fn split_train_holdout(set: &[LabeledExample]) -> (Vec<LabeledExample>, Vec<LabeledExample>) {
+    let train = set
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| i % 5 != 0)
+        .map(|(_, e)| e.clone())
+        .collect();
+    let holdout = set
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| i % 5 == 0)
+        .map(|(_, e)| e.clone())
+        .collect();
+    (train, holdout)
+}
+
+/// Spearman matrix for cross-labeler transfer (SPEC §7): cell [i][j] = fit a
+/// learned model on `sets[i]`'s 80% train split, predict `sets[j]`'s 20% holdout,
+/// spearman vs `sets[j]`'s holdout labels. Evaluating on the holdout (not the full
+/// set) keeps the diagonal a fair held-out self-eval, not an in-sample number.
+pub fn crosseval_matrix(sets: &[Vec<LabeledExample>]) -> Vec<Vec<f64>> {
+    let split: Vec<(Vec<LabeledExample>, Vec<LabeledExample>)> =
+        sets.iter().map(|s| split_train_holdout(s)).collect();
+    split
+        .iter()
+        .map(|(train, _)| {
+            let model = logreg::fit(train, &FitConfig::default());
+            split
+                .iter()
+                .map(|(_, holdout)| {
+                    let labels: Vec<f64> = holdout.iter().map(|e| e.difficulty).collect();
+                    let pred: Vec<f64> = holdout
+                        .iter()
+                        .map(|e| model.difficulty(&e.query).score)
+                        .collect();
+                    spearman(&pred, &labels)
+                })
+                .collect()
+        })
+        .collect()
+}
+
+/// `crosseval [files...]`: print the cross-labeler spearman matrix. Defaults to
+/// the three committed labeler sets when no files are given. Per SPEC §9, a
+/// missing/unreadable labeled set is skipped (with a logged note), not fatal.
+pub fn crosseval(paths: &[String]) {
+    let owned: Vec<String> = if paths.is_empty() {
+        [
+            "data/labeled.gemma.jsonl",
+            "data/labeled.claude.jsonl",
+            "data/labeled.codex.jsonl",
+        ]
+        .iter()
+        .map(|s| s.to_string())
+        .collect()
+    } else {
+        paths.to_vec()
+    };
+    let mut names: Vec<String> = Vec::new();
+    let mut sets: Vec<Vec<LabeledExample>> = Vec::new();
+    for p in &owned {
+        match crate::dataset::load(p) {
+            Ok(s) => {
+                names.push(short_name(p));
+                sets.push(s);
+            }
+            Err(e) => eprintln!("crosseval: skipping {p}: {e}"),
+        }
+    }
+    if sets.len() < 2 {
+        eprintln!(
+            "crosseval: need >=2 readable labeled sets, got {}",
+            sets.len()
+        );
+        return;
+    }
+    let m = crosseval_matrix(&sets);
+
+    println!("crosseval — spearman of (fit on row) predicting (col)'s 20% holdout");
+    print!("{:<14}", "train\\test");
+    for n in &names {
+        print!(" {n:>9}");
+    }
+    println!();
+    for (i, row) in m.iter().enumerate() {
+        print!("{:<14}", names[i]);
+        for v in row {
+            print!(" {v:>9.3}");
+        }
+        println!();
+    }
+    println!("note: diagonal = held-out self-eval (80/20); off-diagonal = cross-labeler transfer.");
 }
 
 #[cfg(test)]
@@ -528,6 +771,89 @@ mod tests {
             parse_in_flag(&["eval".to_string(), "--in".to_string()]),
             None
         );
+    }
+
+    #[test]
+    fn parse_flag_finds_named_value() {
+        let args = vec![
+            "compare".to_string(),
+            "--gold".to_string(),
+            "g.jsonl".to_string(),
+            "a.jsonl".to_string(),
+        ];
+        assert_eq!(parse_flag(&args, "--gold"), Some("g.jsonl".to_string()));
+        assert_eq!(parse_flag(&args, "--in"), None);
+        assert_eq!(parse_flag(&["--gold".to_string()], "--gold"), None);
+    }
+
+    #[test]
+    fn parse_compare_args_splits_gold_and_files() {
+        let rest = vec![
+            "--gold".to_string(),
+            "g.jsonl".to_string(),
+            "a.jsonl".to_string(),
+            "b.jsonl".to_string(),
+        ];
+        let (gold, files) = parse_compare_args(&rest).unwrap();
+        assert_eq!(gold, Some("g.jsonl".to_string()));
+        assert_eq!(files, vec!["a.jsonl".to_string(), "b.jsonl".to_string()]);
+
+        let (g2, f2) = parse_compare_args(&["a.jsonl".to_string()]).unwrap();
+        assert_eq!(g2, None);
+        assert_eq!(f2, vec!["a.jsonl".to_string()]);
+
+        // `--gold` with no following value is an error, not a silent non-gold run.
+        assert!(parse_compare_args(&["--gold".to_string()]).is_err());
+    }
+
+    #[test]
+    fn crosseval_matrix_is_square_with_finite_diagonal() {
+        let sets = vec![sample_data(), sample_data()];
+        let m = crosseval_matrix(&sets);
+        assert_eq!(m.len(), 2, "one row per train set");
+        assert!(m.iter().all(|row| row.len() == 2), "one col per test set");
+        for i in 0..2 {
+            assert!(m[i][i].is_finite(), "diagonal must be finite");
+            assert!((-1.0..=1.0).contains(&m[i][i]), "spearman in range");
+        }
+    }
+
+    #[test]
+    fn evaluate_gold_produces_in_range_metrics() {
+        let train = sample_data();
+        let gold = vec![
+            LabeledExample {
+                query: "hi".into(),
+                difficulty: 0.0,
+                category: "chat".into(),
+            },
+            LabeledExample {
+                query: "prove a tight lower bound".into(),
+                difficulty: 1.0,
+                category: "math".into(),
+            },
+            LabeledExample {
+                query: "implement a binary search in Rust".into(),
+                difficulty: 0.5,
+                category: "code".into(),
+            },
+            LabeledExample {
+                query: "define HTTP".into(),
+                difficulty: 0.25,
+                category: "extraction".into(),
+            },
+        ];
+        let r = evaluate_gold(&train, &gold);
+        assert_eq!(r.n, 4);
+        for s in [r.spearman_learned, r.spearman_heuristic] {
+            assert!((-1.0..=1.0).contains(&s), "spearman out of range: {s}");
+        }
+        for o in [r.ordinal_learned, r.ordinal_heuristic] {
+            assert!((0.0..=1.0).contains(&o), "ordinal out of range: {o}");
+        }
+        for c in [r.cost_learned, r.cost_heuristic] {
+            assert!(c.is_finite() && c >= 0.0, "cost invalid: {c}");
+        }
     }
 
     #[test]

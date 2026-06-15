@@ -1,10 +1,11 @@
 //! Offline trainer for the learned router.
-//! Subcommands: `synth`, `label`, `fit`, `eval [--in <file>]`, `compare <files...>`.
+//! Subcommands are dispatched in `main`; run with no/invalid args to print usage.
 
 mod corpus;
 mod dataset;
 mod emit;
 mod eval;
+mod gold;
 mod label;
 mod logreg;
 
@@ -23,19 +24,43 @@ fn main() {
             );
         }
         "eval" => {
-            let args: Vec<String> = std::env::args().collect();
-            match eval::parse_in_flag(&args) {
-                Some(path) => eval::run_path(&path),
-                None => eval::run(),
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            // A flag present without a value is a usage error, not a silent fallback.
+            for flag in ["--gold", "--in"] {
+                if rest.iter().any(|a| a == flag) && eval::parse_flag(&rest, flag).is_none() {
+                    eprintln!(
+                        "usage: trainer eval [--in <file>|--gold <file>] — {flag} requires a value"
+                    );
+                    std::process::exit(2);
+                }
+            }
+            if let Some(gold) = eval::parse_flag(&rest, "--gold") {
+                eval::run_gold(&gold);
+            } else if let Some(path) = eval::parse_in_flag(&rest) {
+                eval::run_path(&path);
+            } else {
+                eval::run();
             }
         }
         "compare" => {
+            let rest: Vec<String> = std::env::args().skip(2).collect();
+            match eval::parse_compare_args(&rest) {
+                Ok((Some(g), files)) => eval::compare_gold(&g, &files),
+                Ok((None, files)) => eval::compare(&files),
+                Err(e) => {
+                    eprintln!("usage: trainer compare [--gold <file>] <files...> — {e}");
+                    std::process::exit(2);
+                }
+            }
+        }
+        "gold-pool" => gold::run_pool(),
+        "crosseval" => {
             let files: Vec<String> = std::env::args().skip(2).collect();
-            eval::compare(&files);
+            eval::crosseval(&files);
         }
         "label" => label::run(),
         other => {
-            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>]|compare <files...>>");
+            eprintln!("usage: trainer <synth|label|fit|eval [--in <file>|--gold <file>]|compare [--gold <file>] <files...>|crosseval [files...]|gold-pool>");
             if !other.is_empty() {
                 eprintln!("unknown subcommand: {other:?}");
             }
