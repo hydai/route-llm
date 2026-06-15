@@ -257,7 +257,7 @@ confidence = clamp( 0.5·boundary_margin + 0.5·estimator_agreement , 0, 1 )
 
 ## 9. 錯誤處理
 
-- **推論**：`BudgetRouter` 與 v1/v2 一樣**不新增可失敗路徑**（純函式、無 I/O）；head 維度與 feature 長度不符 → `debug_assert`（同 `LinearModel`）。空 query / 空候選 / 非法 `cost_bias` 沿用 `handlers::process` 既有檢查。未知 `policy` 字串 → DTO 反序列化回退 `Balanced`（不 fail）。
+- **推論**：`BudgetRouter` 與 v1/v2 一樣**不新增可失敗路徑**（純函式、無 I/O）；head 維度與 feature 長度不符 → `debug_assert`（同 `LinearModel`）。空 query / 空候選 / 非法 `cost_bias` 沿用 `handlers::process` 既有檢查。未設 `ROUTE_LLM_POLICY` → 回退 `Balanced`；未知/非 UTF-8 值 → 明確錯誤訊息並 `exit(1)`（與 `choose_router` 一致，fail-fast、不靜默回退）。
 - **離線**：`label --dims` 某題回傳缺維/越界 → 記錄並跳過該題（沿用 v2.1 的 skip-and-continue），不中止整批；持續性網路故障才 abort。`fit-budget` 缺某 labeler 檔 → 清楚錯誤、非零退出。`eval-budget` 的 gold 對不上 → 以可對齊者評估並報告差異（沿用 v2.2）。
 
 ## 10. 相依與效能
@@ -270,11 +270,11 @@ confidence = clamp( 0.5·boundary_margin + 0.5·estimator_agreement , 0, 1 )
 ## 11. 測試策略 (TDD)
 
 - **`budget/dims.rs`**：head 輸出有限、決定性、落在尺度內；空 query 全有限；contribution 排序穩定。
-- **`budget/level.rs`**：加權公式對固定 dims 算出預期 budget_score；門檻邊界（3/7/11/16/17）分桶正確；level↔tier↔difficulty 映射；正規化 difficulty ∈ [0,1]。
+- **`budget/level.rs`**：加權公式對固定 dims 算出預期 budget_score；門檻邊界（4/8/12/17）分桶正確；level↔tier↔difficulty 映射；正規化 difficulty ∈ [0,1]。
 - **`budget/escalation.rs`**：high_risk 關鍵字 → floor R3/R4；latest-info → `needs_tool` 且**不**升 level；confidence 公式邊界；`Δlevel ≥ 2` → max + verifier；Balanced/Strict/Cheap 的升降與旗標差異。
 - **`budget/mod.rs`**：`BudgetRouter` 產生完整 ranking（長度＝候選數）；難題 budget_score > 易題；budget 區塊欄位齊全。
 - **回歸（守住加法不破壞）**：`heuristic`/`learned` 的 `Recommendation` 序列化**不含** `budget` 欄位（逐字不變）；既有 core/server 測試全綠。
-- **server**：`ROUTE_LLM_ROUTER=budget` 啟動；三 dialect 回應含 `route_llm.budget`；未知/省略 `policy` 回退 Balanced。
+- **server**：`ROUTE_LLM_ROUTER=budget` 啟動；三 dialect 回應含 `route_llm.budget`；省略 `policy` 回退 Balanced、未知值明確錯誤退出。
 - **trainer**：`label --dims` 對 fixture 解析 6 維；`fit-budget` 產 6 head；`eval-budget`/`crosseval --dims` 指標落在合理範圍、矩陣對角線存在。
 
 ## 12. 向後相容 / 隔離
@@ -291,7 +291,7 @@ inference 時呼叫 LLM、服務代執行 verify/fallback/工具、改 v1/v2 推
 
 ## 14. 待定 / 起始預設（可調）
 
-- 維度尺度 `[4,4,4,4,3,4]` 與權重 `[1.4,1.1,1.0,1.0,0.8,1.2]`、level 門檻 `3/7/11/16/17`：朋友 §5–§6 起始值，gold 校準後定案（§8）。
+- 維度尺度 `[4,4,4,4,3,4]` 與權重 `[1.4,1.1,1.0,1.0,0.8,1.2]`、level 門檻 `4/8/12/17`：朋友 §5–§6 起始值，gold 校準後定案（§8）。
 - 標註陣容：起始沿用 claude/codex/gemma；可加 frontier model（不影響管線形狀）。
 - confidence 權重（0.5/0.5）與升級門檻 τ（0.7/0.85）：起始值，`crosseval --dims` 校準。
 - 子指令命名（`fit-budget`/`eval-budget`/`label --dims`/`crosseval --dims`）、env 命名（`ROUTE_LLM_POLICY`）與旗標於實作定稿。
