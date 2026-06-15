@@ -77,9 +77,11 @@ impl Router for BudgetRouter {
             learned_level,
         );
 
-        // Runtime difficulty = max(raw estimator, escalated level floor) — SPEC-v3 §5.3.
-        let difficulty_score =
-            level::raw_difficulty(score).max(level::level_floor_difficulty(decision.level));
+        // Axis A verdict (SPEC-v3 §16): the budget estimator lost the gold gate, so
+        // learned is the difficulty backbone. Runtime difficulty = learned scalar, raised to
+        // the escalated level floor so risk/policy escalations still strengthen routing
+        // (§5.2/§5.3). budget_score drives only the budget block below.
+        let difficulty_score = learned_diff.max(level::level_floor_difficulty(decision.level));
 
         let difficulty = Difficulty {
             score: difficulty_score,
@@ -170,5 +172,39 @@ mod tests {
         let eb = easy.budget.unwrap().budget_score;
         let hb = hard.budget.unwrap().budget_score;
         assert!(hb > eb, "hard {hb} vs easy {eb}");
+    }
+
+    #[test]
+    fn difficulty_backbone_is_learned_never_below() {
+        // Axis A verdict (SPEC-v3 §16): learned is the difficulty backbone; the budget
+        // router must never route weaker than learned would (uses shipped heads).
+        let r = BudgetRouter::new();
+        for q in [
+            "hi",
+            "summarize this paragraph in one line",
+            "design a distributed rate limiter and analyze the trade-offs",
+        ] {
+            let rec = r.recommend(q, &models(), &RoutingPreferences::default());
+            let learned = crate::learned::weights::shipped_model().difficulty(q).score;
+            assert!(
+                rec.difficulty.score >= learned - 1e-9,
+                "q={q:?}: budget difficulty {} below learned {}",
+                rec.difficulty.score,
+                learned
+            );
+            assert!(rec.budget.is_some(), "budget block still ships");
+        }
+    }
+
+    #[test]
+    fn high_risk_escalation_still_raises_difficulty() {
+        // The decision layer can strengthen routing even in learned-backbone mode.
+        let r = BudgetRouter::new();
+        let rec = r.recommend(
+            "review this legal employment contract clause for me",
+            &models(),
+            &RoutingPreferences::default(),
+        );
+        assert!(rec.difficulty.score >= level::level_floor_difficulty(level::Level::R3) - 1e-9);
     }
 }
