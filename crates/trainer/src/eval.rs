@@ -929,9 +929,9 @@ mod tests {
         let m = crosseval_matrix(&sets);
         assert_eq!(m.len(), 2, "one row per train set");
         assert!(m.iter().all(|row| row.len() == 2), "one col per test set");
-        for i in 0..2 {
-            assert!(m[i][i].is_finite(), "diagonal must be finite");
-            assert!((-1.0..=1.0).contains(&m[i][i]), "spearman in range");
+        for (i, row) in m.iter().enumerate() {
+            assert!(row[i].is_finite(), "diagonal must be finite");
+            assert!((-1.0..=1.0).contains(&row[i]), "spearman in range");
         }
     }
 
