@@ -144,7 +144,7 @@ pub fn save_dims(path: &str, items: &[DimsExample]) -> Result<(), String> {
     std::fs::write(path, to_dims_jsonl(items)).map_err(|e| format!("write {path}: {e}"))
 }
 
-/// Dimension value by canonical index 0..6 (matches `budget::dims::DIM_NAMES`).
+/// Dimension value by canonical index (0–5 for the six dims, in `budget::dims::DIM_NAMES` order).
 pub fn dim_value(d: &DimScores, i: usize) -> f64 {
     [
         d.reasoning_depth,
