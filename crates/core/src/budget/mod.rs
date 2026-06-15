@@ -2,3 +2,4 @@
 pub mod dims;
 pub mod escalation;
 pub mod level;
+pub mod weights;
