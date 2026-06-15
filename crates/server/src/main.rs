@@ -59,23 +59,27 @@ async fn main() {
         }
     };
 
-    let policy = match choose_policy(std::env::var("ROUTE_LLM_POLICY").as_deref()) {
-        Ok(p) => p,
-        Err(msg) => {
-            eprintln!("{msg}");
-            std::process::exit(1);
-        }
-    };
-
     let (router, router_name): (route_llm_server::SharedRouter, &'static str) = match router_name {
         "heuristic" => (
             std::sync::Arc::new(route_llm_core::HeuristicRouter),
             "heuristic",
         ),
-        "budget" => (
-            std::sync::Arc::new(route_llm_core::BudgetRouter::with_policy(policy)),
-            "budget",
-        ),
+        "budget" => {
+            // ROUTE_LLM_POLICY applies only to the budget router, so it is parsed
+            // and validated only when budget is the selected strategy — an invalid
+            // value does not abort startup for the heuristic/learned routers.
+            let policy = match choose_policy(std::env::var("ROUTE_LLM_POLICY").as_deref()) {
+                Ok(p) => p,
+                Err(msg) => {
+                    eprintln!("{msg}");
+                    std::process::exit(1);
+                }
+            };
+            (
+                std::sync::Arc::new(route_llm_core::BudgetRouter::with_policy(policy)),
+                "budget",
+            )
+        }
         _ => (
             std::sync::Arc::new(route_llm_core::LearnedRouter::new()),
             "learned",
