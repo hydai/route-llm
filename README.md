@@ -49,8 +49,11 @@ cargo test
 Select at startup:
 
 ```bash
-ROUTE_LLM_ROUTER=learned cargo run --release -p route-llm-server   # default
-ROUTE_LLM_ROUTER=heuristic cargo run --release -p route-llm-server # fallback
+ROUTE_LLM_ROUTER=learned   cargo run --release -p route-llm-server   # default
+ROUTE_LLM_ROUTER=heuristic cargo run --release -p route-llm-server   # v1 fallback
+ROUTE_LLM_ROUTER=budget    cargo run --release -p route-llm-server   # v3 Reasoning Budget Router
+# Budget policy (only for the budget router): balanced (default) | strict | cheap
+ROUTE_LLM_ROUTER=budget ROUTE_LLM_POLICY=strict cargo run --release -p route-llm-server
 ```
 
 ### Retraining (offline)

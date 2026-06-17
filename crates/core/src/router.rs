@@ -26,6 +26,7 @@ impl Router for HeuristicRouter {
         Recommendation {
             difficulty,
             ranking,
+            budget: None,
         }
     }
 }

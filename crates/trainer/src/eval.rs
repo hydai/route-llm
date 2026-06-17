@@ -598,6 +598,123 @@ pub fn crosseval(paths: &[String]) {
     println!("note: diagonal = held-out self-eval (80/20); off-diagonal = cross-labeler transfer.");
 }
 
+use crate::dataset::{dim_value, DimsExample};
+
+const DIM_NAMES: [&str; 6] = [
+    "reasoning_depth",
+    "verification_difficulty",
+    "constraint_density",
+    "context_integration",
+    "ambiguity",
+    "error_cost",
+];
+const DIM_SCALES: [f64; 6] = [4.0, 4.0, 4.0, 4.0, 3.0, 4.0];
+
+/// Map a 6-dim labeled set to per-dimension `LabeledExample`s (target = dim/scale).
+fn dim_as_labeled(set: &[DimsExample], i: usize) -> Vec<LabeledExample> {
+    set.iter()
+        .map(|d| LabeledExample {
+            query: d.query.clone(),
+            difficulty: (dim_value(&d.dims, i) / DIM_SCALES[i]).clamp(0.0, 1.0),
+            category: d.category.clone(),
+        })
+        .collect()
+}
+
+/// Per-dimension cross-labeler matrices (fit on row, holdout-eval on col).
+pub fn crosseval_dims_matrices(sets: &[Vec<DimsExample>]) -> Vec<Vec<Vec<f64>>> {
+    (0..6)
+        .map(|i| {
+            let per_labeler: Vec<Vec<LabeledExample>> =
+                sets.iter().map(|s| dim_as_labeled(s, i)).collect();
+            crosseval_matrix(&per_labeler)
+        })
+        .collect()
+}
+
+/// `eval-budget`: score the shipped BudgetRouter (raw estimator difficulty) and the
+/// learned model against the human gold's difficulty. SPEC-v3 §8 axis A.
+pub fn run_eval_budget(gold_path: &str) {
+    let gold = match crate::dataset::load(gold_path) {
+        Ok(g) if !g.is_empty() => g,
+        Ok(_) => {
+            eprintln!("eval-budget: gold set {gold_path} is empty");
+            std::process::exit(2);
+        }
+        Err(e) => {
+            eprintln!("eval-budget: {e}");
+            std::process::exit(2);
+        }
+    };
+    let labels: Vec<f64> = gold.iter().map(|g| g.difficulty).collect();
+
+    let budget = route_llm_core::BudgetRouter::new();
+    let bpred: Vec<f64> = gold
+        .iter()
+        .map(|g| budget.raw_difficulty(&g.query))
+        .collect();
+
+    let learned = route_llm_core::learned::weights::shipped_model();
+    let lpred: Vec<f64> = gold
+        .iter()
+        .map(|g| learned.difficulty(&g.query).score)
+        .collect();
+
+    println!("eval-budget vs human gold ({} queries)", gold.len());
+    println!("{:<10} {:>10} {:>10}", "router", "spearman", "ordinal");
+    println!(
+        "{:<10} {:>10.3} {:>10.3}",
+        "budget",
+        spearman(&bpred, &labels),
+        ordinal_accuracy(&bpred, &labels)
+    );
+    println!(
+        "{:<10} {:>10.3} {:>10.3}",
+        "learned",
+        spearman(&lpred, &labels),
+        ordinal_accuracy(&lpred, &labels)
+    );
+    println!(
+        "\nAxis A (SPEC-v3 §8): adopt budget as the difficulty backbone iff budget \
+         Spearman >= learned AND budget ordinal >= learned."
+    );
+}
+
+/// Print per-dimension cross-labeler matrices (diagnostic; SPEC-v3 §8 axis B).
+pub fn run_crosseval_dims(paths: &[String]) {
+    let mut names: Vec<String> = Vec::new();
+    let mut sets: Vec<Vec<DimsExample>> = Vec::new();
+    for p in paths {
+        match crate::dataset::load_dims(p) {
+            Ok(s) => {
+                names.push(short_name(p));
+                sets.push(s);
+            }
+            Err(e) => eprintln!("crosseval --dims: skip {p}: {e}"),
+        }
+    }
+    if sets.len() < 2 {
+        eprintln!("crosseval --dims needs >= 2 readable budget.*.jsonl files");
+        std::process::exit(2);
+    }
+    let mats = crosseval_dims_matrices(&sets);
+    for (i, m) in mats.iter().enumerate() {
+        println!("\n# dimension: {}", DIM_NAMES[i]);
+        print!("{:<14}", "fit\\eval");
+        for n in &names {
+            print!("{n:>12}");
+        }
+        println!();
+        for (r, row) in m.iter().enumerate() {
+            print!("{:<14}", names.get(r).map(|s| s.as_str()).unwrap_or("?"));
+            for v in row {
+                print!("{v:>12.3}");
+            }
+            println!();
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -812,9 +929,9 @@ mod tests {
         let m = crosseval_matrix(&sets);
         assert_eq!(m.len(), 2, "one row per train set");
         assert!(m.iter().all(|row| row.len() == 2), "one col per test set");
-        for i in 0..2 {
-            assert!(m[i][i].is_finite(), "diagonal must be finite");
-            assert!((-1.0..=1.0).contains(&m[i][i]), "spearman in range");
+        for (i, row) in m.iter().enumerate() {
+            assert!(row[i].is_finite(), "diagonal must be finite");
+            assert!((-1.0..=1.0).contains(&row[i]), "spearman in range");
         }
     }
 
@@ -886,5 +1003,57 @@ mod tests {
             r.cost_at_adequacy_heuristic.is_some(),
             "ceiling adequacy must be reachable (heuristic)"
         );
+    }
+
+    #[test]
+    fn budget_router_difficulty_is_finite_on_gold_like_input() {
+        // Uses the shipped (placeholder) heads; just checks the eval plumbing is finite.
+        let router = route_llm_core::BudgetRouter::new();
+        let d = router.raw_difficulty("prove and derive step by step");
+        assert!(d.is_finite() && (0.0..=1.0).contains(&d));
+    }
+
+    #[test]
+    fn crosseval_dims_matrix_is_square_per_dimension() {
+        // 6 queries so the 80/20 holdout split is never empty.
+        let queries = [
+            "hi there",
+            "summarize this paragraph",
+            "prove the theorem step by step",
+            "design a database schema",
+            "what is two plus two",
+            "analyze the trade-offs and justify",
+        ];
+        let a: Vec<_> = queries
+            .iter()
+            .enumerate()
+            .map(|(i, q)| dims_ex(q, [(i % 5) as u8, 1, 2, 0, 1, 2]))
+            .collect();
+        let b: Vec<_> = queries
+            .iter()
+            .enumerate()
+            .map(|(i, q)| dims_ex(q, [(i % 4) as u8, 2, 1, 1, 0, 3]))
+            .collect();
+        let mats = crosseval_dims_matrices(&[a, b]);
+        assert_eq!(mats.len(), 6, "one matrix per dimension");
+        for m in &mats {
+            assert_eq!(m.len(), 2);
+            assert_eq!(m[0].len(), 2);
+        }
+    }
+
+    fn dims_ex(q: &str, d: [u8; 6]) -> crate::dataset::DimsExample {
+        crate::dataset::DimsExample {
+            query: q.into(),
+            category: "x".into(),
+            dims: crate::dataset::DimScores {
+                reasoning_depth: d[0],
+                verification_difficulty: d[1],
+                constraint_density: d[2],
+                context_integration: d[3],
+                ambiguity: d[4],
+                error_cost: d[5],
+            },
+        }
     }
 }
